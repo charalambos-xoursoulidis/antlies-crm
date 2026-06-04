@@ -2140,22 +2140,12 @@ function propsSaveLocal(d) {
 
 // ── API helpers ───────────────────────────────────────────────────
 async function loadProperties(custId) {
-  // Always load from localStorage first (fast + reliable)
-  var local = propsLoadLocal().filter(function(p){return p.customer_id===custId;});
   try {
+    // Supabase: primary storage
     if (storageMode==='supa') {
       var server = await supaRest('properties','GET',null,'select=*&customer_id=eq.'+custId+'&order=created_at.desc');
       if (Array.isArray(server)) {
-        if (server.length === 0 && local.length > 0) {
-          // Αυτόματη μεταφορά από localStorage → Supabase (μία φορά)
-          console.log('Migrating '+local.length+' properties to Supabase...');
-          for (var mi=0; mi<local.length; mi++) {
-            try { await supaRest('properties','POST',local[mi],'on_conflict=id'); } catch(e){}
-          }
-          return local;
-        }
-        var others = propsLoadLocal().filter(function(p){return p.customer_id!==custId;});
-        propsSaveLocal(others.concat(server));
+        propsSaveLocal(server); // sync localStorage
         return server;
       }
     } else if (storageMode==='server') {
@@ -2171,12 +2161,16 @@ async function loadProperties(custId) {
 }
 
 async function savePropertyAPI(prop) {
+  try {
+    if (storageMode==='supa') {
+      await supaRest('properties','POST',prop,'on_conflict=id');
+    } else if (storageMode==='server') {
+      await apiFetch('properties','POST',prop);
+    }
+  } catch(e) { alert('Σφάλμα αποθήκευσης ακινήτου: '+e.message); return prop; }
+  // Sync localStorage
   var all = propsLoadLocal().filter(function(p){return p.id!==prop.id;});
   all.unshift(prop); propsSaveLocal(all);
-  try {
-    if (storageMode==='supa') await supaRest('properties','POST',prop,'on_conflict=id');
-    else if (storageMode==='server') await apiFetch('properties','POST',prop);
-  } catch(e){ console.warn('Properties save failed:',e); }
   return prop;
 }
 
