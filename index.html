@@ -2146,6 +2146,14 @@ async function loadProperties(custId) {
     if (storageMode==='supa') {
       var server = await supaRest('properties','GET',null,'select=*&customer_id=eq.'+custId+'&order=created_at.desc');
       if (Array.isArray(server)) {
+        if (server.length === 0 && local.length > 0) {
+          // Αυτόματη μεταφορά από localStorage → Supabase (μία φορά)
+          console.log('Migrating '+local.length+' properties to Supabase...');
+          for (var mi=0; mi<local.length; mi++) {
+            try { await supaRest('properties','POST',local[mi],'on_conflict=id'); } catch(e){}
+          }
+          return local;
+        }
         var others = propsLoadLocal().filter(function(p){return p.customer_id!==custId;});
         propsSaveLocal(others.concat(server));
         return server;
