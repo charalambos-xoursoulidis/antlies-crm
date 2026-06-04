@@ -1,0 +1,2519 @@
+﻿<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Αντλίες Θερμότητας — Διαχείριση Προσφορών </title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:14px;background:#f0f2f5;color:#1e293b;min-height:100vh}
+.hidden{display:none!important}
+.hdr{background:#1e3a5f;color:#fff;padding:0 20px;height:52px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 6px rgba(0,0,0,.3);position:sticky;top:0;z-index:100}
+.hdr-title{font-size:14px;font-weight:600}
+.hdr-sub{font-size:11px;color:#93afc9}
+.hdr-gap{flex:1}
+.conn-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:12px;cursor:pointer;border:none;white-space:nowrap}
+.conn-badge.supa{background:#f0fdf4;color:#16a34a}
+.conn-badge.serv{background:#eff6ff;color:#2563eb}
+.conn-badge.local{background:#fef9c3;color:#92400e}
+.hdr-btn{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:background .13s;white-space:nowrap}
+.hdr-btn:hover{background:rgba(255,255,255,.23)}
+.hdr-btn.grn{background:#16a34a;border-color:#16a34a}
+.hdr-btn.grn:hover{background:#15803d}
+.bc{padding:9px 20px;display:flex;align-items:center;gap:7px;font-size:12px;color:#64748b;background:#fff;border-bottom:1px solid #e2e8f0}
+.bc-link{color:#2563eb;cursor:pointer;font-weight:500}
+.bc-link:hover{text-decoration:underline}
+.bc-sep{color:#cbd5e1}.bc-cur{color:#1e293b;font-weight:600}
+.loading{text-align:center;padding:50px;color:#94a3b8}
+.loading .spin{font-size:28px;animation:spin 1s linear infinite;display:inline-block;margin-bottom:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn{border-radius:7px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid;transition:all .13s}
+.btn-primary{background:#1e3a5f;color:#fff;border-color:#1e3a5f}.btn-primary:hover{background:#1e4d7d}
+.btn-green{background:#16a34a;color:#fff;border-color:#16a34a}.btn-green:hover{background:#15803d}
+.btn-danger{background:#dc2626;color:#fff;border-color:#dc2626}.btn-danger:hover{background:#b91c1c}
+.btn-ghost{background:#fff;color:#64748b;border-color:#cbd5e1}.btn-ghost:hover{background:#f8fafc}
+.modal-back{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:#fff;border-radius:12px;padding:24px;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:90vh;overflow-y:auto}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #e2e8f0}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;padding-top:12px;border-top:1px solid #e2e8f0;margin-top:12px;flex-wrap:wrap}
+.storage-opts{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.stor-opt{border:1.5px solid #e2e8f0;border-radius:9px;padding:13px 14px;cursor:pointer;transition:all .13s;display:flex;align-items:flex-start;gap:12px}
+.stor-opt:hover{border-color:#93c5fd;background:#f0f7ff}
+.stor-opt.active{border-color:#2563eb;background:#eff6ff}
+.stor-icon{font-size:22px;flex-shrink:0}
+.stor-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.stor-desc{font-size:12px;color:#64748b;line-height:1.4}
+.supa-fields{background:#f8fafc;border-radius:8px;padding:12px;margin-top:8px;border:1px solid #e2e8f0}
+.supa-fields.hidden{display:none}
+.sql-block{background:#1e293b;color:#86efac;border-radius:8px;padding:11px 13px;font-family:monospace;font-size:11px;line-height:1.6;margin:8px 0;white-space:pre-wrap;position:relative;max-height:160px;overflow-y:auto}
+.copy-sql{position:absolute;top:7px;right:7px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:5px;padding:2px 8px;font-size:10px;cursor:pointer}
+.copy-sql:hover{background:rgba(255,255,255,.2)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.form-full{grid-column:1/-1}
+.fld label{display:block;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.fld input,.fld textarea,.fld select{width:100%;border:1px solid #cbd5e1;border-radius:7px;padding:7px 10px;font-size:13px;background:#fff;color:#1e293b;font-family:inherit;transition:border-color .12s}
+.fld input:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,.1)}
+.fld textarea{resize:vertical;min-height:52px}
+.view-cust{padding:20px}
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.toolbar h2{font-size:18px;font-weight:700;flex:1}
+.search-box{border:1px solid #cbd5e1;border-radius:8px;padding:7px 12px 7px 34px;font-size:13px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") no-repeat 10px center;color:#1e293b;width:220px}
+.search-box:focus{outline:none;border-color:#3b82f6}
+.cust-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:13px}
+.cust-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:15px;cursor:pointer;transition:all .15s;position:relative}
+.cust-card:hover{border-color:#93c5fd;box-shadow:0 4px 14px rgba(37,99,235,.1);transform:translateY(-1px)}
+.c-av{width:42px;height:42px;border-radius:50%;background:#1e3a5f;color:#fff;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:9px}
+.c-name{font-size:14px;font-weight:700;margin-bottom:3px}
+.c-line{font-size:12px;color:#64748b;margin-bottom:2px}
+.c-badges{display:flex;gap:5px;margin-top:9px;flex-wrap:wrap}
+.badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.b-blue{background:#eff6ff;color:#2563eb}.b-gray{background:#f1f5f9;color:#64748b}.b-green{background:#f0fdf4;color:#16a34a}
+.c-arr{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:#cbd5e1;font-size:18px}
+.empty-state{text-align:center;padding:60px 20px;color:#94a3b8;grid-column:1/-1}
+.empty-state .ei{font-size:44px;margin-bottom:10px}
+.det-layout{display:flex;min-height:calc(100vh - 52px - 38px)}
+.det-sidebar{width:290px;flex-shrink:0;background:#fff;border-right:1px solid #e2e8f0;padding:18px;display:flex;flex-direction:column;gap:10px}
+.det-main{flex:1;padding:18px;overflow-y:auto}
+.cic{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px}
+.cic .av{width:48px;height:48px;border-radius:50%;background:#1e3a5f;color:#fff;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.cic .fn{font-size:15px;font-weight:700;margin-bottom:7px}
+.cic .ir{font-size:12px;color:#475569;margin-bottom:3px}
+.sb-btn{width:100%;border-radius:7px;padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid;text-align:left;transition:all .13s;display:flex;align-items:center;gap:7px}
+.sb-new{background:#16a34a;color:#fff;border-color:#16a34a}.sb-new:hover{background:#15803d}
+.sb-edit{background:#fff;color:#1e3a5f;border-color:#cbd5e1}.sb-edit:hover{background:#f0f7ff;border-color:#93c5fd}
+.sb-del{background:#fff;color:#dc2626;border-color:#fecaca}.sb-del:hover{background:#fef2f2}
+.qhdr{display:flex;align-items:center;margin-bottom:13px}
+.qhdr h3{font-size:15px;font-weight:700;flex:1}
+.q-cards{display:flex;flex-direction:column;gap:9px}
+.qcard{background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;transition:border-color .13s}
+.qcard:hover{border-color:#93c5fd}
+.qcard-hdr{display:flex;align-items:center;padding:10px 13px 8px;gap:9px;border-bottom:1px solid #f1f5f9}
+.q-num{font-size:13px;font-weight:700;flex:1}
+.qst{font-size:10px;font-weight:700;padding:2px 9px;border-radius:10px}
+.qcard-body{padding:9px 13px}
+.q-pump{font-size:13px;font-weight:600;margin-bottom:4px}
+.q-date{font-size:11px;color:#94a3b8;margin-bottom:7px}
+.q-totals{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:9px}
+.qtb{background:#f8fafc;border-radius:6px;padding:5px 7px;text-align:center}
+.qtb-lbl{font-size:9px;color:#94a3b8;text-transform:uppercase;display:block;margin-bottom:1px}
+.qtb-val{font-size:12px;font-weight:700}
+.qtb.profit .qtb-val{color:#16a34a}
+.q-acts{display:flex;gap:5px}
+.qab{flex:1;border-radius:6px;padding:5px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid;text-align:center;transition:all .13s}
+.qab.edit{background:#eff6ff;color:#2563eb;border-color:#bfdbfe}.qab.edit:hover{background:#dbeafe}
+.qab.copy{background:#fff7ed;color:#c2410c;border-color:#fed7aa}.qab.copy:hover{background:#ffedd5}
+.qab.del{background:#fef2f2;color:#dc2626;border-color:#fecaca}.qab.del:hover{background:#fee2e2}
+.no-quotes{text-align:center;padding:36px 20px;color:#94a3b8;border:2px dashed #e2e8f0;border-radius:10px}
+.editor-wrap{padding:14px 18px;max-width:1160px;margin:0 auto}
+.emeta{background:#fff;border:1px solid #dde3ec;border-radius:8px;padding:11px 14px;margin-bottom:11px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.em-fld{display:flex;flex-direction:column;gap:2px}
+.em-lbl{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em}
+.em-inp{border:1px solid #cbd5e1;border-radius:6px;padding:5px 9px;font-size:13px;background:#fff;color:#1e293b;font-family:inherit}
+.em-inp:focus{outline:none;border-color:#3b82f6}
+.em-sel select{border:1px solid #cbd5e1;border-radius:6px;padding:5px 9px;font-size:13px;background:#fff;color:#1e293b;font-family:inherit}
+.elay{display:flex;gap:15px;align-items:flex-start}
+.eform{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+.esum{width:232px;flex-shrink:0;position:sticky;top:66px}
+.card{background:#fff;border:1px solid #dde3ec;border-radius:8px;overflow:hidden}
+.card-hdr{background:#f6f8fb;border-bottom:1px solid #dde3ec;padding:8px 14px;display:flex;align-items:center;gap:6px}
+.card-hdr h2{font-size:11px;font-weight:700;color:#1e3a5f;text-transform:uppercase;letter-spacing:.06em}
+.card-hdr .hint{font-size:10px;color:#94a3b8;font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px}
+.card-body{padding:11px 13px}
+.brand-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.brand-btn{border:2px solid #dde3ec;border-radius:8px;background:#fff;padding:8px 5px;cursor:pointer;text-align:center;transition:all .13s;width:100%}
+.brand-btn:hover:not(.active){border-color:#93c5fd;background:#f0f7ff}
+.brand-btn.active{border-color:var(--bc);background:color-mix(in srgb,var(--bc) 8%,#fff)}
+.bi{font-size:15px;margin-bottom:3px}.bn{font-size:11px;font-weight:700;color:#1e293b}.brand-btn.active .bn{color:var(--bc)}.bs{font-size:9px;color:#94a3b8;margin-top:1px;line-height:1.3}
+.tg-wrap{display:inline-flex;border:1.5px solid #cbd5e1;border-radius:7px;overflow:hidden;flex-wrap:wrap}
+.tg-btn{padding:5px 12px;font-size:11px;font-weight:500;border:none;background:#fff;color:#64748b;cursor:pointer;border-right:1.5px solid #cbd5e1;transition:all .12s;white-space:nowrap}
+.tg-btn:last-child{border-right:none}
+.tg-btn.active{background:#1e3a5f;color:#fff}
+.pump-grid{display:grid;gap:5px}
+.pump-btn{border:1.5px solid #cbd5e1;border-radius:7px;background:#fff;padding:6px 8px;cursor:pointer;text-align:left;transition:all .12s;width:100%}
+.pump-btn:hover:not(.active){border-color:#93c5fd;background:#f0f7ff}
+.pump-btn.active{border:2px solid #1d4ed8;background:#eff6ff}
+.p-kw{font-size:10px;color:#94a3b8;margin-bottom:1px}.p-nm{font-size:11px;font-weight:600;color:#1e293b;margin-bottom:2px;line-height:1.3}
+.pump-btn.active .p-nm{color:#1d4ed8}.p-pr{font-size:10px;color:#64748b}.pump-btn.active .p-pr{color:#2563eb}
+.msec{border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-top:8px}
+.msec-hdr{display:flex;align-items:center;padding:7px 11px;gap:7px}
+.pump-hdr{background:#eef2ff;border-bottom:1px solid #c7d2fe}
+.buf-hdr{background:#ecfeff;border-bottom:1px solid #a5f3fc}
+.boil-hdr{background:#fff7ed;border-bottom:1px solid #fed7aa}
+.msec-title{font-size:12px;font-weight:700;flex:1}
+.pump-hdr .msec-title{color:#3730a3}.buf-hdr .msec-title{color:#0e7490}.boil-hdr .msec-title{color:#c2410c}
+.sec-tog{display:inline-flex;border-radius:20px;border:1.5px solid #cbd5e1;overflow:hidden;cursor:pointer;background:#f8fafc}
+.sec-tog span{padding:2px 9px;font-size:10px;font-weight:700;transition:all .12s;white-space:nowrap}
+.sec-tog .tog-off{color:#94a3b8}.sec-tog .tog-on{color:#94a3b8}
+.sec-tog.active .tog-on{background:#16a34a;color:#fff;border-radius:20px}
+.sec-tog:not(.active) .tog-off{background:#dc2626;color:#fff;border-radius:20px}
+.mat-tbl{width:100%;border-collapse:collapse}
+.mat-tbl tr{border-bottom:1px solid #f1f5f9}.mat-tbl tr:last-child{border-bottom:none}
+.mat-tbl tr.mon{background:#f8faff}.mat-tbl tr.moff{background:#fff}
+.mat-tbl tr.moff td:not(.chk-c){color:#94a3b8}
+.mat-tbl td{padding:5px 7px;vertical-align:middle}
+.chk-c{width:26px;padding-left:8px!important}
+.chk{width:16px;height:16px;border:1.5px solid #94a3b8;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;background:#fff;transition:all .12s}
+.mon .chk{background:#1d4ed8;border-color:#1d4ed8}
+.chkm{display:none;color:#fff;font-size:10px;font-weight:700;line-height:1}.mon .chkm{display:block}
+.mat-nm{font-size:12px;cursor:pointer}.mon .mat-nm{font-weight:500;color:#1d4ed8}
+.mat-un{font-size:10px;color:#94a3b8;text-align:right;padding-right:4px!important;white-space:nowrap}
+.qty-c{width:54px;padding:2px 3px!important}
+.qty-i{width:48px;text-align:center;font-size:12px;font-weight:500;border:1px solid #cbd5e1;border-radius:5px;padding:2px;background:#fff;color:#1e293b}
+.mon .qty-i{border-color:#93c5fd}
+.mat-pr{text-align:right;font-size:12px;font-weight:600;white-space:nowrap;padding-right:8px!important;min-width:58px}
+.mon .mat-pr{color:#1d4ed8}.moff .mat-pr{color:#e2e8f0}
+.free-row.mon td{background:#fffbeb!important}.free-row.moff td{background:#fffdf5!important}
+.free-row.mon .chk{background:#d97706;border-color:#d97706}.free-row.mon .mat-pr{color:#92400e}
+.free-desc{border:none;background:transparent;font-size:12px;width:100%;font-style:italic;color:#92400e;padding:0;font-family:inherit}
+.free-desc:focus{outline:1px solid #f59e0b;border-radius:3px;background:#fff8ed;padding:1px 2px;font-style:normal}
+.free-row.moff .free-desc{color:#94a3b8}
+.lab-row.mon td{background:#e0f2fe!important}.lab-row.moff td{background:#f8fcff!important}
+.lab-row.mon .chk{background:#0369a1;border-color:#0369a1}
+.lab-row.mon .mat-nm{color:#075985;font-weight:600}.lab-row.moff .mat-nm{color:#94a3b8}
+.lab-row.mon .mat-pr{color:#0369a1}
+.sec-sub{display:flex;justify-content:space-between;padding:4px 10px;font-size:11px;background:#f8fafc;border-top:1px solid #e2e8f0;color:#64748b}
+.sec-sub strong{color:#1e293b}
+.sum-card{background:#fff;border:1px solid #dde3ec;border-radius:8px;overflow:hidden}
+.sum-hdr{background:#1e3a5f;color:#fff;padding:9px 13px;font-size:13px;font-weight:600}
+.sum-body{padding:10px 13px}
+.sum-sel{font-size:11px;font-weight:600;padding:5px 8px;border-radius:6px;text-align:center;margin-bottom:8px;border:1px solid}
+.sum-ph{font-size:11px;color:#94a3b8;font-style:italic;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;text-align:center;margin-bottom:8px}
+.sgt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:3px 0 2px;border-bottom:1px solid #f1f5f9;margin-bottom:2px;color:#1e3a5f}
+.srow{display:flex;justify-content:space-between;padding:2px 0;font-size:11px}
+.slbl{color:#64748b}.sval{font-weight:500;color:#1e293b}
+.sdiv{border:none;border-top:1.5px solid #e2e8f0;margin:6px 0}
+.sgrand{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;font-weight:700}
+.profit-box{margin-top:8px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:7px;padding:9px 11px;text-align:center}
+.plbl{font-size:10px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.07em}
+.pval{font-size:19px;font-weight:700;color:#15803d;margin:2px 0}.ppct{font-size:12px;color:#16a34a}
+.note{font-size:11px;color:#94a3b8;margin-top:4px}
+input[type=number]::-webkit-inner-spin-button{opacity:.4}
+a{color:#2563eb}
+
+.equip-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.equip-btn{border:2px solid #dde3ec;border-radius:10px;background:#fff;padding:14px;cursor:pointer;text-align:center;transition:all .14s;width:100%}
+.equip-btn:hover:not(.active){border-color:#93c5fd;background:#f0f7ff}
+.equip-btn.active{border-width:2.5px;border-color:var(--ebc);background:color-mix(in srgb,var(--ebc) 9%,#fff)}
+.equip-icon{font-size:28px;display:block;margin-bottom:6px}
+.equip-label{font-size:14px;font-weight:700;display:block}
+.equip-btn.active .equip-label{color:var(--ebc)}
+.equip-sub{font-size:11px;color:#94a3b8;display:block;margin-top:2px}
+.gas-hdr{background:#fffbeb;border-bottom:1px solid #fde68a}
+.gas-hdr .msec-title{color:#92400e}
+.study-hdr{background:#faf5ff;border-bottom:1px solid #d8b4fe}
+.study-hdr .msec-title{color:#6d28d9}
+
+
+.price-i{width:62px;text-align:right;font-size:11px;border:1px solid #e2e8f0;border-radius:5px;padding:2px 3px;background:#fffdf5;color:#78350f}
+.mon .price-i{border-color:#fcd34d;background:#fffbeb}
+.mat-header th{font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.04em;padding:3px 7px 4px;border-bottom:1.5px solid #e2e8f0;white-space:nowrap}
+.mat-header th:nth-child(2){text-align:left}
+.mat-header th:nth-child(n+4){text-align:right}
+.sec-sub2{display:flex;justify-content:flex-end;gap:20px;padding:4px 10px;font-size:11px;background:#f8fafc;border-top:1px solid #e2e8f0;color:#64748b}
+
+
+.type-sel{width:100%;padding:9px 13px;font-size:14px;font-weight:600;
+  border:2px solid #e2e8f0;border-radius:8px;background:#fff;color:#1e293b;
+  font-family:inherit;cursor:pointer;outline:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  -webkit-appearance:none;appearance:none;padding-right:36px}
+.type-sel:focus{border-color:#3b82f6;box-shadow:0 0 0 3px #dbeafe}
+
+.err-box{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:12px 14px;font-size:13px;margin-bottom:12px}
+
+/* ── THERMAL RESULT ─────────────────────────────────── */
+.thermal-result{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1.5px solid #bfdbfe;
+  border-radius:10px;padding:12px 14px}
+.tr-row{display:flex;gap:12px;flex-wrap:wrap}
+.tr-cell{flex:1;min-width:100px;text-align:center;padding:8px 6px;
+  background:rgba(255,255,255,.7);border-radius:8px;border:1px solid #e2e8f0}
+.tr-cell.highlight{background:#1e3a5f;border-color:#1e3a5f}
+.tr-cell.highlight .tr-lbl{color:#93c5fd}
+.tr-cell.highlight .tr-val{color:#fff;font-size:20px}
+.tr-lbl{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.tr-val{font-size:18px;font-weight:700;color:#1e293b}
+
+.cftab-content.hidden{display:none}
+.tog-group{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.cf-sec{font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:#64748b;padding:10px 0 6px;
+  border-top:1px solid #f1f5f9;margin-top:8px}
+.tog-btn{border:1.5px solid #e2e8f0;background:#fff;border-radius:7px;
+  padding:6px 14px;font-size:13px;font-weight:500;cursor:pointer;
+  color:#475569;transition:all .13s;font-family:inherit}
+.tog-btn:hover{border-color:#93c5fd;color:#1d4ed8}
+.tog-btn.active{background:#1e3a5f;color:#fff;border-color:#1e3a5f}
+.znx-opts{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.znx-row{display:flex;align-items:center;gap:10px;padding:8px 10px;
+  border:1.5px solid #e2e8f0;border-radius:8px;cursor:pointer;transition:border-color .12s}
+.znx-row:hover{border-color:#93c5fd}
+.znx-row input[type=radio]{accent-color:#1e3a5f;width:16px;height:16px;flex-shrink:0}
+.znx-row span{font-size:13px;color:#1e293b;flex:1}
+
+.emeta{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+
+/* ── PROPERTY CARDS ─────────────────────────────── */
+.prop-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:11px;
+  padding:14px 16px;display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:all .15s;margin-bottom:10px}
+.prop-card:hover{border-color:#93c5fd;box-shadow:0 3px 12px rgba(37,99,235,.1)}
+.prop-card-left{flex:1;min-width:0}
+.prop-name{font-size:15px;font-weight:700;color:#1e293b;margin-bottom:4px}
+.prop-meta{font-size:12px;color:#64748b;margin-bottom:2px}
+.prop-card-right{display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <span style="font-size:20px">🌡️</span>
+  <div><div class="hdr-title">Διαχείριση Προσφορών — Αντλίες Θερμότητας</div>
+  <div class="hdr-sub">Bosch · Hitachi · Inventor · Toyotomi · Atlantic · MDV</div></div>
+  <div class="hdr-gap"></div>
+  <button class="conn-badge" id="conn-badge" onclick="openSetup()">⚙ Ρυθμίσεις</button>
+  <button class="hdr-btn" onclick="call(goCustomers)">👥 Πελάτες</button>
+  <button class="hdr-btn grn" id="hdr-new-cust" onclick="openNewCustomer()" style="display:none">+ Νέος Πελάτης</button>
+  <button class="hdr-btn grn" id="hdr-new-quote" onclick="call(newQuoteForCurrent)" style="display:none">+ Νέα Προσφορά</button>
+</div>
+
+
+
+<!-- VIEW: CUSTOMERS -->
+<div id="v-customers" class="view-cust hidden">
+  <div class="toolbar">
+    <h2>👥 Πελάτες</h2>
+    <input class="search-box" type="search" id="cust-search" placeholder="Αναζήτηση..." oninput="call(renderCustomers)">
+    <button class="btn btn-primary" onclick="openNewCustomer()">+ Νέος Πελάτης</button>
+  </div>
+  <div id="cust-grid" class="cust-grid"></div>
+</div>
+
+<!-- VIEW: CUSTOMER DETAIL -->
+<div id="v-customer" class="hidden">
+  <div class="bc">
+    <span class="bc-link" onclick="call(goCustomers)">👥 Πελάτες</span>
+    <span class="bc-sep">›</span><span class="bc-cur" id="bc-cname">—</span>
+  </div>
+  <div class="det-layout">
+    <div class="det-sidebar">
+      <div class="cic" id="cust-info-card"></div>
+      <button class="sb-btn sb-new" onclick="openNewProperty()">🏠 Νέο Ακίνητο</button>
+      <button class="sb-btn sb-edit" onclick="openEditCustomer()">✏ Επεξεργασία</button>
+      <button class="sb-btn sb-del" onclick="call(deleteCurrentCustomer)">🗑 Διαγραφή πελάτη</button>
+      <button class="sb-btn sb-edit" onclick="call(exportQuotesToExcel)" style="background:#fff;color:#16a34a;border-color:#86efac">📊 Εξαγωγή Excel</button>
+    </div>
+    <div class="det-main">
+      <div class="qhdr">
+        <h3>🏠 Ακίνητα</h3>
+        <span id="p-count" style="font-size:12px;color:#64748b;margin-left:8px"></span>
+      </div>
+      <div id="p-cards"></div>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW: PROPERTY (quotes per property) -->
+<div id="v-property" class="hidden">
+  <div class="bc">
+    <span class="bc-link" onclick="call(goCustomers)">👥 Πελάτες</span>
+    <span class="bc-sep">›</span>
+    <span class="bc-link" onclick="call(goCustomer)" id="bc-prcust">—</span>
+    <span class="bc-sep">›</span>
+    <span class="bc-cur" id="bc-propname">—</span>
+  </div>
+  <div class="det-layout">
+    <div class="det-sidebar">
+      <div class="cic" id="prop-info-card"></div>
+      <button class="sb-btn sb-new" onclick="call(newQuoteForCurrent)">＋ Νέα Προσφορά</button>
+      <button class="sb-btn sb-edit" onclick="openEditProperty()">✏ Επεξ. Ακινήτου</button>
+      <button class="sb-btn sb-del" onclick="call(deleteCurrentProperty)">🗑 Διαγραφή Ακινήτου</button>
+      <button class="sb-btn sb-edit" onclick="call(exportQuotesToExcel)" style="background:#fff;color:#16a34a;border-color:#86efac">📊 Εξαγωγή Excel</button>
+    </div>
+    <div class="det-main">
+      <div class="qhdr">
+        <h3>📋 Προσφορές</h3>
+        <span id="q-count" style="font-size:12px;color:#64748b;margin-left:8px"></span>
+      </div>
+      <div id="q-cards" class="q-cards"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: PROPERTY FORM -->
+<div id="modal-prop" class="modal-back hidden">
+  <div class="modal" style="max-width:680px;padding:20px">
+    <h3 id="prop-modal-title" style="font-size:15px;margin-bottom:14px">Νέο Ακίνητο</h3>
+    <div class="form-grid">
+      <div class="fld form-full"><label>Ονομασία Ακινήτου *</label>
+        <input class="req-inp" id="pf-name" placeholder="π.χ. Κατοικία Βέροια, Εξοχικό Φλώρινα, Επαγγελματικός χώρος..."></div>
+      <div class="fld form-full"><label>Διεύθυνση Ακινήτου</label>
+        <input class="req-inp" id="pf-address" placeholder="Οδός, Πόλη"></div>
+      <div class="fld form-full">
+        <label>Τύπος</label>
+        <div class="tog-group" id="ptg-proptype">
+          <button class="tog-btn" onclick="togPF('proptype','house',this)">Μονοκατοικία</button>
+          <button class="tog-btn" onclick="togPF('proptype','apt',this)">Διαμέρισμα</button>
+          <button class="tog-btn" onclick="togPF('proptype','commercial',this)">Επαγγελματικός</button>
+        </div>
+      </div>
+      <div class="fld form-full">
+        <label>Φάση</label>
+        <div class="tog-group" id="ptg-phase">
+          <button class="tog-btn" onclick="togPF('phase','mono',this)">⚡ 1φασικό</button>
+          <button class="tog-btn" onclick="togPF('phase','tri',this)">⚡ 3φασικό</button>
+        </div>
+      </div>
+      <div class="fld"><label>Εμβαδό (m²)</label><input class="req-inp" id="pf-area" type="number" placeholder="120"></div>
+      <div class="fld"><label>Έτος κατασκευής</label><input class="req-inp" id="pf-year" type="number" placeholder="1995"></div>
+      <div class="fld"><label>Επίπεδα / Όροφοι</label><input class="req-inp" id="pf-floors" type="number" placeholder="2"></div>
+      <div class="fld"><label>Όροφος κατοικίας</label><input class="req-inp" id="pf-floor" placeholder="π.χ. 3ος"></div>
+      <div class="fld form-full">
+        <label>Σύστημα διανομής</label>
+        <div class="tog-group" id="ptg-distrib">
+          <button class="tog-btn" onclick="togPF('distrib','under',this)">Ενδοδαπέδια</button>
+          <button class="tog-btn" onclick="togPF('distrib','rad',this)">Καλοριφέρ</button>
+          <button class="tog-btn" onclick="togPF('distrib','both',this)">Και τα δύο</button>
+        </div>
+      </div>
+      <div class="fld form-full"><label>Υπάρχον σύστημα θέρμανσης</label>
+        <input class="req-inp" id="pf-heating" placeholder="π.χ. Πετρέλαιο, αέριο, ηλεκτρικό..."></div>
+      <div class="fld form-full">
+        <label>Παροχή φυσικού αερίου;</label>
+        <div class="tog-group" id="ptg-gas">
+          <button class="tog-btn" onclick="togPF('gas','yes',this)">Ναι</button>
+          <button class="tog-btn" onclick="togPF('gas','no',this)">Όχι</button>
+          <button class="tog-btn" onclick="togPF('gas','unknown',this)">Άγνωστο</button>
+        </div>
+      </div>
+      <div class="fld form-full">
+        <label>Θέρμανση — Τι θέλει;</label>
+        <div class="tog-group" id="ptg-heatwork">
+          <button class="tog-btn" onclick="togPF('heatwork','new',this)">Νέα εγκατάσταση</button>
+          <button class="tog-btn" onclick="togPF('heatwork','replace',this)">Αντικατάσταση</button>
+        </div>
+      </div>
+      <div class="fld form-full">
+        <label>Ζεστό Νερό Χρήσης (ΖΝΧ)</label>
+        <div class="tog-group" id="ptg-znx">
+          <button class="tog-btn" onclick="togPF('znx','boiler',this)">Μπόιλερ λεβητοστασίου</button>
+          <button class="tog-btn" onclick="togPF('znx','electric',this)">Ηλεκτρομπόιλερ</button>
+          <button class="tog-btn" onclick="togPF('znx','has',this)">Έχει ήδη</button>
+          <button class="tog-btn" onclick="togPF('znx','none',this)">Δεν θέλει</button>
+        </div>
+      </div>
+      <div class="fld form-full">
+        <label>Ανακαίνιση / αλλαγή σωληνώσεων;</label>
+        <div class="tog-group" id="ptg-renov">
+          <button class="tog-btn" onclick="togPF('renov','yes',this)">Ναι</button>
+          <button class="tog-btn" onclick="togPF('renov','no',this)">Όχι</button>
+          <button class="tog-btn" onclick="togPF('renov','partial',this)">Μερική</button>
+        </div>
+      </div>
+      <div class="cf-sec" style="padding-top:8px">📋 ΔΙΑΧΕΙΡΙΣΗ</div>
+      <div class="fld"><label>Ανέλαβε ο/η</label><input class="req-inp" id="pf-assigned" placeholder="Υπεύθυνος"></div>
+      <div class="fld"><label>Εκτιμώμενο ποσό (€)</label><input class="req-inp" id="pf-amount" type="number" placeholder="0.00"></div>
+      <div class="fld"><label>Ημ/νία ζήτησης</label><input class="req-inp" id="pf-reqdate" type="date"></div>
+      <div class="fld"><label>Προθεσμία απάντησης</label><input class="req-inp" id="pf-deadline" type="date"></div>
+      <div class="fld"><label>Κατάσταση</label>
+        <select class="req-inp" id="pf-status">
+          <option value="pending">Εκκρεμεί</option>
+          <option value="in_progress">Σε εξέλιξη</option>
+          <option value="sent">Απεστάλη</option>
+          <option value="won">Κερδήθηκε</option>
+          <option value="lost">Χάθηκε</option>
+        </select></div>
+      <div class="fld"><label>Προτεραιότητα</label>
+        <select class="req-inp" id="pf-priority">
+          <option value="medium">Μέτρια</option>
+          <option value="high">Υψηλή</option>
+          <option value="low">Χαμηλή</option>
+        </select></div>
+      <div class="fld"><label>Budget πελάτη (€)</label><input class="req-inp" id="pf-budget" type="number" placeholder="5000"></div>
+      <div class="fld"><label>Πότε θέλει εγκατάσταση;</label><input class="req-inp" id="pf-when" placeholder="π.χ. Άμεσα, Σεπτέμβριο..."></div>
+      <div class="fld form-full"><label>Σημειώσεις</label>
+        <textarea class="req-inp" id="pf-notes" rows="2" placeholder="Επιπλέον πληροφορίες..."></textarea></div>
+    </div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn btn-danger" id="pf-del-btn" onclick="call(deleteCurrentProperty)" style="display:none;margin-right:auto">🗑 Διαγραφή</button>
+      <button class="btn btn-ghost" onclick="g('modal-prop').classList.add('hidden')">Ακύρωση</button>
+      <button class="btn btn-primary" onclick="call(saveProperty)">💾 Αποθήκευση</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW: EDITOR -->
+<div id="v-editor" class="hidden">
+  <div class="bc">
+    <span class="bc-link" onclick="call(goCustomers)">👥 Πελάτες</span>
+    <span class="bc-sep">›</span>
+    <span class="bc-link" onclick="call(goCustomer)" id="bc-ecust">—</span>
+    <span class="bc-sep">›</span>
+    <span class="bc-cur" id="bc-equote">Νέα Προσφορά</span>
+  </div>
+  <div class="editor-wrap">
+    <div class="emeta">
+      <div class="em-fld"><span class="em-lbl">Αρ. Προσφοράς</span><input class="em-inp" id="e-num" style="width:140px"></div>
+      <div class="em-fld"><span class="em-lbl">Ημερομηνία</span><input class="em-inp" type="date" id="e-date" style="width:140px"></div>
+      <div class="em-fld em-sel"><span class="em-lbl">Κατάσταση</span>
+        <select id="e-status" onchange="toggleAgreed();rSum()">
+          <option value="draft">📝 Πρόχειρο</option>
+          <option value="sent">📤 Απεστάλη</option>
+          <option value="accepted">✅ Αποδεκτή</option>
+          <option value="rejected">❌ Απορριφθείσα</option>
+        </select>
+      </div>
+      <div class="em-fld" style="flex:1;min-width:120px"><span class="em-lbl">Σημειώσεις</span>
+        <input class="em-inp" id="e-notes" style="width:100%" placeholder="Παρατηρήσεις...">
+      </div>
+      <div class="em-fld" id="agreed-wrap" style="display:none">
+        <span class="em-lbl" style="color:#15803d">💰 Ποσό Συμφωνίας</span>
+        <input class="em-inp" type="number" id="e-agreed" style="width:130px;border-color:#86efac;color:#15803d;font-weight:600" placeholder="0.00" step="0.01" min="0" oninput="rSum()">
+      </div>
+      <div class="hdr-gap"></div>
+      <button class="btn btn-green" onclick="call(saveQuote)">💾 Αποθήκευση</button>
+      <button class="btn btn-ghost" onclick="call(goCustomer)">✕ Ακύρωση</button>
+    </div>
+    <div class="elay">
+      <div class="eform">
+        <div class="card"><div class="card-hdr"><h2>&#9889; Τύπος εξοπλισμού</h2></div>
+          <div class="card-body"><div class="equip-grid">
+            <button class="equip-btn active" id="eq-hp" style="--ebc:#1d4ed8" onclick="setEquip('hp')">
+              <span class="equip-icon">🌡️</span>
+              <span class="equip-label">Αντλία Θερμότητας</span>
+              <span class="equip-sub">Heat Pump Monoblock</span>
+            </button>
+            <button class="equip-btn" id="eq-gas" style="--ebc:#b45309" onclick="setEquip('gas')">
+              <span class="equip-icon">🔥</span>
+              <span class="equip-label">Λέβητας Αερίου</span>
+              <span class="equip-sub">Φυσικό Αέριο</span>
+            </button>
+          </div></div></div>
+        <div class="card"><div class="card-hdr"><h2 id="brand-card-title">🏭 Μάρκα αντλίας</h2></div>
+          <div class="card-body"><div class="brand-grid" id="brand-grid"></div></div></div>
+        <div class="card"><div class="card-hdr"><h2>❄️ Μοντέλο αντλίας</h2><span class="hint">(τύπος → μοντέλο)</span></div>
+          <div class="card-body"><div class="tg-wrap" id="type-tabs" style="margin-bottom:9px"></div>
+          <div class="pump-grid" id="pump-grid"></div></div></div>
+        <div class="card" id="pump-price-card" style="display:none">
+          <div class="card-hdr" style="background:#f0fdf4;border-color:#86efac">
+            <h2 style="color:#15803d">💰 Τιμές εξοπλισμού</h2>
+            <span class="hint" style="color:#16a34a">Επεξεργάσιμες — αλλάξτε αν η προσφορά προμηθευτή διαφέρει</span>
+          </div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div class="fld">
+                <label style="color:#15803d;font-weight:700">📦 Τιμή κόστους αγοράς (χ/ΦΠΑ)</label>
+                <input id="pump-cost-inp" type="number" class="em-inp" style="width:100%;border-color:#86efac;font-size:15px;font-weight:600;color:#15803d" step="0.01" min="0" oninput="updPumpCost(this.value)" placeholder="0.00">
+              </div>
+              <div class="fld">
+                <label style="color:#1d4ed8;font-weight:700">🏷 Λιανική πώληση (χ/ΦΠΑ)</label>
+                <input id="pump-retail-inp" type="number" class="em-inp" style="width:100%;border-color:#93c5fd;font-size:15px;font-weight:600;color:#1d4ed8" step="0.01" min="0" oninput="updPumpRetail(this.value)" placeholder="0.00">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card"><div class="card-hdr"><h2>📦 Υλικά εγκατάστασης</h2>
+          <span class="hint">✏️ επεξεργάσιμη επικεφαλίδα · ⚒ εργασία · 💧🔥 on/off</span></div>
+          <div class="card-body" style="padding:0 11px 11px"><div id="mat-sections"></div></div></div>
+        <p class="note">* Χωρίς ΦΠΑ · Λιανική υλικών ×1,45 · Λιανική εργασίας ×1,30 (165€/ημ.)</p>
+      </div>
+      <div class="esum"><div class="sum-card"><div class="sum-hdr">🧾 Σύνοψη</div>
+        <div class="sum-body" id="sum-body"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ΡΥΘΜΙΣΕΙΣ ΑΠΟΘΗΚΕΥΣΗΣ -->
+<div id="modal-setup" class="modal-back hidden">
+  <div class="modal" style="max-width:540px">
+    <h3>⚙ Ρυθμίσεις Αποθήκευσης</h3>
+    <div id="setup-err" class="err-box hidden"></div>
+    <div class="storage-opts">
+      <div class="stor-opt" id="opt-server" onclick="selectMode('server')">
+        <div class="stor-icon">🖥️</div>
+        <div>
+          <div class="stor-title">Αποθήκευση στον Server <span style="font-size:10px;background:#eff6ff;color:#2563eb;padding:1px 7px;border-radius:10px;font-weight:700;margin-left:5px">ΣΥΝΙΣΤΑΤΑΙ</span></div>
+          <div class="stor-desc">Τα δεδομένα αποθηκεύονται ως αρχεία JSON στον server (crm_customers.json, crm_quotes.json). Κοινή πρόσβαση από όλους τους χρήστες. Απαιτεί PHP.</div>
+        </div>
+      </div>
+      <div class="stor-opt" id="opt-supa" onclick="selectMode('supa')">
+        <div class="stor-icon">☁️</div>
+        <div>
+          <div class="stor-title">Supabase Cloud</div>
+          <div class="stor-desc">Δωρεάν cloud βάση δεδομένων. Για πρόσβαση από διαφορετικές τοποθεσίες/δίκτυα.</div>
+        </div>
+      </div>
+      <div class="stor-opt" id="opt-local" onclick="selectMode('local')">
+        <div class="stor-icon">💻</div>
+        <div>
+          <div class="stor-title">Τοπική αποθήκευση (browser)</div>
+          <div class="stor-desc">Αποθήκευση στον browser. Μόνο για δοκιμές — τα δεδομένα δεν μοιράζονται.</div>
+        </div>
+      </div>
+    </div>
+    <!-- Supabase fields -->
+    <div class="supa-fields hidden" id="supa-fields">
+      <p style="font-size:12px;color:#475569;margin-bottom:10px">Δημιουργήστε δωρεάν project στο <a href="https://supabase.com" target="_blank">supabase.com</a> και τρέξτε αυτό το SQL:</p>
+      <div class="sql-block" id="sql-blk">CREATE TABLE customers (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  lastname TEXT NOT NULL, firstname TEXT,
+  address TEXT, city TEXT, zip TEXT, phone TEXT, email TEXT, notes TEXT
+);
+CREATE TABLE quotes (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  customer_id UUID REFERENCES customers(id) ON DELETE CASCADE,
+  quote_number TEXT, date DATE, status TEXT DEFAULT 'draft',
+  notes TEXT, brand TEXT, brand_label TEXT, type_idx INT DEFAULT 0,
+  pump_id TEXT, pump_name TEXT, pump_kw TEXT, sections JSONB, totals JSONB
+);
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE quotes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "allow_all" ON customers FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "allow_all" ON quotes FOR ALL USING (true) WITH CHECK (true);<button class="copy-sql" onclick="copySQL()">📋 Αντιγραφή</button></div>
+      <div class="form-grid" style="margin-top:8px">
+        <div class="fld form-full"><label>Project URL</label><input id="supa-url" placeholder="https://xxxx.supabase.co" type="url"></div>
+        <div class="fld form-full"><label>Anon Key</label><input id="supa-key" placeholder="eyJhbGci..."></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeSetup()">Ακύρωση</button>
+      <button class="btn btn-primary" onclick="call(applyMode)">✔ Εφαρμογή</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ΠΕΛΑΤΗΣ -->
+<div id="modal-cust" class="modal-back hidden">
+  <div class="modal" style="max-width:560px">
+    <h3 id="modal-cust-title" style="font-size:15px;margin-bottom:14px">Νέος Πελάτης</h3>
+    <div class="form-grid">
+      <div class="fld"><label>Επώνυμο *</label><input id="m-ln" class="req-inp" placeholder="Παπαδόπουλος"></div>
+      <div class="fld"><label>Όνομα</label><input id="m-fn" class="req-inp" placeholder="Γεώργιος"></div>
+      <div class="fld"><label>Τηλέφωνο</label><input id="m-phone" class="req-inp" type="tel" placeholder="2310 000000"></div>
+      <div class="fld"><label>Email</label><input id="m-email" class="req-inp" type="email" placeholder="info@example.gr"></div>
+      <div class="fld form-full"><label>Διεύθυνση</label><input id="m-addr" class="req-inp" placeholder="Ερμού 25"></div>
+      <div class="fld"><label>Τ.Κ.</label><input id="m-zip" class="req-inp" placeholder="59100"></div>
+      <div class="fld"><label>Πόλη</label><input id="m-city" class="req-inp" placeholder="Βέροια"></div>
+      <div class="fld form-full"><label>Παρατηρήσεις</label><textarea id="m-notes" class="req-inp" rows="2"></textarea></div>
+    </div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn btn-ghost" onclick="g('modal-cust').classList.add('hidden')">Ακύρωση</button>
+      <button class="btn btn-primary" onclick="call(saveCustomer)">💾 Αποθήκευση</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// BRANDS & MATERIALS DATA
+// ══════════════════════════════════════════════════════════════════
+const BRANDS=[
+  {id:'bosch',label:'Bosch',icon:'🔴',color:'#c0001a',sub:'CS200 AWF',types:[
+    {key:'mono',label:'⚡ Μονοφ. R-S',pumps:[
+      {id:'bs4',kw:'4,4kW',name:'AWF 4 R‑S',cost:1431.44,retail:2095.63},{id:'bs6',kw:'6kW',name:'AWF 6 R‑S',cost:2478.34,retail:3628.29},
+      {id:'bs8',kw:'8kW',name:'AWF 8 R‑S',cost:2394,retail:3504.82},{id:'bs10',kw:'10kW',name:'AWF 10 R‑S',cost:2480,retail:3630.72},
+      {id:'bs12',kw:'12kW',name:'AWF 12 R‑S',cost:3388,retail:4960.03},{id:'bs14',kw:'14,5kW',name:'AWF 14 R‑S',cost:3548,retail:5194.27},
+      {id:'bs16',kw:'15,9kW',name:'AWF 16 R‑S',cost:3667,retail:5368.49},
+    ]},
+    {key:'tri',label:'⚡⚡ Τριφ. R-T',pumps:[
+      {id:'bt12',kw:'12kW',name:'AWF 12 R‑T',cost:3446,retail:5044.94},{id:'bt14',kw:'14,5kW',name:'AWF 14 R‑T',cost:3646,retail:5337.74},
+      {id:'bt16',kw:'15,9kW',name:'AWF 16 R‑T',cost:3813,retail:5582.23},{id:'bt18',kw:'18kW',name:'AWF 18 R‑T',cost:4889,retail:7157.5},
+      {id:'bt22',kw:'22kW',name:'AWF 22 R‑T',cost:5392,retail:7893.89},{id:'bt26',kw:'26kW',name:'AWF 26 R‑T',cost:5463,retail:7997.83},
+      {id:'bt30',kw:'30kW',name:'AWF 30 R‑T',cost:5675,retail:8308.2},
+    ]}
+  ]},
+  {id:'hitachi',label:'Hitachi',icon:'⚫',color:'#1e293b',sub:'HZKF',types:[
+    {key:'mono',label:'⚡ KME-Q',pumps:[{id:'hm8',kw:'8kW',name:'HZKF08KME-Q',cost:2300,retail:3335},{id:'hm12',kw:'12kW',name:'HZKF12KME-Q',cost:2960,retail:4292},{id:'hm16',kw:'16kW',name:'HZKF16KME-Q',cost:3230,retail:4683.5}]},
+    {key:'tri',label:'⚡⚡ KMO-Q',pumps:[{id:'ht12',kw:'12kW',name:'HZKF12KMO-Q',cost:3050,retail:4422.5},{id:'ht16',kw:'16kW',name:'HZKF16KMO-Q',cost:3310,retail:4799.5}]}
+  ]},
+  {id:'inventor',label:'Inventor',icon:'🔵',color:'#1d4ed8',sub:'X FORCE',types:[
+    {key:'mono',label:'⚡ S3',pumps:[{id:'im8',kw:'8kW',name:'XFMH08S3',cost:1677,retail:2431.65},{id:'im10',kw:'10kW',name:'XFMH10S3',cost:1833,retail:2657.85},{id:'im16',kw:'16kW',name:'XFMH16S3',cost:2652,retail:3845.4}]},
+    {key:'tri',label:'⚡⚡ T9',pumps:[{id:'it12',kw:'12kW',name:'XFMH12T9',cost:2028,retail:2940.6},{id:'it14',kw:'14kW',name:'XFMH14T9',cost:2262,retail:3279.9},{id:'it16',kw:'16kW',name:'XFMH16T9',cost:2496,retail:3619.2}]}
+  ]},
+  {id:'toyotomi',label:'Toyotomi',icon:'🟠',color:'#c2410c',sub:'HYDRIA/ATRIA',types:[
+    {key:'h1',label:'HYDRIA 1PH',pumps:[
+      {id:'th1_6',kw:'6kW',name:'THMUSG406/1',cost:1944.76,retail:2819.9},{id:'th1_8',kw:'8kW',name:'THMUSG408/1',cost:2008.7,retail:2912.62},
+      {id:'th1_10',kw:'10kW',name:'THMUSG410/1',cost:2372.18,retail:3439.66},{id:'th1_12',kw:'12kW',name:'THMUSG412/1',cost:2679.92,retail:3885.88},
+      {id:'th1_14',kw:'14kW',name:'THMUSG414/1',cost:2731.21,retail:3960.25},{id:'th1_16',kw:'16kW',name:'THMUSG416/1',cost:3013.3,retail:4369.29},
+    ]},
+    {key:'h3',label:'HYDRIA 3PH',pumps:[
+      {id:'th3_10',kw:'10kW',name:'THMUSG410/3',cost:2756.67,retail:3997.17},{id:'th3_12',kw:'12kW',name:'THMUSG412/3',cost:2799.6,retail:4059.42},
+      {id:'th3_14',kw:'14kW',name:'THMUSG414/3',cost:2885.08,retail:4183.37},{id:'th3_16',kw:'16kW',name:'THMUSG416/3',cost:3184.27,retail:4617.19},
+    ]},
+    {key:'at',label:'ATRIA 1PH',pumps:[
+      {id:'ta10',kw:'10kW',name:'ATRIA TAMUSG10/1',cost:1954.31,retail:2833.75},{id:'ta12',kw:'12kW',name:'ATRIA TAMUSG12/1',cost:2344.81,retail:3399.97},
+      {id:'ta14',kw:'14kW',name:'ATRIA TAMUSG14/1',cost:2458.86,retail:3565.35},{id:'ta16',kw:'16kW',name:'ATRIA TAMUSG16/1',cost:2573.35,retail:3731.36},
+    ]}
+  ]},
+  {id:'atlantic',label:'Atlantic',icon:'🔷',color:'#0369a1',sub:'Alfea · Extensa · Excellia',types:[
+    {key:'extm',  label:'Extensa M Compact R32 (1ph)', pumps:[
+      {id:'aem5', kw:'4 kW',  name:'Alfea Extensa M 5 Compact R32',  cost:2839.10,retail:4895.00},
+      {id:'aem6', kw:'5 kW',  name:'Alfea Extensa M 6 Compact R32',  cost:3059.50,retail:5275.00},
+      {id:'aem8', kw:'8 kW',  name:'Alfea Extensa M 8 Compact R32',  cost:3308.90,retail:5705.00},
+      {id:'aem11',kw:'10 kW', name:'Alfea Extensa M 11 Compact R32', cost:3511.90,retail:6055.00},
+    ]},
+    {key:'r290m', label:'M Compact R290 Mono (1ph)', pumps:[
+      {id:'ar290m6', kw:'~8 kW',  name:'Alfea M 6 Compact R290 mono',  cost:3854.10,retail:6645.00},
+      {id:'ar290m8', kw:'~11 kW', name:'Alfea M 8 Compact R290 mono',  cost:4178.90,retail:7205.00},
+      {id:'ar290m10',kw:'~14 kW', name:'Alfea M 10 Compact R290 mono', cost:4587.80,retail:7910.00},
+      {id:'ar290m12',kw:'~16 kW', name:'Alfea M 12 Compact R290 mono', cost:4770.50,retail:8225.00},
+    ]},
+    {key:'r290t', label:'M Compact R290 TRI (3ph)', pumps:[
+      {id:'ar290t6', kw:'~8 kW',  name:'Alfea M 6 Compact R290 TRI',  cost:4007.80,retail:6910.00},
+      {id:'ar290t8', kw:'~11 kW', name:'Alfea M 8 Compact R290 TRI',  cost:4347.10,retail:7495.00},
+      {id:'ar290t10',kw:'~14 kW', name:'Alfea M 10 Compact R290 TRI', cost:4886.50,retail:8425.00},
+      {id:'ar290t12',kw:'~16 kW', name:'Alfea M 12 Compact R290 TRI', cost:4950.30,retail:8535.00},
+    ]},
+    {key:'extensa',label:'Extensa S R32 (1ph)', pumps:[
+      {id:'ae5', kw:'4,5 kW',name:'Alfea Extensa S 5 R32',  cost:2804.30,retail:4835.00},
+      {id:'ae6', kw:'5,5 kW',name:'Alfea Extensa S 6 R32',  cost:3016.00,retail:5200.00},
+      {id:'ae8', kw:'7,5 kW',name:'Alfea Extensa S 8 R32',  cost:3242.20,retail:5590.00},
+      {id:'ae10',kw:'9,5 kW',name:'Alfea Extensa S 10 R32', cost:3683.00,retail:6350.00},
+    ]},
+    {key:'mono',  label:'Excellia S R32 Mono (1ph)', pumps:[
+      {id:'am9', kw:'~10 kW',name:'Alfea Excellia S9 R32',       cost:3790.30,retail:6535.00},
+      {id:'am12',kw:'~12 kW',name:'Alfea Excellia S12 R32',      cost:4051.30,retail:6985.00},
+      {id:'am14',kw:'~14 kW',name:'Alfea Excellia S14 R32',      cost:4393.50,retail:7575.00},
+    ]},
+    {key:'tri',   label:'Excellia S R32 TRI (3ph)', pumps:[
+      {id:'at12',kw:'~12 kW',name:'Alfea Excellia S12 R32 TRI',  cost:4141.20,retail:7140.00},
+      {id:'at14',kw:'~14 kW',name:'Alfea Excellia S14 R32 TRI',  cost:4474.70,retail:7715.00},
+    ]},
+    {key:'hpai',  label:'Excellia HP AI TRI — Υψηλής Ισχύος (3ph)', pumps:[
+      {id:'ahp15',kw:'~16 kW',name:'Alfea Excellia HP AI 15 TRI', cost:5698.50,retail:9825.00},
+      {id:'ahp17',kw:'~18 kW',name:'Alfea Excellia HP AI 17 TRI', cost:6235.00,retail:10750.00},
+    ]}
+  ]}
+  ,{id:'mdv',label:'MDV',icon:'🔵',color:'#1565c0',sub:'Arctic Series',types:[
+    {key:'mono',label:'⚡ Μονοφ. 1-phase',pumps:[
+      {id:'mdv_v9_c2',  kw:'~10 kW',name:'MHC-V9W/D2N8-C2',    cost:2403.59,retail:3032.26},
+      {id:'mdv_v10_b2', kw:'~10 kW',name:'MHC-V10W/D2N8-B2',   cost:2537.04,retail:3185.48},
+      {id:'mdv_v12_b2', kw:'12 kW', name:'MHC-V12W/D2N8-B2/C2',cost:3494.47,retail:4072.58},
+      {id:'mdv_v14_b2', kw:'14 kW', name:'MHC-V14W/D2N8-B2/C2',cost:3658.62,retail:4330.65},
+      {id:'mdv_v16_b2', kw:'16 kW', name:'MHC-V16W/D2N8-B2/C2',cost:3781.84,retail:4411.29},
+    ]},
+    {key:'tri',label:'⚡⚡ Τριφ. 3-phase',pumps:[
+      {id:'mdv_v12_rn8', kw:'12 kW',name:'MHC-V12W/D2RN8-B2/C2',cost:3520.05,retail:4161.29},
+      {id:'mdv_v14_rn8', kw:'14 kW',name:'MHC-V14W/D2RN8-B2/C2',cost:3725.58,retail:4379.03},
+      {id:'mdv_v16_rn8', kw:'16 kW',name:'MHC-V16W/D2RN8-B2/C2',cost:3894.84,retail:4548.39},
+      {id:'mdv_v18_rn8', kw:'18 kW',name:'MHC-V18W/D2RN8',        cost:4105.95,retail:5354.84},
+      {id:'mdv_v22_rn8', kw:'22 kW',name:'MHC-V22W/D2RN8',        cost:4240.80,retail:5588.71},
+      {id:'mdv_v26_rn8', kw:'26 kW',name:'MHC-V26W/D2RN8',        cost:4380.30,retail:5693.55},
+      {id:'mdv_v30_rn8', kw:'30 kW',name:'MHC-V30W/D2RN8',        cost:4538.40,retail:5887.10},
+    ]}
+  ]}
+  ,{id:'aux',label:'AUX',icon:'🟡',color:'#d97706',sub:'ACHP Monoblock R32',types:[
+    {key:'mono',label:'⚡ Μονοφ. /4R3HA (1Φ)',pumps:[
+      {id:'aux_h04',kw:'4,3 kW', name:'ACHP-H04/4R3HA-ME',cost:1963.10,retail:4040.00},
+      {id:'aux_h06',kw:'6,35 kW',name:'ACHP-H06/4R3HA-ME',cost:2036.80,retail:4200.00},
+      {id:'aux_h08',kw:'8,4 kW', name:'ACHP-H08/4R3HA-ME',cost:2056.90,retail:4230.00},
+      {id:'aux_h10',kw:'10 kW',  name:'ACHP-H10/4R3HA-ME',cost:2137.30,retail:4400.00},
+      {id:'aux_h12',kw:'12,2 kW',name:'ACHP-H12/4R3HA-ME',cost:2726.90,retail:5600.00},
+      {id:'aux_h14',kw:'14,5 kW',name:'ACHP-H14/4R3HA-ME',cost:2961.40,retail:6090.00},
+      {id:'aux_h16',kw:'16,1 kW',name:'ACHP-H16/4R3HA-ME',cost:3075.30,retail:6330.00},
+    ]},
+    {key:'tri',label:'⚡⚡ Τριφ. /5R3HA (3Φ)',pumps:[
+      {id:'aux_h12t',kw:'12,2 kW',name:'ACHP-H12/5R3HA-ME',cost:3015.00,retail:6200.00},
+      {id:'aux_h14t',kw:'14,5 kW',name:'ACHP-H14/5R3HA-ME',cost:3202.60,retail:6600.00},
+      {id:'aux_h16t',kw:'16,1 kW',name:'ACHP-H16/5R3HA-ME',cost:3376.80,retail:6950.00},
+    ]}
+  ]}
+];
+const MAT_TPL=[
+  {id:'pump',icon:'🔧',label:'Υλικά Αντλίας',hdrClass:'pump-hdr',hasToggle:false,on:true,defaultOn:[],
+   items:[
+    {id:'av',name:'Αντικραδασμικά',unit:'τεμ',qty:1,on:true,cost:74,retail:107.3},
+    {id:'pi',name:'Σωλήνα Πολυστρ. Φ26',unit:'μ',qty:20,on:true,cost:4.65,retail:6.74},
+    {id:'mm',name:'Υλικά μηχανοστάσιο',unit:'σετ',qty:1,on:true,cost:130,retail:188.5},
+    {id:'em',name:'Υλικά ηλεκτρολογικά',unit:'σετ',qty:1,on:true,cost:50,retail:72.5},
+    {id:'sc',name:'StopCOr A3',unit:'τεμ',qty:1,on:false,cost:54,retail:78.3},
+    {id:'mf',name:'Mag-Filter φίλτρα 1"',unit:'τεμ',qty:1,on:false,cost:139,retail:201.55},
+    {id:'mg',name:'Μαγνητικό φίλτρο 1"',unit:'τεμ',qty:1,on:true,cost:20.32,retail:29.46},
+    {id:'ap',name:'Αυτόματος Πληρωτής',unit:'τεμ',qty:1,on:true,cost:27.56,retail:39.96},
+    {id:'ref_pipe',name:'Ψυκτικές σωλήνες',unit:'μ.',qty:0,on:false,cost:10.13,retail:14.69},
+   ],free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'},labor:{on:true,days:6,costPerDay:165,retailPerDay:230}},
+  {id:'buffer',icon:'💧',label:'Δοχείο Αδράνειας',hdrClass:'buf-hdr',hasToggle:true,on:false,defaultOn:['bf2'],
+   items:[
+    {id:'ci1',name:'Κυκλοφορητής NMT MINI 32/70-180',unit:'τεμ',qty:1,on:false,cost:162.5,retail:235.63},
+    {id:'bf1',name:'Δοχείο Intrasol 40lit',unit:'τεμ',qty:1,on:false,cost:72.5,retail:105.13},
+    {id:'bf2',name:'Δοχείο Intrasol 60-80lit',unit:'τεμ',qty:1,on:false,cost:177.5,retail:257.38},
+    {id:'bf3',name:'Δοχείο Intrasol 110-200lit',unit:'τεμ',qty:1,on:false,cost:220,retail:319},
+   ],free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'},labor:{on:false,days:2,costPerDay:165,retailPerDay:230}},
+  {id:'boiler',icon:'🔥',label:'Μπόιλερ',hdrClass:'boil-hdr',hasToggle:true,on:false,defaultOn:['bx','v3b','bo'],
+   items:[
+    {id:'bx',name:'Υλικά Επίπλεον Μπόιλερ',unit:'σετ',qty:1,on:false,cost:100,retail:145},
+    {id:'ci2',name:'Κυκλ. IMP Mini 25/70-180',unit:'τεμ',qty:1,on:false,cost:147.63,retail:214.06},
+    {id:'v3b',name:'Ηλεκτροβάνα 3οδη 1"',unit:'τεμ',qty:1,on:false,cost:157,retail:227.65},
+    {id:'bo',name:'Boiler 200lit BLS ΑΘ',unit:'τεμ',qty:1,on:false,cost:440,retail:638},
+   ],free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'},labor:{on:false,days:3,costPerDay:165,retailPerDay:230}}
+];
+
+const ST={draft:{icon:'📝',label:'Πρόχειρο',color:'#64748b',bg:'#f1f5f9'},sent:{icon:'📤',label:'Απεστάλη',color:'#2563eb',bg:'#eff6ff'},accepted:{icon:'✅',label:'Αποδεκτή',color:'#16a34a',bg:'#f0fdf4'},rejected:{icon:'❌',label:'Απορριφθείσα',color:'#dc2626',bg:'#fef2f2'}};
+
+// ══════════════════════════════════════════════════════════════════
+// STORAGE LAYER  (3 backends: server PHP, Supabase, localStorage)
+// ══════════════════════════════════════════════════════════════════
+async function supaTest(url, key) {
+  var r = await fetch(url.replace(/\/$/,'')+'/rest/v1/customers?select=id&limit=1', {
+    headers:{'apikey':key,'Authorization':'Bearer '+key}
+  });
+  if (!r.ok) throw new Error('HTTP '+r.status);
+  return true;
+}
+const IS_SERVER = location.protocol !== 'file:';
+const API = 'api.php';
+const CFG_KEY = 'crm_storage_v1'; // {mode:'server'|'supa'|'local', supaUrl, supaKey}
+
+let sb = null;
+let storageMode = 'supa'; // default: Supabase
+
+// ── PHP API ────────────────────────────────────────────────────
+async function apiFetch(action, method='GET', body=null, params={}) {
+  const url = new URL(API, location.href);
+  url.searchParams.set('action', action);
+  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k,v));
+  const opts = {method, headers:{'Content-Type':'application/json'}};
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(url, opts);
+  const text = await r.text();
+  if (!r.ok) throw new Error(`Server ${r.status}: ${text}`);
+  return JSON.parse(text);
+}
+
+// ── localStorage ───────────────────────────────────────────────
+const LOC = {
+  get(k){return JSON.parse(localStorage.getItem(k)||'[]')},
+  set(k,v){localStorage.setItem(k,JSON.stringify(v))},
+  custs(){return this.get('hp_c')},
+  quotes(){return this.get('hp_q')},
+  upsert(arr, item, key='id'){const i=arr.findIndex(x=>x[key]===item[key]);if(i>=0)arr[i]=item;else arr.unshift(item);return arr},
+  saveCust(c){const a=this.upsert(this.custs(),c);this.set('hp_c',a);return c},
+  delCust(id){this.set('hp_c',this.custs().filter(x=>x.id!==id));this.set('hp_q',this.quotes().filter(x=>x.customer_id!==id))},
+  custQ(cid){return this.quotes().filter(q=>q.customer_id===cid).sort((a,b)=>b.created_at.localeCompare(a.created_at))},
+  saveQ(q){const a=this.upsert(this.quotes(),q);this.set('hp_q',a);return q},
+  delQ(id){this.set('hp_q',this.quotes().filter(x=>x.id!==id))}
+};
+
+// ── UNIFIED DB ─────────────────────────────────────────────────
+// ── Supabase REST API helper (πιο αξιόπιστο από το SDK) ──────────
+async function supaRest(table, method, body, query) {
+  var _scfg = JSON.parse(localStorage.getItem(CFG_KEY)||'null');
+  var _sUrl = (_scfg&&_scfg.supaUrl) ? _scfg.supaUrl : SUPA_URL_DEFAULT;
+  var _sKey = (_scfg&&_scfg.supaKey) ? _scfg.supaKey : SUPA_KEY_DEFAULT;
+  var url = _sUrl.replace(/\/$/,'')+'/rest/v1/'+table+(query?'?'+query:'');
+  var headers = {
+    'apikey': _sKey,
+    'Authorization': 'Bearer '+_sKey,
+    'Content-Type': 'application/json'
+  };
+  if (method==='POST') headers['Prefer'] = 'return=minimal,resolution=merge-duplicates';
+  var opts = {method:method, headers:headers};
+  if (body) opts.body = JSON.stringify(body);
+  var r = await fetch(url, opts);
+  if (!r.ok) { var t=await r.text(); throw new Error('Supabase '+method+' '+table+': '+t); }
+  if (r.status===204||r.headers.get('content-length')=== '0') return [];
+  var txt = await r.text();
+  return txt ? JSON.parse(txt) : [];
+}
+
+const DB = {
+  async customers() {
+    if (storageMode==='supa') return supaRest('customers','GET',null,'select=*&order=created_at.desc');
+    if (storageMode==='server') return apiFetch('customers');
+    return LOC.custs().sort((a,b)=>b.created_at.localeCompare(a.created_at));
+  },
+  async saveCust(c) {
+    if (storageMode==='supa') { await supaRest('customers','POST',c,'on_conflict=id'); return c; }
+    if (storageMode==='server') return apiFetch('customers','POST',c);
+    return LOC.saveCust(c);
+  },
+  async delCust(id) {
+    if (storageMode==='supa') {
+      await supaRest('quotes','DELETE',null,'customer_id=eq.'+id);
+      await supaRest('properties','DELETE',null,'customer_id=eq.'+id);
+      await supaRest('customers','DELETE',null,'id=eq.'+id);
+      return;
+    }
+    if (storageMode==='server') { await apiFetch('customers','DELETE',null,{id}); return; }
+    LOC.delCust(id);
+  },
+  async custQuotes(cid) {
+    if (storageMode==='supa') return supaRest('quotes','GET',null,'select=*&customer_id=eq.'+cid+'&order=created_at.desc');
+    if (storageMode==='server') return apiFetch('quotes','GET',null,{customer_id:cid});
+    return LOC.custQ(cid);
+  },
+  async allQuotes() {
+    if (storageMode==='supa') return supaRest('quotes','GET',null,'select=customer_id');
+    if (storageMode==='server') return apiFetch('all_quotes');
+    return LOC.quotes().map(q=>({customer_id:q.customer_id}));
+  },
+  async saveQuote(q) {
+    if (storageMode==='supa') { await supaRest('quotes','POST',q,'on_conflict=id'); return q; }
+    if (storageMode==='server') return apiFetch('quotes','POST',q);
+    return LOC.saveQ(q);
+  },
+  async delQuote(id) {
+    if (storageMode==='supa') { await supaRest('quotes','DELETE',null,'id=eq.'+id); return; }
+    if (storageMode==='server') { await apiFetch('quotes','DELETE',null,{id}); return; }
+    LOC.delQ(id);
+  },
+  async nextNum(cid) {
+    const q = await this.custQuotes(cid);
+    return `PRF-${new Date().getFullYear()}-${String(q.length+1).padStart(3,'0')}`;
+  }
+};
+
+// ══════════════════════════════════════════════════════════════════
+// SETUP MODAL
+// ══════════════════════════════════════════════════════════════════
+let pendingMode = storageMode;
+
+function selectMode(m) {
+  pendingMode = m;
+  ['server','supa','local'].forEach(id=>{
+    document.getElementById('opt-'+id).classList.toggle('active', id===m);
+  });
+  document.getElementById('supa-fields').classList.toggle('hidden', m!=='supa');
+  document.getElementById('setup-err').classList.add('hidden');
+}
+
+function openSetup() {
+  const cfg = JSON.parse(localStorage.getItem(CFG_KEY)||'null');
+  if (cfg?.supaUrl) document.getElementById('supa-url').value = cfg.supaUrl;
+  if (cfg?.supaKey) document.getElementById('supa-key').value = cfg.supaKey;
+  selectMode(storageMode);
+  document.getElementById('modal-setup').classList.remove('hidden');
+}
+function closeSetup() { document.getElementById('modal-setup').classList.add('hidden'); }
+
+async function applyMode() {
+  const errEl = document.getElementById('setup-err');
+  errEl.classList.add('hidden');
+  if (pendingMode === 'supa') {
+    const url = document.getElementById('supa-url').value.trim();
+    const key = document.getElementById('supa-key').value.trim();
+    if (!url||!key) { errEl.textContent='Συμπληρώστε URL και Key'; errEl.classList.remove('hidden'); return; }
+    sb = null; storageMode = 'supa';
+    localStorage.setItem(CFG_KEY, JSON.stringify({mode:'supa', supaUrl:url, supaKey:key}));
+  } else if (pendingMode === 'server') {
+    try {
+      await apiFetch('status');
+      sb = null; storageMode = 'server';
+      localStorage.setItem(CFG_KEY, JSON.stringify({mode:'server'}));
+    } catch(e) { errEl.textContent='Σφάλμα: Δεν βρέθηκε το api.php ή ο server δεν έχει PHP. '+e.message; errEl.classList.remove('hidden'); return; }
+  } else {
+    sb = null; storageMode = 'local';
+    localStorage.setItem(CFG_KEY, JSON.stringify({mode:'local'}));
+  }
+  updateBadge();
+  closeSetup();
+  await goCustomers();
+}
+
+function updateBadge() {
+  const b = document.getElementById('conn-badge');
+  if (storageMode==='supa') { b.className='conn-badge supa'; b.textContent='🟢 Supabase Cloud'; }
+  else if (storageMode==='server') { b.className='conn-badge serv'; b.textContent='🔵 Αποθήκευση Server'; }
+  else { b.className='conn-badge local'; b.textContent='🟡 Τοπικά (browser)'; }
+}
+
+function copySQL() {
+  const txt = document.getElementById('sql-blk').innerText.replace('📋 Αντιγραφή','').trim();
+  navigator.clipboard.writeText(txt).then(()=>{const b=document.querySelector('.copy-sql');b.textContent='✅ OK';setTimeout(()=>b.textContent='📋 Αντιγραφή',2000)});
+}
+
+// ══════════════════════════════════════════════════════════════════
+// APP STATE & NAVIGATION
+// ══════════════════════════════════════════════════════════════════
+let APP = {custId:null, _custCache:null};
+let ES  = {brand:'bosch', typeIdx:0, pump:null};
+let MSEC = JSON.parse(JSON.stringify(MAT_TPL));
+const LAB_RATE=165, LAB_RET=1.30;
+
+function uuid(){return crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function fmt(n){return n.toLocaleString('el-GR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'}
+function initials(c){return((c.lastname||'')[0]||'').toUpperCase()+((c.firstname||'')[0]||'').toUpperCase()||'?'}
+function call(fn,...a){Promise.resolve(fn(...a)).catch(e=>{console.error(e);alert('Σφάλμα: '+(e.message||e))})}
+function loading(id){const el=document.getElementById(id);if(el)el.innerHTML='<div class="loading"><div class="spin">⏳</div><p>Φόρτωση...</p></div>'}
+function g(id){return document.getElementById(id)}
+
+function showView(id) {
+  ['v-customers','v-customer','v-editor'].forEach(v=>g(v).classList.add('hidden'));
+  g(id).classList.remove('hidden');
+  g('hdr-new-cust').style.display = id==='v-customers'?'':'none';
+  g('hdr-new-quote').style.display = id==='v-customer'?'':'none';
+}
+
+async function goCustomers(){showView('v-customers');await renderCustomers();}
+async function goCustomer(){if(APP.custId){showView('v-customer');await renderCustomerDetail()}}
+
+// ══════════════════════════════════════════════════════════════════
+// CUSTOMERS
+// ══════════════════════════════════════════════════════════════════
+async function renderCustomers(){
+  loading('cust-grid');
+  const q=(g('cust-search').value||'').toLowerCase();
+  const all=(await DB.customers()).filter(c=>(c.lastname+' '+(c.firstname||'')+' '+(c.city||'')+' '+(c.phone||'')).toLowerCase().includes(q));
+  const grid=g('cust-grid');
+  if(!all.length){grid.innerHTML=`<div class="empty-state"><div class="ei">👥</div><p style="font-weight:600;margin-bottom:5px">${q?'Δεν βρέθηκαν αποτελέσματα':'Δεν υπάρχουν πελάτες'}</p><p style="font-size:12px">${q?'Δοκιμάστε άλλη αναζήτηση':'Κάντε κλικ «+ Νέος Πελάτης»'}</p></div>`;return}
+  const allQ = await DB.allQuotes();
+  const qcnt={};allQ.forEach(q=>{qcnt[q.customer_id]=(qcnt[q.customer_id]||0)+1});
+  grid.innerHTML=all.map(c=>`
+    <div class="cust-card" onclick="call(()=>openCustomer('${c.id}'))">
+      <div class="c-av">${initials(c)}</div>
+      <div class="c-name">${c.lastname}${c.firstname?' '+c.firstname:''}</div>
+      ${c.city?`<div class="c-line">📍 ${c.city}</div>`:''}
+      ${c.phone?`<div class="c-line">📞 ${c.phone}</div>`:''}
+      ${c.email?`<div class="c-line" style="font-size:11px">✉ ${c.email}</div>`:''}
+      <div class="c-badges"><span class="badge b-blue">${qcnt[c.id]||0} προσφορ${(qcnt[c.id]||0)===1?'ά':'ές'}</span></div>
+      <div class="c-arr">›</div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CUSTOMER MODAL
+// ══════════════════════════════════════════════════════════════════
+let editCustId=null;
+function openNewCustomer(){editCustId=null;g('modal-cust-title').textContent='Νέος Πελάτης';clearCustForm();g('modal-cust').classList.remove('hidden');}
+function openEditCustomer(id) {
+  // id may be omitted — fallback to current customer
+  var cid = id || APP.custId;
+  if (!cid) return;
+  APP.custId = cid;
+  clearCustForm();
+  g('modal-cust-title').textContent = 'Επεξεργασία Πελάτη';
+  var c = APP._custCache;
+  if (c && c.id === cid) {
+    fillCustForm(c);
+    g('modal-cust').classList.remove('hidden');
+  } else {
+    DB.customers().then(function(custs){
+      var found = custs.find(function(x){return x.id===cid;});
+      if(found){ APP._custCache=found; fillCustForm(found); }
+      g('modal-cust').classList.remove('hidden');
+    }).catch(function(){ g('modal-cust').classList.remove('hidden'); });
+  }
+}
+// saveCustomer overridden below
+
+// ══════════════════════════════════════════════════════════════════
+// CUSTOMER DETAIL
+// ══════════════════════════════════════════════════════════════════
+async function openCustomer(id){APP.custId=id;await goCustomer()}
+// renderCustomerDetail defined below
+async function deleteCurrentCustomer(){
+  const c=APP._custCache;if(!c||!confirm(`Διαγραφή "${c.lastname}";\nΘα διαγραφούν και όλες οι προσφορές.`))return;
+  await DB.delCust(APP.custId);APP.custId=null;await goCustomers();
+}
+async function newQuoteForCurrent(){await openEditor(null)}
+
+// ══════════════════════════════════════════════════════════════════
+// QUOTES
+// ══════════════════════════════════════════════════════════════════
+async function renderQuotes(){
+  g('q-cards').innerHTML='<div style="padding:20px;text-align:center;color:#94a3b8">⏳ Φόρτωση...</div>';
+  const quotes=await DB.custQuotes(APP.custId);
+  g('q-count').textContent=quotes.length?`(${quotes.length})`:'';
+  if(!combined.length){g('q-cards').innerHTML='<div class="no-quotes"><div style="font-size:32px;margin-bottom:8px">📋</div><p style="font-weight:600;margin-bottom:4px">Δεν υπάρχουν προσφορές</p><p style="font-size:12px">Κάντε κλικ στο «Νέα Προσφορά»</p></div>';return}
+  const bmap=Object.fromEntries(BRANDS.map(b=>[b.id,b]));
+  g('q-cards').innerHTML=quotes.map(q=>{
+    const st=ST[q.status]||ST.draft;const t=q.totals||{};const br=bmap[q.brand]||{icon:'🔌'};
+    return`<div class="qcard">
+      <div class="qcard-hdr"><div class="q-num">📄 ${q.quote_number||'—'}</div>
+        <span class="qst" style="background:${st.bg};color:${st.color}">${st.icon} ${st.label}</span></div>
+      <div class="qcard-body">
+        <div class="q-pump">${br.icon} ${q.pump_name||'—'} · ${q.pump_kw||''}</div>
+        <div class="q-date">📅 ${q.date||'—'}${q.notes?' · '+q.notes:''}</div>
+        <div class="q-totals">
+          <div class="qtb"><span class="qtb-lbl">Κόστος</span><span class="qtb-val">${fmt(t.total_c||0)}</span></div>
+          <div class="qtb"><span class="qtb-lbl">Λιανική</span><span class="qtb-val">${fmt(t.total_r||0)}</span></div>
+          <div class="qtb profit"><span class="qtb-lbl">Κέρδος</span><span class="qtb-val">${fmt(t.profit||0)} <small style="font-size:9px;font-weight:400">(${(t.profit_pct||0).toFixed(0)}%)</small></span></div>
+        </div>
+        <div class="q-acts">
+          <button class="qab edit" onclick="call(()=>openEditor('${q.id}'))">✏ Επεξεργασία</button>
+          <button class="qab copy" onclick="call(()=>copyQuote('${q.id}'))">📋 Αντιγραφή</button>
+          <button class="qab del" onclick="call(()=>delQuote('${q.id}'))">🗑</button>
+        </div>
+      </div></div>`}).join('');
+}
+async function delQuote(id){if(!confirm('Διαγραφή;'))return;await DB.delQuote(id);await renderQuotes()}
+async function copyQuote(id){
+  const quotes=await DB.custQuotes(APP.custId);
+  const q=quotes.find(x=>x.id===id);if(!q)return;
+  const nq={...JSON.parse(JSON.stringify(q)),id:uuid(),created_at:new Date().toISOString(),
+    quote_number:await DB.nextNum(APP.custId),status:'draft',date:new Date().toISOString().split('T')[0]};
+  await DB.saveQuote(nq);await openEditor(nq.id);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// EDITOR
+// ══════════════════════════════════════════════════════════════════
+let EDIT_QID=null;
+async function openEditor(qid){
+  EDIT_QID=qid;
+  const c=APP._custCache;
+  const cn=c?c.lastname+(c.firstname?' '+c.firstname:''):'—';
+  const bcec=g('bc-ecust');if(bcec)bcec.textContent=cn;
+  if(qid){
+    const qs=await DB.custQuotes(APP.custId);
+    const q=qs.find(x=>x.id===qid);if(!q)return;
+    if(g('e-title'))g('e-title').value=q.title||'';g('e-num').value=q.quote_number||'';g('e-date').value=q.date||'';
+    g('e-status').value=q.status||'draft';g('e-notes').value=q.notes||'';
+    g('bc-equote').textContent=q.quote_number||'Προσφορά';
+    ES.brand=q.brand||'bosch';ES.typeIdx=q.type_idx||0;ES.pump=q.pump_id||null;
+    MSEC=JSON.parse(JSON.stringify(q.sections||MAT_TPL));
+  }else{
+    const num=await DB.nextNum(APP.custId);
+    g('e-num').value=num;g('e-date').value=new Date().toISOString().split('T')[0];
+    if(g('e-title'))g('e-title').value='';g('e-status').value='draft';g('e-notes').value='';
+    g('bc-equote').textContent='Νέα Προσφορά';
+    ES={brand:'bosch',typeIdx:0,pump:null};MSEC=JSON.parse(JSON.stringify(MAT_TPL));
+  }
+  showView('v-editor');rBrands();rTypeTabs();rPumps();rMats();rSum();
+}
+
+async function saveQuote(){
+  const brand=BRANDS.find(b=>b.id===ES.brand);
+  const type=brand.types[ES.typeIdx];
+  const p=ES.pump?type.pumps.find(x=>x.id===ES.pump):null;
+  const pm=sTotals('pump'),bf=sTotals('buffer'),bo=sTotals('boiler');
+  const pC=p?p.cost:0,pR=p?p.retail:0;
+  const tC=pC+pm.c+bf.c+bo.c,tR=pR+pm.r+bf.r+bo.r;
+  const q={id:EDIT_QID||uuid(),customer_id:APP.custId,created_at:new Date().toISOString(),
+    title:g('e-title')?g('e-title').value:'',
+    property_id:APP.propId||null,
+    quote_number:g('e-num').value,date:g('e-date').value,status:g('e-status').value,notes:g('e-notes').value,
+    brand:ES.brand,brand_label:brand.label,type_idx:ES.typeIdx,
+    pump_id:ES.pump,pump_name:p?.name||null,pump_kw:p?.kw||null,
+    sections:JSON.parse(JSON.stringify(MSEC)),
+    totals:{pump_c:pC,pump_r:pR,mat_c:pm.c,mat_r:pm.r,buf_c:bf.c,buf_r:bf.r,boi_c:bo.c,boi_r:bo.r,
+            total_c:tC,total_r:tR,profit:tR-tC,profit_pct:tC>0?(tR-tC)/tC*100:0}};
+  await DB.saveQuote(q);EDIT_QID=q.id;
+  g('bc-equote').textContent=q.quote_number;
+  alert(`✅ Η προσφορά "${q.quote_number}" αποθηκεύτηκε!`);
+  await goCustomer();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// EDITOR RENDERING
+// ══════════════════════════════════════════════════════════════════
+function selBrand(id){ES.brand=id;ES.typeIdx=0;ES.pump=null;rBrands();rTypeTabs();rPumps();rSum()}
+function rBrands(){g('brand-grid').innerHTML=BRANDS.map(b=>`<button class="brand-btn${ES.brand===b.id?' active':''}" style="--bc:${b.color}" onclick="selBrand('${b.id}')"><div class="bi">${b.icon}</div><div class="bn">${b.label}</div><div class="bs">${b.sub}</div></button>`).join('')}
+function selType(i){ES.typeIdx=i;ES.pump=null;rTypeTabs();rPumps();rSum()}
+function selPump(id){ES.pump=id;rPumps();rSum()}
+function togSec(sid){const s=MSEC.find(x=>x.id===sid);if(!s||!s.hasToggle)return;s.on=!s.on;if(s.on){if(s.defaultOn.length)s.items.forEach(it=>{it.on=s.defaultOn.includes(it.id)});s.labor.on=true}rMats();rSum()}
+function togItem(sid,iid){const s=MSEC.find(x=>x.id===sid);if(!s)return;const it=s.items.find(i=>i.id===iid);if(it){it.on=!it.on;rMats();rSum()}}
+function updQty(sid,iid,v){const s=MSEC.find(x=>x.id===sid);if(!s)return;const it=s.items.find(i=>i.id===iid);if(it){it.qty=Math.max(0,parseFloat(v)||0);it.on=it.qty>0;rMats();rSum()}}
+function togFree(sid){const s=MSEC.find(x=>x.id===sid);if(s){s.free.on=!s.free.on;rMats();rSum()}}
+function updFree(sid,v){const s=MSEC.find(x=>x.id===sid);if(s){s.free.cost=Math.max(0,parseFloat(v)||0);s.free.on=s.free.cost>0;rMats();rSum()}}
+function updFreeDesc(sid,v){const s=MSEC.find(x=>x.id===sid);if(s)s.free.desc=v}
+function togLab(sid){const s=MSEC.find(x=>x.id===sid);if(s){s.labor.on=!s.labor.on;rMats();rSum()}}
+
+
+// ══════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════
+// ── Supabase credentials (hardcoded για αξιόπιστη σύνδεση) ──────
+const SUPA_URL_DEFAULT = 'https://wdbgdrbkhkdtfmpdgzmy.supabase.co';
+const SUPA_KEY_DEFAULT = 'sb_publishable_xjrKqW_cm1sQBdjoY7mg7g_-E1bsUnQ';
+
+window.addEventListener('load', async ()=>{
+  storageMode = 'supa';
+  updateBadge();
+  await goCustomers();
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// GAS MODULE — DATA + OVERRIDES
+// ═══════════════════════════════════════════════════════════════════
+
+const GAS_BRANDS = [
+  { id:'buderus', label:'Buderus', icon:'🟡', color:'#b45309', sub:'Logamax Plus GB',
+    models:[
+      {id:'gb062_24', kw:'24 kW', name:'Logamax GB062-24 ΜΕ ΖΝΧ',         cost:694.14,  retail:902.38},
+      {id:'gb122_24', kw:'24 kW', name:'Logamax GB122i-24 ΖΝΧ + Πλήρωση', cost:788.90,  retail:1025.57},
+      {id:'gb172_24', kw:'24 kW', name:'Logamax GB172i.2-24 KDW ΖΝΧ',     cost:1005.56, retail:1307.23},
+    ]},
+  { id:'bongioanni', label:'Bongioanni', icon:'🟢', color:'#059669', sub:'Play S',
+    models:[
+      {id:'plays24', kw:'24 kW', name:'Play S24 + Καμινάδα + ΖΝΧ', cost:604.00, retail:785.20},
+    ]}
+];
+
+const GAS_MAT_TPL = [
+  { id:'boiler_acc', icon:'🔧', label:'Εξαρτήματα Λέβητα', hdrClass:'pump-hdr',
+    hasToggle:false, on:true, defaultOn:[],
+    items:[
+      {id:'flue',    name:'Kit Καμινάδα Coaxial Φ60/100',      unit:'τεμ.', qty:1,  on:true,  cost:41.86, retail:60.70},
+      {id:'tc100',   name:'Θερμοστάτης RC100 On-Off',         unit:'τεμ.', qty:0,  on:false, cost:47.84, retail:69.37},
+      {id:'rc210',   name:'Θερμοστάτης RC210 RF ασύρματος',   unit:'τεμ.', qty:0,  on:false, cost:135.24,retail:196.10},
+      {id:'af',      name:'Εξωτ. Αισθητήριο Αντιστάθμ. AF',   unit:'τεμ.', qty:0,  on:false, cost:18.40, retail:26.68},
+      {id:'iso_val', name:'Βαλβίδες απόμ. + φίλτρο λάσπης 1"', unit:'σετ', qty:1,  on:true,  cost:48.00, retail:69.60},
+      {id:'fill_v',  name:'Βαλβίδα πλήρωσης/εκκένωσης',        unit:'τεμ.', qty:1,  on:true,  cost:16.00, retail:23.20},
+      {id:'mm_boi',  name:'Υλικά μηχανοστάσιο Λέβητα',        unit:'σετ', qty:1,  on:true,  cost:150.00,retail:217.50},
+      {id:'znx_boi', name:'Υλικά ΖΝΧ Λέβητα',                 unit:'σετ', qty:1,  on:true,  cost:50.00, retail:72.50},
+      {id:'mag_g',   name:'Μαγνητικό φίλτρο 1"',              unit:'τεμ.', qty:1,  on:true,  cost:20.32, retail:29.46},
+      {id:'pipe26g', name:'Σωλήνα Πολυστρωματική Φ26',         unit:'μ.',   qty:10, on:true,  cost:4.65,  retail:6.74},
+    ], free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'}, labor:{on:true,days:4,costPerDay:165,retailPerDay:230}},
+  { id:'gas_pipe', icon:'🔵', label:'Παροχή Αερίου', hdrClass:'gas-hdr',
+    hasToggle:false, on:true, defaultOn:[],
+    items:[
+      {id:'galv',  name:'Γαλβανιζέ σωλήνας 1" βαρ. τύπου', unit:'μ.',   qty:6, on:true, cost:8.00,  retail:11.60},
+      {id:'vgas',  name:'Βάνα αερίου σφαιρική 1" EN331',  unit:'τεμ.', qty:2, on:true, cost:12.56, retail:18.21},
+      {id:'galvf', name:'Γαλβανιζές εξαρτ. 1" (γωνίες/μούφες/ταφ)', unit:'σετ', qty:1, on:true, cost:43.00, retail:62.35},
+      {id:'gfilt', name:'Φίλτρο αερίου Y 1" (gas strainer)', unit:'τεμ.', qty:1, on:true, cost:18.00, retail:26.10},
+      {id:'flex_g',name:'Εύκαμπτος σωλ. αερίου inox 3/4"',unit:'τεμ.', qty:1, on:true, cost:22.00, retail:31.90},
+    ], free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'}, labor:{on:false,days:2,costPerDay:165,retailPerDay:230}},
+  { id:'gas_study', icon:'📋', label:'Μελέτη & Υπηρεσίες', hdrClass:'study-hdr',
+    hasToggle:true, on:true, defaultOn:['study_eda'],
+    items:[
+      {id:'study_eda', name:'Μελέτη ΕΔΑ + Κατάθεση + Θέση Λειτουργίας',unit:'παγ.',qty:1,on:true,cost:200.00,retail:290.00},
+    ], free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'}, labor:{on:false,days:1,costPerDay:165,retailPerDay:230}},
+  { id:'extra_pipes', icon:'📐', label:'Επιπλέον Σωληνώσεις', hdrClass:'buf-hdr',
+    hasToggle:true, on:false, defaultOn:['ex_znx','ex_heat','ex_gas'],
+    items:[
+      {id:'ex_znx',  name:'Επιπλέον ζεύγος μ. ΖΝΧ Φ20 (εισ.+επιστ.) all-in',      unit:'ζεύγ.μ.', qty:0, on:false, cost:26.20, retail:38.00},
+      {id:'ex_heat', name:'Επιπλέον ζεύγος μ. Θέρμανσης Φ26 (εισ.+επιστ.) all-in',   unit:'ζεύγ.μ.', qty:0, on:false, cost:39.20, retail:52.00},
+      {id:'ex_gas',  name:'Επιπλέον τρέχον μ. Αερίου Γαλβανιζέ 1" all-in',      unit:'μ.',      qty:0, on:false, cost:22.55, retail:32.00},
+    ], free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'}, labor:{on:false,days:0,costPerDay:165,retailPerDay:230}}
+];
+
+const LAB_RET_GAS = 1.35;
+
+// ── EQUIPMENT TYPE ─────────────────────────────────────────────────
+function setEquip(type) {
+  ES.equipType = type;
+  ES.brand = (type === 'hp') ? 'bosch' : 'buderus';
+  ES.typeIdx = 0; ES.pump = null;
+  MSEC = JSON.parse(JSON.stringify(type === 'hp' ? MAT_TPL : GAS_MAT_TPL));
+  var eqhp = document.getElementById('eq-hp');
+  var eqgas = document.getElementById('eq-gas');
+  if (eqhp) eqhp.classList.toggle('active', type === 'hp');
+  if (eqgas) eqgas.classList.toggle('active', type === 'gas');
+  var t = document.getElementById('brand-card-title');
+  if (t) t.textContent = (type === 'hp') ? 'Μάρκα αντλίας' : 'Μάρκα λέβητα';
+  rBrands(); rTypeTabs(); rPumps(); rMats(); rSum();
+}
+
+// ── BRAND / MODEL ─────────────────────────────────────────────────
+function selBrand(bid) { ES.brand = bid; ES.typeIdx = 0; ES.pump = null; rBrands(); rTypeTabs(); rPumps(); rSum(); }
+function selBrandEl(btn) { selBrand(btn.getAttribute('data-bid')); }
+
+function rBrands() {
+  var brands = (ES.equipType === 'gas') ? GAS_BRANDS : BRANDS;
+  var cols = (ES.equipType === 'gas') ? Math.min(brands.length, 4) : BRANDS.length;
+  var gEl = document.getElementById('brand-grid');
+  if (!gEl) return;
+  gEl.style.gridTemplateColumns = 'repeat(' + cols + ',1fr)';
+  gEl.innerHTML = brands.map(function(b) {
+    var active = ES.brand === b.id ? ' active' : '';
+    return '<button data-bid="' + b.id + '" class="brand-btn' + active + '" style="--bc:' + b.color + '" onclick="selBrandEl(this)">'
+      + '<div class="bi">' + b.icon + '</div>'
+      + '<div class="bn">' + b.label + '</div>'
+      + '<div class="bs">' + b.sub + '</div>'
+      + '</button>';
+  }).join('');
+}
+
+function selType(i) { ES.typeIdx = i; ES.pump = null; rTypeTabs(); rPumps(); rSum(); }
+
+function selPump(pid) { ES.pump = pid; rPumps(); rSum(); }
+function selPumpEl(btn) { selPump(btn.getAttribute('data-pid')); }
+
+
+// ── TOTALS ────────────────────────────────────────────────────────
+
+// ── SUMMARY ───────────────────────────────────────────────────────
+
+// ── SAVE QUOTE ────────────────────────────────────────────────────
+async function saveQuote() {
+  var isGas = (ES.equipType === 'gas');
+  var brands = isGas ? GAS_BRANDS : BRANDS;
+  var brand = brands.find(function(b) { return b.id === ES.brand; }) || brands[0];
+  var p = null;
+  if (isGas) {
+    var gbr = GAS_BRANDS.find(function(b) { return b.id === ES.brand; }) || GAS_BRANDS[0];
+    p = ES.pump ? gbr.models.find(function(x) { return x.id === ES.pump; }) : null;
+  } else {
+    var htype = brand.types ? brand.types[ES.typeIdx] : null;
+    if (htype) p = ES.pump ? htype.pumps.find(function(x) { return x.id === ES.pump; }) : null;
+  }
+  var pC = p ? p.cost : 0, pR = p ? p.retail : 0;
+  var tC = pC + MSEC.reduce(function(a,s) { return a + sTotals(s.id).c; }, 0);
+  var tR = pR + MSEC.reduce(function(a,s) { return a + sTotals(s.id).r; }, 0);
+  var q = {
+    id: EDIT_QID || uuid(), customer_id: APP.custId, created_at: new Date().toISOString(),
+    quote_number: g('e-num').value, date: g('e-date').value,
+    status: g('e-status').value, notes: g('e-notes').value,
+    equip_type: ES.equipType, brand: ES.brand, brand_label: brand.label, type_idx: ES.typeIdx,
+    pump_id: ES.pump, pump_name: p ? p.name : null, pump_kw: p ? p.kw : null,
+    sections: JSON.parse(JSON.stringify(MSEC)),
+    totals: {pump_c:pC, pump_r:pR, total_c:tC, total_r:tR, profit:tR-tC, profit_pct:tC>0?(tR-tC)/tC*100:0}
+  };
+  await DB.saveQuote(q);
+  EDIT_QID = q.id;
+  var bc = g('bc-equote');
+  if (bc) bc.textContent = q.quote_number;
+  alert('Αποθηκεύτηκε! Προσφορά ' + q.quote_number);
+  await goCustomer();
+}
+
+// ── OPEN EDITOR ───────────────────────────────────────────────────
+async function openEditor(qid) {
+  EDIT_QID = qid;
+  var c = APP._custCache;
+  var cn = c ? c.lastname + (c.firstname ? ' ' + c.firstname : '') : '---';
+  var bcec = g('bc-ecust'); if (bcec) bcec.textContent = cn;
+  if (qid) {
+    var qs = await DB.custQuotes(APP.custId);
+    var q2 = qs.find(function(x) { return x.id === qid; });
+    if (!q2) return;
+    g('e-num').value = q2.quote_number || '';
+    g('e-date').value = q2.date || '';
+    g('e-status').value = q2.status || 'draft';
+    g('e-notes').value = q2.notes || '';
+    var bc = g('bc-equote'); if (bc) bc.textContent = q2.quote_number || 'Prosfora';
+    ES.equipType = q2.equip_type || 'hp';
+    ES.brand = q2.brand || 'bosch'; ES.typeIdx = q2.type_idx || 0; ES.pump = q2.pump_id || null;
+    MSEC = migrateGasSections(JSON.parse(JSON.stringify(q2.sections || (ES.equipType==='gas' ? GAS_MAT_TPL : MAT_TPL))), q2.equip_type || 'hp');
+  } else {
+    var num = await DB.nextNum(APP.custId);
+    g('e-num').value = num;
+    g('e-date').value = new Date().toISOString().split('T')[0];
+    g('e-status').value = 'draft'; g('e-notes').value = '';
+    var bc2 = g('bc-equote'); if (bc2) bc2.textContent = 'Νέα Προσφορά';
+    ES = {equipType:'hp', brand:'bosch', typeIdx:0, pump:null};
+    MSEC = JSON.parse(JSON.stringify(MAT_TPL));
+  }
+  var eqhp = document.getElementById('eq-hp');
+  var eqgas = document.getElementById('eq-gas');
+  if (eqhp) eqhp.classList.toggle('active', ES.equipType === 'hp');
+  if (eqgas) eqgas.classList.toggle('active', ES.equipType === 'gas');
+  var t = g('brand-card-title');
+  if (t) t.textContent = (ES.equipType === 'hp') ? 'Μάρκα αντλίας' : 'Μάρκα λέβητα';
+  showView('v-editor'); rBrands(); rTypeTabs(); rPumps(); rMats(); rSum();
+}
+
+// ── RENDER QUOTES ─────────────────────────────────────────────────
+async function renderQuotes() {
+  g('q-cards').innerHTML = '<div style="padding:20px;text-align:center;color:#94a3b8">Loading...</div>';
+  var quotes = await DB.custQuotes(APP.custId);
+  g('q-count').textContent = quotes.length ? '(' + quotes.length + ')' : '';
+  if (!quotes.length) {
+    g('q-cards').innerHTML = '<div class="no-quotes">'
+      + '<div style="font-size:32px;margin-bottom:8px">📋</div>'
+      + '<p style="font-weight:600;margin-bottom:4px">Den yparxoun prosfores</p>'
+      + '<p style="font-size:12px">Kanete klik Neo Prosfora</p></div>';
+    return;
+  }
+  var bmap = {}; BRANDS.forEach(function(b) { bmap[b.id] = b; });
+  var gbmap = {}; GAS_BRANDS.forEach(function(b) { gbmap[b.id] = b; });
+  g('q-cards').innerHTML = quotes.map(function(q) {
+    var st = ST[q.status] || ST.draft;
+    var t = q.totals || {};
+    var isGas = (q.equip_type === 'gas');
+    var br = isGas ? (gbmap[q.brand] || {icon:'🔥', label:'Αέριο'}) : (bmap[q.brand] || {icon:'🔌', label:'-'});
+    var gasTag = isGas ? '<span style="font-size:9px;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:8px;padding:1px 7px;margin-left:6px;font-weight:700">AERIO</span>' : '';
+    return '<div class="qcard">'
+      + '<div class="qcard-hdr">'
+      + '<div class="q-num">📄 ' + (q.quote_number || '-') + gasTag + '</div>'
+      + '<span class="qst" style="background:' + st.bg + ';color:' + st.color + '">' + st.icon + ' ' + st.label + '</span>'
+      + '</div><div class="qcard-body">'
+      + '<div class="q-pump">' + br.icon + ' ' + (q.pump_name || '-') + ' &middot; ' + (q.pump_kw || '') + '</div>'
+      + '<div class="q-date">📅 ' + (q.date || '-') + (q.notes ? ' &middot; ' + q.notes : '') + '</div>'
+      + '<div class="q-totals">'
+      + '<div class="qtb"><span class="qtb-lbl">Κόστος</span><span class="qtb-val">' + fmt(t.total_c||0) + '</span></div>'
+      + '<div class="qtb"><span class="qtb-lbl">Λιανική</span><span class="qtb-val">' + fmt(t.total_r||0) + '</span></div>'
+      + '<div class="qtb profit"><span class="qtb-lbl">Κέρδος</span><span class="qtb-val">' + fmt(t.profit||0) + ' <small style="font-size:9px;font-weight:400">(' + ((t.profit_pct||0).toFixed(0)) + '%)</small></span></div>'
+      + '</div><div class="q-acts">'
+      + '<button class="qab edit" data-qid="' + q.id + '" onclick="qEdit(this)">✏ Επεξεργασία</button>'
+      + '<button class="qab copy" data-qid="' + q.id + '" onclick="qCopy(this)">📋 Αντιγραφή</button>'
+      + '<button class="qab del" data-qid="' + q.id + '" onclick="qDel(this)">🗑</button>'
+      + '</div></div></div>';
+  }).join('');
+}
+
+// ── QUOTE ACTION HELPERS (avoid onclick quote issues) ─────────────
+function qEdit(btn) { var id=typeof btn==='string'?btn:btn.getAttribute('data-qid'); call(function(){return openEditor(id);}); }
+function qCopy(btn) { var id=typeof btn==='string'?btn:btn.getAttribute('data-qid'); call(function(){return copyQuote(id);}); }
+function qDel(btn)  { var id=typeof btn==='string'?btn:btn.getAttribute('data-qid'); call(function(){return delQuote(id);}); }
+
+// ═══════════════════════════════════════════════════════════════════
+// MIGRATION: fix ASCII gas item names/units in old saved quotes
+// ═══════════════════════════════════════════════════════════════════
+const GAS_NAME_MAP = {
+  'Kit Kaminada Coaxial F60/100':       'Kit Καμινάδα Coaxial Φ60/100',
+  'Thermostatis RC100 On-Off':           'Θερμοστάτης RC100 On-Off',
+  'Thermostatis RC210 RF asyrmatos':     'Θερμοστάτης RC210 RF Ασύρματος',
+  'Exot. Aisthitiro Antistathm. AF':    'Εξωτ. Αισθητήριο Αντιστάθμισης AF',
+  'Valvides apom. + filtro laspis 1"':  'Βαλβίδες απομόνωσης + φίλτρο λάσπης 1"',
+  'Valvida pliroseos/ekkenos.':         'Βαλβίδα πλήρωσης / εκκένωσης',
+  'Ylike mihanostasio Lebita':          'Υλικά μηχανοστάσιο Λέβητα',
+  'Ylike ZNX Lebita':                   'Υλικά ΖΝΧ Λέβητα',
+  'Magnitiko filtro 1"':                'Μαγνητικό φίλτρο 1"',
+  'Solina Polystromatiki F26':          'Σωλήνα Πολυστρωματική Φ26',
+  'Galvanize solinas 1" var. typou':    'Γαλβανιζέ σωλήνας 1" βαρ. τύπου',
+  'Bana aeriou sfairik. 1" EN331':      'Βάνα αερίου σφαιρική 1" EN331',
+  'Galvanizes exart. 1" (gon/mou/taf)':'Γαλβανιζές εξαρτήματα 1" (γωνίες, μούφες, ταφ)',
+  'Filtro aeriou Y 1" (gas strainer)':  'Φίλτρο αερίου Y 1" (gas strainer)',
+  'Eykamptos solinas aeriou inox 3/4"': 'Εύκαμπτος σωλήνας αερίου inox 3/4"',
+  'Meleti EDA + Katathesi + Thesis Leit.': 'Μελέτη ΕΔΑ + Κατάθεση + Θέση Λειτουργίας',
+  'Epipleon zeygos m. ZNX F20 (eis+epist) all-in':    'Επιπλέον ζεύγος μ. ΖΝΧ Φ20 (εισ.+επιστ.) all-in',
+  'Epipleon zeygos m. Therm. F26 (eis+epist) all-in': 'Επιπλέον ζεύγος μ. Θέρμανσης Φ26 (εισ.+επιστ.) all-in',
+  'Epipleon trexon m. Aeriou Galvanize 1" all-in':    'Επιπλέον τρέχον μ. Αερίου Γαλβανιζέ 1" all-in',
+  'Logamax GB062-24 ME ZNX':    'Logamax GB062-24 ΜΕ ΖΝΧ',
+  'Logamax GB122i-24 ZNX + Plirosi': 'Logamax GB122i-24 ΖΝΧ + Πλήρωση',
+  'Logamax GB172i.2-24 KDW ZNX': 'Logamax GB172i.2-24 KDW ΖΝΧ',
+  'Play S24 + Kaminada + ZNX':  'Play S24 + Καμινάδα + ΖΝΧ',
+};
+const GAS_UNIT_MAP = {
+  'tem':'τεμ.', 'set':'σετ', 'pag':'παγ.', 'zeug.m':'ζεύγ.μ.',
+  'Loipa / Ektakta':'Λοιπά / Έκτακτα',
+  'Exartimata Lebita':'Εξαρτήματα Λέβητα',
+  'Parochi Aeriou':'Παροχή Αερίου',
+  'Meleti kai Ypiresies':'Μελέτη & Υπηρεσίες',
+  'Epipleon Solinosis':'Επιπλέον Σωληνώσεις',
+};
+function migrateGasSections(sections, equipType) {
+  if (!sections || equipType !== 'gas') return sections;
+  sections.forEach(function(sec) {
+    if (GAS_UNIT_MAP[sec.label]) sec.label = GAS_UNIT_MAP[sec.label];
+    if (GAS_UNIT_MAP[sec.free.desc]) sec.free.desc = GAS_UNIT_MAP[sec.free.desc];
+    sec.items.forEach(function(it) {
+      if (GAS_NAME_MAP[it.name]) it.name = GAS_NAME_MAP[it.name];
+      if (GAS_UNIT_MAP[it.unit]) it.unit = GAS_UNIT_MAP[it.unit];
+    });
+  });
+  return sections;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// EXCEL EXPORT — μία προσφορά ανά φύλλο
+// ═══════════════════════════════════════════════════════════════════
+async function exportQuotesToExcel() {
+  if (!window.XLSX) { alert('Η βιβλιοθήκη XLSX δεν φορτώθηκε. Ελέγξτε τη σύνδεση.'); return; }
+  var c = APP._custCache;
+  var quotes = await DB.custQuotes(APP.custId);
+  if (!quotes.length) { alert('Δεν υπάρχουν προσφορές για εξαγωγή.'); return; }
+  var custName = c ? c.lastname + (c.firstname ? ' ' + c.firstname : '') : '';
+  var wb = XLSX.utils.book_new();
+
+  quotes.forEach(function(q) {
+    var isGas = (q.equip_type === 'gas');
+    var t = q.totals || {};
+    var st = ST[q.status] || ST.draft;
+    var secs = migrateGasSections(JSON.parse(JSON.stringify(q.sections || [])), q.equip_type);
+    var labRet = isGas ? 1.35 : 1.30;
+    var equipLbl = isGas ? 'Λέβητας Αερίου' : 'Αντλία Θερμότητας';
+
+    var rows = [];
+    // ── HEADER ────────────────────────────────────────────────
+    rows.push(['ΑΝΤΛΙΕΣ ΘΕΡΜΟΤΗΤΑΣ — ΠΡΟΣΦΟΡΑ']);
+    rows.push([]);
+    rows.push(['Αρ. Προσφοράς:', q.quote_number || '-', '', 'Κατάσταση:', st.label]);
+    rows.push(['Ημερομηνία:',    q.date || '-',          '', 'Πελάτης:',  custName]);
+    if (q.notes) rows.push(['Παρατηρήσεις:', q.notes]);
+    rows.push([]);
+
+    // ── ΕΞΟΠΛΙΣΜΟΣ ────────────────────────────────────────────
+    rows.push(['ΕΞΟΠΛΙΣΜΟΣ']);
+    rows.push(['Τύπος:',   equipLbl]);
+    rows.push(['Μάρκα:',   q.brand_label || q.brand || '-']);
+    rows.push(['Μοντέλο:', q.pump_name || '-']);
+    rows.push(['Ισχύς:',   q.pump_kw || '-']);
+    rows.push(['Κόστος αγοράς:',  t.pump_c || 0]);
+    rows.push(['Λιανική πώληση:', t.pump_r || 0]);
+    rows.push([]);
+
+    // ── ΥΛΙΚΑ ─────────────────────────────────────────────────
+    rows.push(['ΥΛΙΚΑ ΕΓΚΑΤΑΣΤΑΣΗΣ']);
+    rows.push(['Περιγραφή', 'Μον.', 'Ποσ.', 'Κόστος', 'Λιανική']);
+
+    secs.forEach(function(sec) {
+      if (sec.hasToggle && !sec.on) return;
+      rows.push(['── ' + sec.label.toUpperCase() + ' ──', '', '', '', '']);
+      sec.items.filter(function(i) { return i.on && i.qty > 0; }).forEach(function(i) {
+        rows.push([i.name, i.unit, i.qty,
+          Math.round(i.cost * i.qty * 100) / 100,
+          Math.round(i.retail * i.qty * 100) / 100]);
+      });
+      if (sec.free.on && sec.free.cost > 0)
+        rows.push([sec.free.desc, '€', 1, sec.free.cost, Math.round(sec.free.cost * 1.45 * 100)/100]);
+      if (sec.labor.on && sec.labor.days > 0) {
+        var lc = Math.round(sec.labor.days * 165 * 100) / 100;
+        var lr = Math.round(lc * labRet * 100) / 100;
+        rows.push(['Εργασία 1 ατόμου (165€/ημ.)', 'ημ.', sec.labor.days, lc, lr]);
+      }
+    });
+    rows.push([]);
+
+    // ── ΣΥΝΟΛΑ ────────────────────────────────────────────────
+    rows.push(['ΣΥΝΟΛΑ ΠΡΟΣΦΟΡΑΣ']);
+    rows.push(['Συν. Κόστους:',  Math.round((t.total_c||0)*100)/100]);
+    rows.push(['Συν. Λιανικής:', Math.round((t.total_r||0)*100)/100]);
+    rows.push(['Κέρδος:',        Math.round((t.profit||0)*100)/100]);
+    rows.push(['Περιθώριο:',     ((t.profit_pct||0).toFixed(1)) + '%']);
+
+    var ws = XLSX.utils.aoa_to_sheet(rows);
+
+    // Column widths
+    ws['!cols'] = [{wch:42},{wch:8},{wch:6},{wch:12},{wch:12}];
+
+    // Bold + borders via cell styles (basic)
+    // Mark header rows (row 0, rows with ΚΕΦΑΛΑΙA labels)
+    var boldRows = [0, 6, 12, rows.length - 5];
+    boldRows.forEach(function(ri) {
+      var cell = ws[XLSX.utils.encode_cell({r:ri, c:0})];
+      if (cell) { cell.s = {font:{bold:true, sz:11}}; }
+    });
+
+    // Format number cells as currency
+    var numFmt = '#,##0.00 €';
+    Object.keys(ws).forEach(function(addr) {
+      if (addr[0] === '!') return;
+      var cell = ws[addr];
+      if (typeof cell.v === 'number') {
+        cell.t = 'n';
+        cell.z = numFmt;
+      }
+    });
+
+    var sheetName = (q.quote_number || 'Quote').replace(/[/:*?\[\]\\]/g, '-').substring(0, 31);
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  });
+
+  var fname = 'Prosfores_' + custName.replace(/\s+/g, '_') + '_' + new Date().toISOString().split('T')[0] + '.xlsx';
+  XLSX.writeFile(wb, fname);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// NEW: Editable prices, agreed amount, rMats/rSum/saveQuote/openEditor overrides
+// ═══════════════════════════════════════════════════════════════════
+
+function updCost(sid,iid,v){var s=MSEC.find(function(x){return x.id===sid;});if(!s)return;var it=s.items.find(function(i){return i.id===iid;});if(it){it.cost=Math.max(0,parseFloat(v)||0);rSum();}}
+function updRetail(sid,iid,v){var s=MSEC.find(function(x){return x.id===sid;});if(!s)return;var it=s.items.find(function(i){return i.id===iid;});if(it){it.retail=Math.max(0,parseFloat(v)||0);rSum();}}
+function toggleAgreed(){var st=g('e-status');var wrap=g('agreed-wrap');if(wrap)wrap.style.display=(st&&st.value==='accepted')?'':'none';}
+
+
+
+async function saveQuote(){
+  var isGas=(ES.equipType==='gas');
+  var brands=isGas?GAS_BRANDS:BRANDS;
+  var brand=brands.find(function(b){return b.id===ES.brand;})||brands[0];
+  var p=null;
+  if(isGas){var gbr=GAS_BRANDS.find(function(b){return b.id===ES.brand;})||GAS_BRANDS[0];p=ES.pump?gbr.models.find(function(x){return x.id===ES.pump;}):null;}
+  else{var htype=brand.types?brand.types[ES.typeIdx]:null;if(htype)p=ES.pump?htype.pumps.find(function(x){return x.id===ES.pump;}):null;}
+  var pC=p?p.cost:0,pR=p?p.retail:0;
+  var tC=pC+MSEC.reduce(function(a,s){return a+sTotals(s.id).c;},0);
+  var tR=pR+MSEC.reduce(function(a,s){return a+sTotals(s.id).r;},0);
+  var agreedEl=g('e-agreed');
+  var agreed=agreedEl?(parseFloat(agreedEl.value)||0):0;
+  var statusVal=g('e-status')?g('e-status').value:'draft';
+  var isAccepted=statusVal==='accepted';
+  var finalAgreed=isAccepted&&agreed>0?agreed:null;
+  var prof=finalAgreed?finalAgreed-tC:tR-tC;
+  var profPct=tC>0?prof/tC*100:0;
+  var q={id:EDIT_QID||uuid(),customer_id:APP.custId,created_at:new Date().toISOString(),
+    quote_number:g('e-num').value,date:g('e-date').value,status:statusVal,notes:g('e-notes').value,
+    equip_type:ES.equipType,brand:ES.brand,brand_label:brand.label,type_idx:ES.typeIdx,
+    pump_id:ES.pump,pump_name:p?p.name:null,pump_kw:p?p.kw:null,
+    agreed_amount:finalAgreed,
+    sections:JSON.parse(JSON.stringify(MSEC)),
+    totals:{pump_c:pC,pump_r:pR,total_c:tC,total_r:tR,profit:prof,profit_pct:profPct,agreed_amount:finalAgreed}};
+  await DB.saveQuote(q);EDIT_QID=q.id;
+  var bc=g('bc-equote');if(bc)bc.textContent=q.quote_number;
+  alert('OK - Prosfora ' + q.quote_number + ' apotheikeyth.');
+  await goCustomer();
+}
+
+async function openEditor(qid){
+  EDIT_QID=qid;
+  var c=APP._custCache;
+  var cn=c?c.lastname+(c.firstname?' '+c.firstname:''):'---';
+  var bcec=g('bc-ecust');if(bcec)bcec.textContent=cn;
+  var bceq=g('bc-equote');if(bceq)bceq.textContent=qid?'Επεξεργασία':'Νέα Προσφορά';
+  // Διατηρεί APP.propId ώστε το saveQuote να ξέρει σε ποιο ακίνητο ανήκει
+  if(qid){
+    var qs=await DB.custQuotes(APP.custId);
+    var q2=qs.find(function(x){return x.id===qid;});if(!q2)return;
+    g('e-num').value=q2.quote_number||'';g('e-date').value=q2.date||'';
+    g('e-status').value=q2.status||'draft';g('e-notes').value=q2.notes||'';
+    var bc=g('bc-equote');if(bc)bc.textContent=q2.quote_number||'Prosfora';
+    ES.equipType=q2.equip_type||'hp';
+    ES.brand=q2.brand||'bosch';ES.typeIdx=q2.type_idx||0;ES.pump=q2.pump_id||null;
+    MSEC=migrateGasSections(JSON.parse(JSON.stringify(q2.sections||(ES.equipType==='gas'?GAS_MAT_TPL:MAT_TPL))),q2.equip_type||'hp');
+    var agEl=g('e-agreed');if(agEl)agEl.value=q2.agreed_amount||'';
+  }else{
+    var num=await DB.nextNum(APP.custId);
+    g('e-num').value=num;g('e-date').value=new Date().toISOString().split('T')[0];
+    g('e-status').value='draft';g('e-notes').value='';
+    var bc2=g('bc-equote');if(bc2)bc2.textContent='Nea Prosfora';
+    ES={equipType:'hp',brand:'bosch',typeIdx:0,pump:null};
+    MSEC=JSON.parse(JSON.stringify(MAT_TPL));
+    var agEl2=g('e-agreed');if(agEl2)agEl2.value='';
+  }
+  var eqhp=document.getElementById('eq-hp'),eqgas=document.getElementById('eq-gas');
+  if(eqhp)eqhp.classList.toggle('active',ES.equipType==='hp');
+  if(eqgas)eqgas.classList.toggle('active',ES.equipType==='gas');
+  var bt=g('brand-card-title');if(bt)bt.textContent=(ES.equipType==='hp')?'Marka antlias':'Marka lebita';
+  toggleAgreed();
+  showView('v-editor');rBrands();rTypeTabs();rPumps();rMats();rSum();
+}
+
+// Better Excel export
+async function exportQuotesToExcel(){
+  if(!window.XLSX){alert('Η βιβλιοθήκη XLSX δεν φορτώθηκε.');return;}
+  var c=APP._custCache;
+  var quotes=await DB.custQuotes(APP.custId);
+  if(!quotes.length){alert('Δεν υπάρχουν προσφορές.');return;}
+  var custName=c?c.lastname+(c.firstname?' '+c.firstname:''):'';
+  var custAddr=c?(c.address?(c.address+(c.city?', '+c.city:''+(c.zip?' '+c.zip:''))):''):'';
+  var custPhone=c&&c.phone?c.phone:'';
+  var wb=XLSX.utils.book_new();
+
+  quotes.forEach(function(q){
+    var isGas=(q.equip_type==='gas');
+    var t=q.totals||{};
+    var st=ST[q.status]||ST.draft;
+    var secs=migrateGasSections(JSON.parse(JSON.stringify(q.sections||[])),q.equip_type);
+    var labRet=isGas?1.35:1.30;
+    var equipLbl=isGas?'Λέβητας Αερίου':'Αντλία Θερμότητας';
+    var agreed=t.agreed_amount||0;
+    var isAccepted=q.status==='accepted';
+    var D=function(v){return{v:v,t:'s'};};
+    var N=function(v){return{v:Math.round(v*100)/100,t:'n',z:'#,##0.00'};};
+    var rows=[];
+
+    // ── Τίτλος ──────────────────────────────────────────────
+    rows.push([D('ΑΝΤΛΙΕΣ ΘΕΡΜΟΤΗΤΑΣ — ΠΡΟΣΦΟΡΑ'),D(''),D(''),D(''),D(''),D(''),D('')]);
+    rows.push([D(''),D(''),D(''),D(''),D(''),D(''),D('')]);
+
+    // ── Στοιχεία ────────────────────────────────────────────
+    rows.push([D('ΣΤΟΙΧΕΙΑ ΠΡΟΣΦΟΡΑΣ'),D(''),D(''),D('ΣΤΟΙΧΕΙΑ ΠΕΛΑΤΗ'),D(''),D(''),D('')]);
+    rows.push([D('Αρ. Προσφοράς:'),D(q.quote_number||'-'),D(''),D('Πελάτης:'),D(custName),D(''),D('')]);
+    rows.push([D('Ημερομηνία:'),D(q.date||'-'),D(''),D('Διεύθυνση:'),D(custAddr),D(''),D('')]);
+    rows.push([D('Κατάσταση:'),D(st.label),D(''),D('Τηλέφωνο:'),D(custPhone),D(''),D('')]);
+    if(q.notes)rows.push([D('Σημειώσεις:'),D(q.notes),D(''),D(''),D(''),D(''),D('')]);
+    rows.push([D(''),D(''),D(''),D(''),D(''),D(''),D('')]);
+
+    // ── Εξοπλισμός ──────────────────────────────────────────
+    rows.push([D('ΕΞΟΠΛΙΣΜΟΣ'),D(''),D(''),D(''),D(''),D('ΚΟΣΤΟΣ'),D('ΛΙΑΝΙΚΗ')]);
+    rows.push([D('Τύπος: '+equipLbl+' | Μάρκα: '+(q.brand_label||q.brand||'-')),D(''),D(''),D(''),D(''),D(''),D('')]);
+    rows.push([D('Μοντέλο: '+(q.pump_name||'-')+' | Ισχύς: '+(q.pump_kw||'-')),D(''),D(''),D(''),D(''),N(t.pump_c||0),N(t.pump_r||0)]);
+    rows.push([D(''),D(''),D(''),D(''),D(''),D(''),D('')]);
+
+    // ── Υλικά ───────────────────────────────────────────────
+    rows.push([D('ΥΛΙΚΑ ΕΓΚΑΤΑΣΤΑΣΗΣ'),D(''),D(''),D(''),D(''),D(''),D('')]);
+    rows.push([D('Περιγραφή'),D('Μον.'),D('Ποσ.'),D('Κόστ/τεμ'),D('Λιαν/τεμ'),D('Σύν.Κόστος'),D('Σύν.Λιανική')]);
+
+    var matC=0,matR=0;
+    secs.forEach(function(sec){
+      if(sec.hasToggle&&!sec.on)return;
+      rows.push([D('[ '+sec.label+' ]'),D(''),D(''),D(''),D(''),D(''),D('')]);
+      sec.items.filter(function(i){return i.on&&i.qty>0;}).forEach(function(i){
+        var tc=Math.round(i.cost*i.qty*100)/100;
+        var tr2=Math.round(i.retail*i.qty*100)/100;
+        matC+=tc;matR+=tr2;
+        rows.push([D(i.name),D(i.unit),{v:i.qty,t:'n',z:'0'},N(i.cost),N(i.retail),N(tc),N(tr2)]);
+      });
+      if(sec.free.on&&sec.free.cost>0){
+        var fc=sec.free.cost,fr=Math.round(fc*1.45*100)/100;
+        matC+=fc;matR+=fr;
+        rows.push([D(sec.free.desc),D('€'),{v:1,t:'n',z:'0'},N(fc),N(fr),N(fc),N(fr)]);
+      }
+      if(sec.labor.on&&sec.labor.days>0){
+        var lc=Math.round(sec.labor.days*165*100)/100;
+        var lr=Math.round(lc*labRet*100)/100;
+        matC+=lc;matR+=lr;
+        rows.push([D('Εργασία 1 ατόμου (165€/ημ.)'),D('ημ.'),{v:sec.labor.days,t:'n',z:'0.0'},N(165),N(Math.round(165*labRet*100)/100),N(lc),N(lr)]);
+      }
+    });
+    rows.push([D(''),D(''),D(''),D(''),D(''),D(''),D('')]);
+
+    // ── Σύνολα ──────────────────────────────────────────────
+    rows.push([D('ΣΥΝΟΛΑ ΠΡΟΣΦΟΡΑΣ'),D(''),D(''),D(''),D(''),D('Κόστος'),D('Λιανική')]);
+    rows.push([D('Αντλία / Λέβητας:'),D(''),D(''),D(''),D(''),N(t.pump_c||0),N(t.pump_r||0)]);
+    rows.push([D('Υλικά + εργασία:'),D(''),D(''),D(''),D(''),N(matC),N(matR)]);
+    rows.push([D('ΣΥΝΟΛΟ:'),D(''),D(''),D(''),D(''),N(t.total_c||0),N(t.total_r||0)]);
+    rows.push([D(''),D(''),D(''),D(''),D(''),D(''),D('')]);
+    rows.push([D('Κέρδος (λιανική - κόστος):'),D(''),D(''),D(''),D(''),N((t.total_r||0)-(t.total_c||0)),D('')]);
+    rows.push([D('Περιθώριο %:'),D(''),D(''),D(''),D(''),D(((t.profit_pct||0).toFixed(1))+'%'),D('')]);
+
+    if(isAccepted&&agreed>0){
+      rows.push([D(''),D(''),D(''),D(''),D(''),D(''),D('')]);
+      rows.push([D('ΠΟΣΟ ΣΥΜΦΩΝΙΑΣ:'),D(''),D(''),D(''),D(''),N(agreed),D('')]);
+      var fp=agreed-(t.total_c||0);
+      var fpct=(t.total_c||0)>0?fp/(t.total_c||0)*100:0;
+      rows.push([D('Τελικό κέρδος (συμφωνία - κόστος):'),D(''),D(''),D(''),D(''),N(fp),D('')]);
+      rows.push([D('Τελικό περιθώριο %:'),D(''),D(''),D(''),D(''),D(fpct.toFixed(1)+'%'),D('')]);
+    }
+
+    var wsData=rows.map(function(r){return r.map(function(c){return c&&c.v!==undefined?c.v:'';});});
+    var ws=XLSX.utils.aoa_to_sheet(wsData);
+
+    // Apply number format to specific cells
+    rows.forEach(function(row,ri){
+      row.forEach(function(cell,ci){
+        if(!cell||cell.t!=='n')return;
+        var addr=XLSX.utils.encode_cell({r:ri,c:ci});
+        if(ws[addr])ws[addr].z=cell.z||'#,##0.00';
+      });
+    });
+
+    ws['!cols']=[{wch:42},{wch:8},{wch:6},{wch:10},{wch:10},{wch:13},{wch:13}];
+
+    // Row heights for section headers
+    ws['!rows']=[];
+    ws['!rows'][0]={hpt:22};
+
+    var sheetName=(q.quote_number||'Quote').replace(/[/:*?[\]\\]/g,'-').substring(0,31);
+    XLSX.utils.book_append_sheet(wb,ws,sheetName);
+  });
+
+  var fname='Prosfores_'+custName.replace(/\s+/g,'_')+'_'+new Date().toISOString().split('T')[0]+'.xlsx';
+  XLSX.writeFile(wb,fname);
+}
+
+// ══════════════════════════════════════════════════════════════
+// EDITABLE PUMP / BOILER PRICES
+// ══════════════════════════════════════════════════════════════
+
+// Track overridden pump prices in ES
+// ES.pumpCostOvr / ES.pumpRetailOvr = null means use catalog price
+
+function updPumpCost(v) {
+  ES.pumpCostOvr = Math.max(0, parseFloat(v)||0);
+  rSum();
+}
+function updPumpRetail(v) {
+  ES.pumpRetailOvr = Math.max(0, parseFloat(v)||0);
+  rSum();
+}
+
+// Override selPump to init price fields
+function selPump(pid) {
+  ES.pump = pid;
+  // Find selected pump object
+  var pump = null;
+  if (ES.equipType === 'gas') {
+    var gbr = GAS_BRANDS.find(function(b){ return b.id===ES.brand; })||GAS_BRANDS[0];
+    pump = gbr ? gbr.models.find(function(x){ return x.id===pid; }) : null;
+  } else {
+    var hbr = BRANDS.find(function(b){ return b.id===ES.brand; });
+    if (hbr && hbr.types[ES.typeIdx]) pump = hbr.types[ES.typeIdx].pumps.find(function(x){ return x.id===pid; });
+  }
+  if (pump) {
+    ES.pumpCostOvr  = pump.cost;
+    ES.pumpRetailOvr = pump.retail;
+    var ci = g('pump-cost-inp'); if (ci) ci.value = pump.cost;
+    var ri = g('pump-retail-inp'); if (ri) ri.value = pump.retail;
+    var pc = g('pump-price-card'); if (pc) pc.style.display = '';
+  }
+  rPumps(); rSum();
+}
+function selPumpEl(btn) { selPump(btn.getAttribute('data-pid')); }
+
+// Override rSum to use ES.pumpCostOvr / ES.pumpRetailOvr
+
+// Override saveQuote to store pump price overrides
+async function saveQuote(){
+  var isGas=(ES.equipType==='gas');
+  var brands=isGas?GAS_BRANDS:BRANDS;
+  var brand=brands.find(function(b){return b.id===ES.brand;})||brands[0];
+  var pName=null,pKw=null;
+  if(ES.pump){
+    if(isGas){var gbr=GAS_BRANDS.find(function(b){return b.id===ES.brand;})||GAS_BRANDS[0];var pm=gbr?gbr.models.find(function(x){return x.id===ES.pump;}):null;if(pm){pName=pm.name;pKw=pm.kw;}}
+    else{var htype=brand.types?brand.types[ES.typeIdx]:null;var pm2=htype?htype.pumps.find(function(x){return x.id===ES.pump;}):null;if(pm2){pName=pm2.name;pKw=pm2.kw;}}
+  }
+  var pC=ES.pumpCostOvr||0,pR=ES.pumpRetailOvr||0;
+  var tC=pC+MSEC.reduce(function(a,s){return a+sTotals(s.id).c;},0);
+  var tR=pR+MSEC.reduce(function(a,s){return a+sTotals(s.id).r;},0);
+  var agreedEl=g('e-agreed');
+  var agreed=agreedEl?(parseFloat(agreedEl.value)||0):0;
+  var statusVal=g('e-status')?g('e-status').value:'draft';
+  var isAccepted=statusVal==='accepted';
+  var finalAgreed=isAccepted&&agreed>0?agreed:null;
+  var prof=finalAgreed?finalAgreed-tC:tR-tC;
+  var profPct=tC>0?prof/tC*100:0;
+  var q={id:EDIT_QID||uuid(),customer_id:APP.custId,property_id:APP.propId||null,created_at:new Date().toISOString(),
+    quote_number:g('e-num').value,date:g('e-date').value,status:statusVal,notes:g('e-notes').value,
+    equip_type:ES.equipType,brand:ES.brand,brand_label:brand.label,type_idx:ES.typeIdx,
+    pump_id:ES.pump,pump_name:pName,pump_kw:pKw,
+    pump_cost:pC,pump_retail:pR,
+    agreed_amount:finalAgreed,
+    sections:JSON.parse(JSON.stringify(MSEC)),
+    totals:{pump_c:pC,pump_r:pR,total_c:tC,total_r:tR,profit:prof,profit_pct:profPct,agreed_amount:finalAgreed}};
+  await DB.saveQuote(q);EDIT_QID=q.id;
+  var bc=g('bc-equote');if(bc)bc.textContent=q.quote_number;
+  alert('OK - Prosfora ' + q.quote_number + ' apotheikeyth.');
+  await goCustomer();
+}
+
+// Override openEditor to restore pump price overrides
+async function openEditor(qid){
+  EDIT_QID=qid;
+  var c=APP._custCache;
+  var cn=c?c.lastname+(c.firstname?' '+c.firstname:''):'---';
+  var bcec=g('bc-ecust');if(bcec)bcec.textContent=cn;
+  ES.pumpCostOvr=null;ES.pumpRetailOvr=null;
+  var ppc=g('pump-price-card');if(ppc)ppc.style.display='none';
+  if(qid){
+    var qs=await DB.custQuotes(APP.custId);
+    var q2=qs.find(function(x){return x.id===qid;});if(!q2)return;
+    g('e-num').value=q2.quote_number||'';g('e-date').value=q2.date||'';
+    g('e-status').value=q2.status||'draft';g('e-notes').value=q2.notes||'';
+    var bc=g('bc-equote');if(bc)bc.textContent=q2.quote_number||'Prosfora';
+    ES.equipType=q2.equip_type||'hp';
+    ES.brand=q2.brand||'bosch';ES.typeIdx=q2.type_idx||0;ES.pump=q2.pump_id||null;
+    MSEC=migrateGasSections(JSON.parse(JSON.stringify(q2.sections||(ES.equipType==='gas'?GAS_MAT_TPL:MAT_TPL))),q2.equip_type||'hp');
+    // Restore pump prices (saved override or catalog)
+    if(q2.pump_id){
+      ES.pumpCostOvr=q2.pump_cost||0;
+      ES.pumpRetailOvr=q2.pump_retail||0;
+      var ci=g('pump-cost-inp');if(ci)ci.value=ES.pumpCostOvr;
+      var ri=g('pump-retail-inp');if(ri)ri.value=ES.pumpRetailOvr;
+      if(ppc)ppc.style.display='';
+    }
+    var agEl=g('e-agreed');if(agEl)agEl.value=q2.agreed_amount||'';
+  }else{
+    var num=await DB.nextNum(APP.custId);
+    g('e-num').value=num;g('e-date').value=new Date().toISOString().split('T')[0];
+    g('e-status').value='draft';g('e-notes').value='';
+    var bc2=g('bc-equote');if(bc2)bc2.textContent='Nea Prosfora';
+    ES={equipType:'hp',brand:'bosch',typeIdx:0,pump:null,pumpCostOvr:null,pumpRetailOvr:null};
+    MSEC=JSON.parse(JSON.stringify(MAT_TPL));
+    var agEl2=g('e-agreed');if(agEl2)agEl2.value='';
+  }
+  var eqhp=document.getElementById('eq-hp'),eqgas=document.getElementById('eq-gas');
+  if(eqhp)eqhp.classList.toggle('active',ES.equipType==='hp');
+  if(eqgas)eqgas.classList.toggle('active',ES.equipType==='gas');
+  var bt=g('brand-card-title');if(bt)bt.textContent=(ES.equipType==='hp')?'Marka antlias':'Marka lebita';
+  toggleAgreed();
+  showView('v-editor');rBrands();rTypeTabs();rPumps();rMats();rSum();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// EDITABLE LABOR RATES — κόστος/ημ. και λιανική/ημ. ανά section
+// ══════════════════════════════════════════════════════════════════
+
+function updLab(sid, v) {
+  var s=MSEC.find(function(x){return x.id===sid;});
+  if(s){s.labor.days=Math.max(0,parseFloat(v)||0);rSum();}
+}
+function updLabCost(sid, v) {
+  var s=MSEC.find(function(x){return x.id===sid;});
+  if(s){s.labor.costPerDay=Math.max(0,parseFloat(v)||0);rSum();}
+}
+function updLabRetail(sid, v) {
+  var s=MSEC.find(function(x){return x.id===sid;});
+  if(s){s.labor.retailPerDay=Math.max(0,parseFloat(v)||0);rSum();}
+}
+
+// Override sTotals to use per-section labor rates
+function sTotals(sid) {
+  var s=MSEC.find(function(x){return x.id===sid;});
+  if(!s||(!s.on&&s.hasToggle))return {c:0,r:0};
+  var mC=s.items.reduce(function(t,i){return t+(i.on?i.cost*i.qty:0);},0);
+  var mR=s.items.reduce(function(t,i){return t+(i.on?i.retail*i.qty:0);},0);
+  var fC=s.free.on?s.free.cost:0;
+  var fR=fC*1.45;
+  var labCostPerDay   = s.labor.costPerDay   !== undefined ? s.labor.costPerDay   : 165;
+  var labRetailPerDay = s.labor.retailPerDay !== undefined ? s.labor.retailPerDay : 230;
+  var lC=s.labor.on?s.labor.days*labCostPerDay:0;
+  var lR=s.labor.on?s.labor.days*labRetailPerDay:0;
+  return {c:mC+fC+lC, r:mR+fR+lR};
+}
+
+// Override rMats — editable labor cost/day and retail/day inputs
+function rMats(){
+  var el=document.getElementById('mat-sections');if(!el)return;
+  el.innerHTML=MSEC.map(function(sec){
+    var act=!sec.hasToggle||sec.on;
+    var tog=sec.hasToggle?('<div class="sec-tog'+(sec.on?' active':'')+'" onclick="togSec(\''+sec.id+'\')">'
+      +'<span class="tog-off">✕ Ανενεργό</span><span class="tog-on">✓ Ενεργό</span></div>'):'';
+    if(!act)return'<div class="msec"><div class="msec-hdr '+sec.hdrClass+'"><span style="font-size:14px">'+sec.icon+'</span>'
+      +'<span class="msec-title">'+sec.label+'</span>'+tog
+      +'</div><div style="padding:6px 11px;font-size:12px;color:#94a3b8;font-style:italic">Ενεργοποιήστε για να προσθέσετε υλικά.</div></div>';
+
+    var labCPD   = sec.labor.costPerDay   !== undefined ? sec.labor.costPerDay   : 165;
+    var labRPD   = sec.labor.retailPerDay !== undefined ? sec.labor.retailPerDay : 230;
+    var lC=sec.labor.on?sec.labor.days*labCPD:0;
+    var lR=sec.labor.on?sec.labor.days*labRPD:0;
+    var fC=sec.free.on?sec.free.cost:0;
+    var fR=fC*1.45;
+    var subC=sec.items.reduce(function(t,i){return t+(i.on?i.cost*i.qty:0);},0)+fC+lC;
+    var subR=sec.items.reduce(function(t,i){return t+(i.on?i.retail*i.qty:0);},0)+fR+lR;
+
+    var hdr='<tr class="mat-header"><th></th><th>Περιγραφή</th><th style="text-align:center">Μον.</th>'
+      +'<th style="text-align:center">Ποσ.</th>'
+      +'<th title="Τιμή κόστους/τεμ (επεξεργάσιμο)">Κόστ/τεμ ✏</th>'
+      +'<th title="Τιμή λιανικής/τεμ (επεξεργάσιμο)">Λιαν/τεμ ✏</th>'
+      +'<th>Σύν.Κόστος</th></tr>';
+
+    var rows=sec.items.map(function(it){
+      var cl=it.on?'mon':'moff';
+      return'<tr class="'+cl+'">'
+        +'<td class="chk-c"><div class="chk" onclick="togItem(\''+sec.id+'\',\''+it.id+'\')"><span class="chkm">✓</span></div></td>'
+        +'<td class="mat-nm" onclick="togItem(\''+sec.id+'\',\''+it.id+'\')">'+it.name+'</td>'
+        +'<td class="mat-un">'+it.unit+'</td>'
+        +'<td class="qty-c"><input type="number" class="qty-i" value="'+it.qty+'" min="0" step="1" onclick="event.stopPropagation()" onchange="updQty(\''+sec.id+'\',\''+it.id+'\',this.value)"></td>'
+        +'<td class="qty-c"><input type="number" class="qty-i price-i" value="'+it.cost+'" min="0" step="0.01" onclick="event.stopPropagation()" onchange="updCost(\''+sec.id+'\',\''+it.id+'\',this.value)"></td>'
+        +'<td class="qty-c"><input type="number" class="qty-i price-i" value="'+it.retail+'" min="0" step="0.01" onclick="event.stopPropagation()" onchange="updRetail(\''+sec.id+'\',\''+it.id+'\',this.value)"></td>'
+        +'<td class="mat-pr">'+(it.on?fmt(it.cost*it.qty):'—')+'</td>'
+        +'</tr>';
+    }).join('');
+
+    var fRow='<tr class="free-row '+(sec.free.on?'mon':'moff')+'">'
+      +'<td class="chk-c"><div class="chk" onclick="togFree(\''+sec.id+'\')"><span class="chkm">✓</span></div></td>'
+      +'<td><input class="free-desc" type="text" value="'+sec.free.desc+'" onclick="event.stopPropagation()" onchange="updFreeDesc(\''+sec.id+'\',this.value)" placeholder="Επικεφαλίδα..."></td>'
+      +'<td class="mat-un">€</td>'
+      +'<td class="qty-c"><input type="number" class="qty-i" value="'+sec.free.cost+'" min="0" step="0.01" onclick="event.stopPropagation()" onchange="updFree(\''+sec.id+'\',this.value)"></td>'
+      +'<td class="qty-c"></td><td class="qty-c"></td>'
+      +'<td class="mat-pr">'+(sec.free.on?fmt(fC):'—')+'</td></tr>';
+
+    // Labor row — NOW with editable cost/day and retail/day
+    var lRow='<tr class="lab-row '+(sec.labor.on?'mon':'moff')+'">'
+      +'<td class="chk-c"><div class="chk" onclick="togLab(\''+sec.id+'\')"><span class="chkm">✓</span></div></td>'
+      +'<td class="mat-nm" onclick="togLab(\''+sec.id+'\')">⚒ Εργασία · 1 άτομο</td>'
+      +'<td class="mat-un">ημ.</td>'
+      +'<td class="qty-c"><input type="number" class="qty-i" value="'+sec.labor.days+'" min="0" step="0.5" onclick="event.stopPropagation()" onchange="updLab(\''+sec.id+'\',this.value)" title="Ημέρες εργασίας"></td>'
+      +'<td class="qty-c"><input type="number" class="qty-i price-i" value="'+labCPD+'" min="0" step="1" onclick="event.stopPropagation()" onchange="updLabCost(\''+sec.id+'\',this.value)" title="Κόστος/ημέρα"></td>'
+      +'<td class="qty-c"><input type="number" class="qty-i price-i" value="'+labRPD+'" min="0" step="1" onclick="event.stopPropagation()" onchange="updLabRetail(\''+sec.id+'\',this.value)" title="Λιανική/ημέρα"></td>'
+      +'<td class="mat-pr">'+(sec.labor.on?fmt(lC):'—')+'</td>'
+      +'</tr>';
+
+    return'<div class="msec"><div class="msec-hdr '+sec.hdrClass+'"><span style="font-size:14px">'+sec.icon+'</span>'
+      +'<span class="msec-title">'+sec.label+'</span>'+tog+'</div>'
+      +'<table class="mat-tbl">'+hdr+rows+fRow+lRow+'</table>'
+      +'<div class="sec-sub" style="justify-content:space-between"><span>Σύνολο — '+sec.label+'</span>'
+      +'<span style="display:flex;gap:16px">'
+      +'<span style="font-size:10px;color:#64748b">Κόστος: <strong style="color:#1e293b">'+fmt(subC)+'</strong></span>'
+      +'<span style="font-size:10px;color:#64748b">Λιανική: <strong style="color:#1e293b">'+fmt(subR)+'</strong></span>'
+      +'</span></div></div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// UI: Type select dropdown + pump list + ΦΠΑ στη σύνοψη
+// ══════════════════════════════════════════════════════════════════
+
+// ── TYPE SELECT — dropdown αντί για tabs ─────────────────────────
+function rTypeTabs() {
+  var el = document.getElementById('type-tabs');
+  if (!el) return;
+  if (ES.equipType === 'gas') { el.innerHTML = ''; return; }
+  var br = BRANDS.find(function(b){ return b.id===ES.brand; });
+  if (!br || !br.types) return;
+  el.innerHTML = '<select class="type-sel" onchange="selType(parseInt(this.value))">'
+    + br.types.map(function(t,i){
+      return '<option value="'+i+'"'+(ES.typeIdx===i?' selected':'')+'>'+t.label+'</option>';
+    }).join('')
+    + '</select>';
+}
+
+// ── PUMP LIST — πίνακας αντί για κουμπιά ─────────────────────────
+function rPumps() {
+  var pumps;
+  if (ES.equipType === 'gas') {
+    var gbr=GAS_BRANDS.find(function(b){return b.id===ES.brand;})||GAS_BRANDS[0];
+    pumps=gbr?gbr.models:[];
+  } else {
+    var hbr=BRANDS.find(function(b){return b.id===ES.brand;});
+    if(!hbr||!hbr.types[ES.typeIdx])return;
+    pumps=hbr.types[ES.typeIdx].pumps;
+  }
+  var gEl=g('pump-grid');
+  if(!gEl)return;
+  // Reset grid style — use full width table instead
+  gEl.style.gridTemplateColumns='1fr';
+  gEl.style.gap='0';
+  if(!pumps.length){ gEl.innerHTML='<div style="padding:10px;color:#94a3b8;font-size:13px">Δεν υπάρχουν μοντέλα</div>'; return; }
+  var html='<table style="width:100%;border-collapse:collapse;font-size:13px">'
+    +'<tr style="background:#f8fafc;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.04em">'
+    +'<td style="padding:5px 10px">Μοντέλο</td>'
+    +'<td style="padding:5px 10px;text-align:center">Ισχύς</td>'
+    +'<td style="padding:5px 10px;text-align:right;color:#15803d">Κόστος</td>'
+    +'<td style="padding:5px 10px;text-align:right;color:#1d4ed8">Λιανική</td>'
+    +'</tr>';
+  pumps.forEach(function(p){
+    var active=ES.pump===p.id;
+    var rowStyle=active
+      ?'background:#dbeafe;border-left:3px solid #3b82f6;cursor:pointer;'
+      :'border-left:3px solid transparent;cursor:pointer;border-bottom:1px solid #f1f5f9;';
+    html+='<tr data-pid="'+p.id+'" onclick="selPump(this.dataset.pid)" style="'+rowStyle+'">'
+      +'<td style="padding:8px 10px;font-weight:'+(active?'700':'500')+';color:#1e293b">'+p.name+'</td>'
+      +'<td style="padding:8px 10px;text-align:center;color:#475569;font-size:12px;white-space:nowrap">'+p.kw+'</td>'
+      +'<td style="padding:8px 10px;text-align:right;color:#15803d;font-weight:600;white-space:nowrap">'+fmt(p.cost)+'</td>'
+      +'<td style="padding:8px 10px;text-align:right;color:#1d4ed8;font-weight:600;white-space:nowrap">'+fmt(p.retail)+'</td>'
+      +'</tr>';
+  });
+  html+='</table>';
+  gEl.innerHTML=html;
+}
+
+// ── rSum — με ΦΠΑ στη σύνοψη ────────────────────────────────────
+function rSum(){
+  var isGas=(ES.equipType==='gas');
+  var brands=isGas?GAS_BRANDS:BRANDS;
+  var brand=brands.find(function(b){return b.id===ES.brand;})||brands[0];
+  var pC=(ES.pumpCostOvr!=null)?ES.pumpCostOvr:0;
+  var pR=(ES.pumpRetailOvr!=null)?ES.pumpRetailOvr:0;
+  var pName='';
+  if(ES.pump){
+    if(isGas){
+      var gbr=GAS_BRANDS.find(function(b){return b.id===ES.brand;})||GAS_BRANDS[0];
+      var pm=gbr?gbr.models.find(function(x){return x.id===ES.pump;}):null;
+      if(pm)pName=brand.icon+' '+brand.label+' '+pm.name+' &middot; '+pm.kw;
+    }else{
+      var htype=brand.types?brand.types[ES.typeIdx]:null;
+      var pm2=htype?htype.pumps.find(function(x){return x.id===ES.pump;}):null;
+      if(pm2)pName=brand.icon+' '+brand.label+' '+pm2.name+' &middot; '+pm2.kw;
+    }
+  }
+  var activeSecs=MSEC.filter(function(s){return !s.hasToggle||s.on;});
+  var tC=pC+MSEC.reduce(function(a,s){return a+sTotals(s.id).c;},0);
+  var tR=pR+MSEC.reduce(function(a,s){return a+sTotals(s.id).r;},0);
+  var mainLbl=isGas?'🔥 Λέβητας':'🌡️ Αντλία';
+  var agreedEl=g('e-agreed'),statusEl=g('e-status');
+  var agreed=agreedEl?(parseFloat(agreedEl.value)||0):0;
+  var isAccepted=statusEl&&statusEl.value==='accepted';
+  var prof,pct,vatBase;
+  if(isAccepted&&agreed>0){prof=agreed-tC;pct=tC>0?prof/tC*100:0;vatBase=agreed;}
+  else{prof=tR-tC;pct=tC>0?prof/tC*100:0;vatBase=tR;}
+  var vat=Math.round(vatBase*24)/100;
+  var totalWithVat=vatBase+vat;
+  var el=g('sum-body');if(!el)return;
+  var sumSel=pName
+    ?('<div class="sum-sel" style="background:color-mix(in srgb,'+brand.color+' 10%,#fff);color:'+brand.color+';border-color:color-mix(in srgb,'+brand.color+' 30%,#fff)">'+pName+'</div>')
+    :'<div class="sum-ph">&larr; Επιλέξτε μοντέλο</div>';
+  var secRowsC=activeSecs.map(function(s){return'<div class="srow"><span class="slbl">'+s.icon+' '+s.label+'</span><span class="sval">'+fmt(sTotals(s.id).c)+'</span></div>';}).join('');
+  var secRowsR=activeSecs.map(function(s){return'<div class="srow"><span class="slbl">'+s.icon+' '+s.label+'</span><span class="sval">'+fmt(sTotals(s.id).r)+'</span></div>';}).join('');
+  var agreedSection='';
+  if(isAccepted){
+    agreedSection='<hr class="sdiv"><div class="sgt" style="color:#15803d">Ποσό Συμφωνίας</div>'
+      +(agreed>0?('<div class="srow"><span class="slbl">Συμφωνηθέν ποσό</span><span class="sval" style="color:#15803d;font-weight:700">'+fmt(agreed)+'</span></div>'
+        +'<div class="srow"><span class="slbl">Τελ. κέρδος</span><span class="sval" style="color:#15803d">'+fmt(prof)+' ('+pct.toFixed(1)+'%)</span></div>')
+        :'<div style="font-size:11px;color:#94a3b8;padding:3px 0;font-style:italic">Συμπλ. ποσό συμφωνίας στο πεδίο πάνω</div>');
+  }
+  var profLbl=isAccepted&&agreed>0?'💰 Τελικό Κέρδος':'💰 Κέρδος (εκτίμηση)';
+  var profNote=isAccepted&&agreed>0?'<div style="font-size:10px;color:#16a34a;margin-top:3px">βάσει ποσού συμφωνίας</div>':'';
+  // ΦΠΑ box
+  var vatBox='<hr class="sdiv">'
+    +'<div style="background:#f8fafc;border-radius:8px;padding:8px 10px;font-size:12px">'
+    +'<div class="sgt" style="color:#475569;margin-bottom:4px">Σύνολο με ΦΠΑ</div>'
+    +'<div class="srow"><span class="slbl" style="color:#64748b">Λιανική χ/ΦΠΑ</span><span class="sval" style="color:#475569">'+fmt(vatBase)+'</span></div>'
+    +'<div class="srow"><span class="slbl" style="color:#64748b">ΦΠΑ 24%</span><span class="sval" style="color:#64748b">'+fmt(vat)+'</span></div>'
+    +'<div style="display:flex;justify-content:space-between;padding:5px 0 0;border-top:1px solid #e2e8f0;margin-top:4px">'
+    +'<span style="font-weight:700;color:#1e293b;font-size:13px">Σύνολο με ΦΠΑ</span>'
+    +'<span style="font-weight:700;color:#1e293b;font-size:14px">'+fmt(totalWithVat)+'</span>'
+    +'</div></div>';
+
+  el.innerHTML=sumSel
+    +'<div class="sgt">Κόστος αγοράς</div>'
+    +'<div class="srow"><span class="slbl">'+mainLbl+'</span><span class="sval">'+fmt(pC)+'</span></div>'
+    +secRowsC
+    +'<div class="sgrand"><span>Σύν. κόστους</span><span>'+fmt(tC)+'</span></div>'
+    +'<hr class="sdiv"><div class="sgt" style="color:#475569">Λιανική πώληση</div>'
+    +'<div class="srow"><span class="slbl">'+mainLbl+'</span><span class="sval">'+fmt(pR)+'</span></div>'
+    +secRowsR
+    +'<div class="sgrand"><span>Σύν. λιανικής</span><span>'+fmt(tR)+'</span></div>'
+    +agreedSection
+    +'<div class="profit-box"><div class="plbl">'+profLbl+'</div>'
+    +'<div class="pval">'+fmt(prof)+'</div>'
+    +'<div class="ppct">+'+pct.toFixed(1)+'% περιθώριο</div>'+profNote+'</div>'
+    +vatBox;
+}
+// ══════════════════════════════════════════════════════════════════
+// CUSTOMER FORM — Extended fields + toggle buttons
+// ══════════════════════════════════════════════════════════════════
+
+// Track toggle values
+var CF_VALS = {};
+
+function showCustTab(idx, btn) {
+  [0,1,2,3].forEach(function(i) {
+    var c = g('cft-'+i);
+    if(c){ if(i===idx) c.classList.remove('hidden'); else c.classList.add('hidden'); }
+  });
+  var bar = btn.closest('.rftab-bar');
+  if(bar) bar.querySelectorAll('.rftab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+}
+
+function togCF(field, val, btn) {
+  CF_VALS[field] = val;
+  var grp = g('tg-'+field);
+  if(grp) grp.querySelectorAll('.tog-btn').forEach(function(b){
+    b.classList.toggle('active', b === btn);
+  });
+}
+
+function setCFTog(field, val) {
+  CF_VALS[field] = val;
+  var grp = g('tg-'+field);
+  if(!grp || !val) return;
+  grp.querySelectorAll('.tog-btn').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('onclick').includes("'"+val+"'"));
+  });
+}
+
+function znxChange(radio) {
+  g('m-znx-boiler-lt').disabled = radio.value !== 'boiler';
+  g('m-znx-elec-lt').disabled   = radio.value !== 'electric';
+}
+
+function clearCustForm() {
+  ['m-ln','m-fn','m-phone','m-email','m-addr','m-zip','m-city','m-notes']
+    .forEach(function(id){ var el=g(id); if(el) el.value=''; });
+}
+
+function fillCustForm(c) {
+  var set=function(id,v){var el=g(id);if(el)el.value=v||'';};
+  set('m-ln',c.lastname); set('m-fn',c.firstname);
+  set('m-phone',c.phone); set('m-email',c.email);
+  set('m-addr',c.address); set('m-zip',c.zip);
+  set('m-city',c.city);   set('m-notes',c.notes);
+}
+
+function readCustForm() {
+  return {
+    lastname:(g('m-ln')||{}).value||'',
+    firstname:(g('m-fn')||{}).value||'',
+    phone:(g('m-phone')||{}).value||'',
+    email:(g('m-email')||{}).value||'',
+    address:(g('m-addr')||{}).value||'',
+    zip:(g('m-zip')||{}).value||'',
+    city:(g('m-city')||{}).value||'',
+    notes:(g('m-notes')||{}).value||'',
+  };
+}
+
+// Override openNewCustomer to use new form
+function openNewCustomer() {
+  APP.custId = null;
+  clearCustForm();
+  g('modal-cust-title').textContent = 'Νέος Πελάτης';
+  g('modal-cust').classList.remove('hidden');
+}
+
+// Override saveCustomer to use readCustForm
+async function saveCustomer() {
+  var data = readCustForm();
+  if (!data.lastname.trim()) { alert('Απαιτείται το επώνυμο.'); return; }
+  if (APP.custId) {
+    data.id = APP.custId;
+    data.created_at = APP._custCache && APP._custCache.created_at
+      ? APP._custCache.created_at : new Date().toISOString();
+  } else {
+    data.id = 'c'+Date.now()+Math.random().toString(36).slice(2,6);
+    data.created_at = new Date().toISOString();
+  }
+  await DB.saveCust(data);
+  APP._custCache = data;  // Ανανέωση cache αμέσως
+  g('modal-cust').classList.add('hidden');
+  await renderCustomers();
+  if(APP.custId) { await renderCustomerDetail(); }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ΑΚΙΝΗΤΑ — Properties Layer (Customer → Property → Quotes)
+// ══════════════════════════════════════════════════════════════════
+
+var PF_VALS = {};
+var EDIT_PID = null;
+var PROPS_KEY = 'crm_properties_v1';
+
+// ── localStorage helpers ──────────────────────────────────────────
+function propsLoadLocal() {
+  try { return JSON.parse(localStorage.getItem(PROPS_KEY)||'[]'); } catch(e){return [];}
+}
+function propsSaveLocal(d) {
+  try { localStorage.setItem(PROPS_KEY, JSON.stringify(d)); } catch(e){}
+}
+
+// ── API helpers ───────────────────────────────────────────────────
+async function loadProperties(custId) {
+  // Always load from localStorage first (fast + reliable)
+  var local = propsLoadLocal().filter(function(p){return p.customer_id===custId;});
+  try {
+    if (storageMode==='supa') {
+      var server = await supaRest('properties','GET',null,'select=*&customer_id=eq.'+custId+'&order=created_at.desc');
+      if (Array.isArray(server)) {
+        var others = propsLoadLocal().filter(function(p){return p.customer_id!==custId;});
+        propsSaveLocal(others.concat(server));
+        return server;
+      }
+    } else if (storageMode==='server') {
+      var server = await apiFetch('properties','GET',null,{customer_id:custId});
+      if (Array.isArray(server) && server.length > 0) {
+        var others = propsLoadLocal().filter(function(p){return p.customer_id!==custId;});
+        propsSaveLocal(others.concat(server));
+        return server;
+      }
+    }
+  } catch(e){ console.warn('Properties load failed:',e); }
+  return local;
+}
+
+async function savePropertyAPI(prop) {
+  var all = propsLoadLocal().filter(function(p){return p.id!==prop.id;});
+  all.unshift(prop); propsSaveLocal(all);
+  try {
+    if (storageMode==='supa') await supaRest('properties','POST',prop,'on_conflict=id');
+    else if (storageMode==='server') await apiFetch('properties','POST',prop);
+  } catch(e){ console.warn('Properties save failed:',e); }
+  return prop;
+}
+
+async function deletePropertyAPI(id) {
+  propsSaveLocal(propsLoadLocal().filter(function(p){return p.id!==id;}));
+  try {
+    if (storageMode==='supa') await supaRest('properties','DELETE',null,'id=eq.'+id);
+    else if (storageMode==='server') await apiFetch('properties','DELETE',null,{id:id});
+  } catch(e){ console.warn('Properties delete failed:',e); }
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────
+async function goProperty() {
+  if (!APP.propId) return;
+  showView('v-property');
+  await renderPropertyDetail();
+}
+
+// Override showView to include v-property
+function showView(id) {
+  ['v-customers','v-customer','v-property','v-editor'].forEach(function(v){
+    var el=g(v); if(el) el.classList.add('hidden');
+  });
+  var el=g(id); if(el) el.classList.remove('hidden');
+  var hC=g('hdr-new-cust'), hQ=g('hdr-new-quote');
+  if(hC) hC.style.display = id==='v-customers'?'':'none';
+  if(hQ) hQ.style.display = id==='v-property'?'':'none';
+}
+
+// ── RENDER PROPERTIES (in customer detail) ────────────────────────
+async function renderCustomerDetail() {
+  // Πάντα φόρτωνε φρέσκα δεδομένα από DB
+  var custs = await DB.customers();
+  var c = custs.find(function(x){ return x.id===APP.custId; });
+  if (!c) { await goCustomers(); return; }
+  APP._custCache = c;
+  // Breadcrumb
+  var bcn=g('bc-cname'); if(bcn) bcn.textContent=c.lastname+' '+c.firstname;
+  // Info card
+  var card=g('cust-info-card');
+  if (card) {
+    var propType={'house':'🏠 Μονοκατοικία','apt':'🏢 Διαμέρισμα','commercial':'🏭 Επαγγελματικός'}[c.proptype]||'';
+    var stMap={'pending':'🟡 Εκκρεμεί','in_progress':'🔵 Σε Εξέλιξη','sent':'🟣 Απεστάλη','won':'🟢 Κερδήθηκε','lost':'🔴 Χάθηκε'};
+    card.innerHTML =
+      '<div class="cic-name">'+c.lastname+(c.firstname?' '+c.firstname:'')+'</div>'+
+      (c.phone?'<div class="cic-row">📞 '+c.phone+'</div>':'')+
+      (c.email?'<div class="cic-row">✉ '+c.email+'</div>':'')+
+      (c.address?'<div class="cic-row">📍 '+c.address+(c.city?', '+c.city:'')+'</div>':'')+
+      (c.status?'<div class="cic-row" style="margin-top:6px">'+(stMap[c.status]||c.status)+'</div>':'')+
+      (c.notes?'<div class="cic-notes">'+c.notes+'</div>':'');
+  }
+  // Load and render properties
+  var props = await loadProperties(APP.custId);
+  var pCount=g('p-count'); if(pCount) pCount.textContent=props.length?'('+props.length+')':'';
+  var pCards=g('p-cards');
+  if (!pCards) return;
+  if (!props.length) {
+    pCards.innerHTML='<div class="no-quotes"><div style="font-size:32px;margin-bottom:8px">🏠</div><p style="font-weight:600;margin-bottom:4px">Δεν υπάρχουν ακίνητα</p><p style="font-size:12px">Κάντε κλικ στο «🏠 Νέο Ακίνητο»</p></div>';
+    return;
+  }
+  var typeLabels={'house':'🏠 Μονοκατοικία','apt':'🏢 Διαμέρισμα','commercial':'🏭 Επαγγελματικός'};
+  var distribLabels={'under':'Ενδοδαπέδια','rad':'Καλοριφέρ','both':'Και τα δύο'};
+  pCards.innerHTML=props.map(function(p){
+    var meta=[];
+    if(typeLabels[p.proptype]) meta.push(typeLabels[p.proptype]);
+    if(p.area) meta.push(p.area+'m²');
+    if(p.year) meta.push(p.year);
+    if(p.phase) meta.push(p.phase==='mono'?'1φ':'3φ');
+    if(distribLabels[p.distrib]) meta.push(distribLabels[p.distrib]);
+    return '<div class="prop-card" onclick="openProperty(\''+p.id+'\')">'
+      +'<div class="prop-card-left">'
+      +'<div class="prop-name">'+p.name+'</div>'
+      +(p.address?'<div class="prop-meta">📍 '+p.address+'</div>':'')
+      +(meta.length?'<div class="prop-meta">'+meta.join(' · ')+'</div>':'')
+      +(p.heating?'<div class="prop-meta" style="color:#94a3b8">Υπάρχον: '+p.heating+'</div>':'')
+      +'</div>'
+      +'<div class="prop-card-right">'
+      +'<button class="req-act-btn kostol" onclick="event.stopPropagation();openProperty(\''+p.id+'\')">Προσφορές →</button>'
+      +'<button class="req-act-btn edit-btn" onclick="event.stopPropagation();openEditProperty(\''+p.id+'\')">✏ Επεξ.</button>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+// ── PROPERTY DETAIL (quotes for this property) ────────────────────
+async function openProperty(pid) {
+  // find property in cache
+  var allProps = propsLoadLocal();
+  var prop = allProps.find(function(p){return p.id===pid;});
+  if (!prop) return;
+  APP.propId = pid;
+  APP._propCache = prop;
+  await goProperty();
+}
+
+async function renderPropertyDetail() {
+  var prop = APP._propCache;
+  if (!prop) return;
+  // Breadcrumbs
+  var bpc=g('bc-prcust'), bpp=g('bc-propname');
+  if (bpc && APP._custCache) bpc.textContent=APP._custCache.lastname+' '+APP._custCache.firstname;
+  if (bpp) bpp.textContent=prop.name;
+  // Property info card
+  var typeLabels={'house':'🏠 Μονοκατοικία','apt':'🏢 Διαμέρισμα','commercial':'🏭 Επαγγελματικός'};
+  var distribLabels={'under':'Ενδοδαπέδια','rad':'Καλοριφέρ','both':'Και τα δύο'};
+  var card=g('prop-info-card');
+  if(card) {
+    var rows=[];
+    if(typeLabels[prop.proptype]) rows.push(typeLabels[prop.proptype]);
+    if(prop.address) rows.push('📍 '+prop.address);
+    if(prop.area) rows.push('📐 '+prop.area+' m²');
+    if(prop.year) rows.push('🗓 '+prop.year);
+    if(prop.phase) rows.push(prop.phase==='mono'?'⚡ Μονοφασικό':'⚡⚡⚡ Τριφασικό');
+    if(distribLabels[prop.distrib]) rows.push('🔧 '+distribLabels[prop.distrib]);
+    if(prop.heating) rows.push('🔥 '+prop.heating);
+    if(prop.gas) rows.push('⛽ Αέριο: '+(prop.gas==='yes'?'Ναι':prop.gas==='no'?'Όχι':'Άγνωστο'));
+    card.innerHTML='<div class="cic-name">'+prop.name+'</div>'
+      +rows.map(function(r){return '<div class="cic-row">'+r+'</div>';}).join('')
+      +(prop.notes?'<div class="cic-notes">'+prop.notes+'</div>':'');
+  }
+  // Render quotes for this property
+  await renderQuotes();
+}
+
+// renderQuotes — αυστηρό φίλτρο ανά ακίνητο + banner για ορφανές
+async function renderQuotes() {
+  var el=g('q-cards');
+  if(!el) return;
+  el.innerHTML='<div style="padding:20px;text-align:center;color:#94a3b8">⏳ Φόρτωση...</div>';
+  var allQuotes = await DB.custQuotes(APP.custId);
+
+  // ΑΥΣΤΗΡΟ φίλτρο: μόνο οι προσφορές αυτού του ακινήτου
+  var quotes = allQuotes.filter(function(q){ return q.property_id === APP.propId; });
+  // Ορφανές: ανήκουν στον πελάτη αλλά δεν έχουν ακίνητο
+  var orphans = allQuotes.filter(function(q){ return !q.property_id; });
+
+  var qCount=g('q-count'); if(qCount) qCount.textContent=quotes.length?'('+quotes.length+')':'';
+
+  var html='';
+  // Banner ορφανών
+  if(orphans.length){
+    html+='<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px">'
+      +'<span style="font-size:22px">⚠️</span>'
+      +'<div style="flex:1"><div style="font-size:13px;font-weight:700;color:#92400e">'+orphans.length
+      +' προσφορ'+(orphans.length===1?'ά':'ές')+' χωρίς ακίνητο</div>'
+      +'<div style="font-size:12px;color:#78350f;margin-top:2px">Δημιουργήθηκαν πριν το σύστημα ακινήτων. Αναθέστε τις σε αυτό το ακίνητο.</div></div>'
+      +'<button onclick="call(assignAllOrphans)" style="background:#d97706;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">📎 Ανάθεση όλων εδώ</button>'
+      +'</div>';
+  }
+  if(!quotes.length){
+    html+='<div class="no-quotes"><div style="font-size:32px;margin-bottom:8px">📋</div>'
+      +'<p style="font-weight:600;margin-bottom:4px">Δεν υπάρχουν προσφορές</p>'
+      +'<p style="font-size:12px">Κάντε κλικ στο «＋ Νέα Προσφορά»</p></div>';
+    el.innerHTML=html; return;
+  }
+  var bmap=Object.fromEntries(BRANDS.map(function(b){return [b.id,b];}));
+  el.innerHTML=quotes.map(function(q){
+    var st=ST[q.status]||ST.draft;
+    var t=q.totals||{};
+    var br=bmap[q.brand]||{icon:'🔌'};
+    var vatBase=(q.status==='accepted'&&t.agreed_amount)?t.agreed_amount:(t.total_r||0);
+    return '<div class="qcard" data-qid="'+q.id+'">'
+      +'<div class="qcard-hdr">'
+      +'<div class="q-num">📄 '+(q.quote_number||'—')+(q.title?' — <strong>'+q.title+'</strong>':'')+'</div>'
+      +'<span class="qst" style="background:'+st.bg+';color:'+st.color+'">'+st.icon+' '+st.label+'</span>'
+      +'</div>'
+      +'<div class="qcard-body">'
+      +'<div class="q-pump">'+br.icon+' '+(q.pump_name||'—')+' · '+(q.pump_kw||'')+'</div>'
+      +'<div class="q-date">📅 '+(q.date||'—')+(q.notes?' · '+q.notes:'')+'</div>'
+      +'<div class="q-totals">'
+      +'<div class="qtb"><span class="qtb-lbl">Κόστος</span><span class="qtb-val">'+fmt(t.total_c||0)+'</span></div>'
+      +'<div class="qtb"><span class="qtb-lbl">Λιανική</span><span class="qtb-val">'+fmt(t.total_r||0)+'</span></div>'
+      +'<div class="qtb"><span class="qtb-lbl">+ΦΠΑ</span><span class="qtb-val" style="color:#1d4ed8">'+fmt(vatBase*1.24)+'</span></div>'
+      +'<div class="qtb"><span class="qtb-lbl">Κέρδος</span><span class="qtb-val" style="color:#16a34a">'+fmt(t.profit||0)+'</span></div>'
+      +'</div></div>'
+      +'<div class="qcard-actions">'
+      +'<button class="qbtn" data-qid="'+q.id+'" onclick="qEdit(this.dataset.qid)">✏ Επεξ.</button>'
+      +'<button class="qbtn" data-qid="'+q.id+'" onclick="qCopy(this.dataset.qid)">⧉ Αντιγρ.</button>'
+      +'<button class="qbtn qbtn-del" data-qid="'+q.id+'" onclick="qDel(this.dataset.qid)">🗑</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+// Ανάθεση όλων των ορφανών προσφορών σε αυτό το ακίνητο
+async function assignAllOrphans() {
+  if(!APP.propId||!APP.custId) return;
+  var allQ = await DB.custQuotes(APP.custId);
+  var orphans = allQ.filter(function(q){ return !q.property_id; });
+  if(!orphans.length){ alert('Δεν υπάρχουν ορφανές προσφορές.'); return; }
+  for(var i=0;i<orphans.length;i++){
+    orphans[i].property_id = APP.propId;
+    await DB.saveQuote(orphans[i]);
+  }
+  alert('✅ '+orphans.length+' προσφορ'+(orphans.length===1?'ά':'ές')+' αναθέθηκ'+(orphans.length===1?'ε':'αν')+' σε αυτό το ακίνητο.');
+  await renderQuotes();
+}
+// ── Override newQuoteForCurrent to pass property_id ───────────────
+async function newQuoteForCurrent() {
+  await openEditor(null);
+}
+
+// Store property_id when saving quote - patch saveQuote
+var _origSaveQuote = typeof saveQuote !== 'undefined' ? saveQuote : null;
+
+// ── PROPERTY FORM ─────────────────────────────────────────────────
+function togPF(field, val, btn) {
+  PF_VALS[field]=val;
+  var grp=g('ptg-'+field);
+  if(grp) grp.querySelectorAll('.tog-btn').forEach(function(b){
+    b.classList.toggle('active', b===btn);
+  });
+}
+
+function setPFTog(field, val) {
+  PF_VALS[field]=val;
+  var grp=g('ptg-'+field);
+  if(!grp||!val) return;
+  grp.querySelectorAll('.tog-btn').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('onclick').includes("'"+val+"'"));
+  });
+}
+
+function clearPropForm() {
+  PF_VALS={};
+  ['pf-name','pf-address','pf-area','pf-year','pf-floors','pf-floor',
+   'pf-heating','pf-notes','pf-assigned','pf-amount','pf-reqdate',
+   'pf-deadline','pf-budget','pf-when']
+    .forEach(function(id){var el=g(id);if(el)el.value='';});
+  var pfs=g('pf-status'); if(pfs) pfs.value='pending';
+  var pfp=g('pf-priority'); if(pfp) pfp.value='medium';
+  ['proptype','phase','distrib','gas','heatwork','renov','znx'].forEach(function(f){
+    var grp=g('ptg-'+f);
+    if(grp) grp.querySelectorAll('.tog-btn').forEach(function(b){b.classList.remove('active');});
+  });
+}
+
+function openNewProperty() {
+  EDIT_PID=null; clearPropForm();
+  g('prop-modal-title').textContent='Νέο Ακίνητο';
+  var db=g('pf-del-btn'); if(db) db.style.display='none';
+  g('modal-prop').classList.remove('hidden');
+}
+
+function openEditProperty(pid) {
+  var id=pid||APP.propId;
+  if(!id) return;
+  var prop=propsLoadLocal().find(function(p){return p.id===id;});
+  if(!prop) return;
+  EDIT_PID=id;
+  clearPropForm();
+  g('prop-modal-title').textContent='Επεξεργασία Ακινήτου';
+  var db=g('pf-del-btn'); if(db) db.style.display='';
+  var set=function(id,v){var el=g(id);if(el)el.value=v||'';};
+  set('pf-name',prop.name); set('pf-address',prop.address);
+  set('pf-area',prop.area); set('pf-year',prop.year);
+  set('pf-floors',prop.floors); set('pf-floor',prop.floor);
+  set('pf-heating',prop.heating); set('pf-notes',prop.notes);
+  var setv=function(id,v){var el=g(id);if(el)el.value=v||'';};
+  setv('pf-assigned',prop.assigned); setv('pf-amount',prop.amount);
+  setv('pf-reqdate',prop.reqdate);   setv('pf-deadline',prop.deadline);
+  setv('pf-budget',prop.budget);     setv('pf-when',prop.when);
+  var ps=g('pf-status'); if(ps&&prop.status) ps.value=prop.status;
+  var pp=g('pf-priority'); if(pp&&prop.priority) pp.value=prop.priority;
+  ['proptype','phase','distrib','gas','heatwork','renov','znx'].forEach(function(f){if(prop[f])setPFTog(f,prop[f]);});
+  g('modal-prop').classList.remove('hidden');
+}
+
+async function saveProperty() {
+  var name=(g('pf-name')||{}).value||'';
+  if(!name.trim()){alert('Απαιτείται η ονομασία ακινήτου.');return;}
+  var prop={
+    id: EDIT_PID||('p'+Date.now()+Math.random().toString(36).slice(2,6)),
+    customer_id: APP.custId,
+    name: name.trim(),
+    address:(g('pf-address')||{}).value||'',
+    area:(g('pf-area')||{}).value||'',
+    year:(g('pf-year')||{}).value||'',
+    floors:(g('pf-floors')||{}).value||'',
+    floor:(g('pf-floor')||{}).value||'',
+    heating:(g('pf-heating')||{}).value||'',
+    notes:(g('pf-notes')||{}).value||'',
+    assigned:(g('pf-assigned')||{}).value||'',
+    amount:(g('pf-amount')||{}).value||'',
+    reqdate:(g('pf-reqdate')||{}).value||'',
+    deadline:(g('pf-deadline')||{}).value||'',
+    budget:(g('pf-budget')||{}).value||'',
+    when:(g('pf-when')||{}).value||'',
+    status:(g('pf-status')||{}).value||'pending',
+    priority:(g('pf-priority')||{}).value||'medium',
+    proptype:PF_VALS.proptype||'', phase:PF_VALS.phase||'',
+    distrib:PF_VALS.distrib||'',   gas:PF_VALS.gas||'',
+    heatwork:PF_VALS.heatwork||'', renov:PF_VALS.renov||'',
+    znx:PF_VALS.znx||'',
+    created_at: EDIT_PID?undefined:new Date().toISOString(),
+  };
+  await savePropertyAPI(prop);
+  g('modal-prop').classList.add('hidden');
+  await renderCustomerDetail();
+  // If editing current property, refresh its detail
+  if(EDIT_PID && APP.propId===EDIT_PID) {
+    APP._propCache=prop;
+    var bcn=g('bc-propname'); if(bcn) bcn.textContent=prop.name;
+    var card=g('prop-info-card');
+    // will re-render on next goProperty call
+  }
+}
+
+async function deleteCurrentProperty() {
+  var id=APP.propId||EDIT_PID;
+  if(!id||!confirm('Διαγραφή ακινήτου και όλων των προσφορών του;')) return;
+  await deletePropertyAPI(id);
+  g('modal-prop').classList.add('hidden');
+  APP.propId=null; APP._propCache=null;
+  await goCustomer();
+}
+
+// ── Patch saveQuote to add property_id ───────────────────────────
+// Hook: after quote object is built, add property_id
+var _patchedSaveQuote=false;
+(function patchSaveQuote(){
+  if(_patchedSaveQuote) return;
+  _patchedSaveQuote=true;
+  // We inject property_id via a global that saveQuote reads
+})();
+
+// ── Patch openEditor to set property context in breadcrumb ────────
+var _baseGoCustomer = null;
+
+
+async function assignQuoteToProp(qid) {
+  if(!APP.propId) return;
+  var allQ = await DB.custQuotes(APP.custId);
+  var q = allQ.find(function(x){return x.id===qid;});
+  if(!q) return;
+  q.property_id = APP.propId;
+  try { await DB.saveQuote(q); } catch(e) {
+    try {
+      var qs=JSON.parse(localStorage.getItem('crm_quotes_v1')||'[]');
+      var idx=qs.findIndex(function(x){return x.id===qid;});
+      if(idx>=0){qs[idx]=q;localStorage.setItem('crm_quotes_v1',JSON.stringify(qs));}
+    } catch(e2){}
+  }
+  await renderQuotes();
+}
+
+</script>
+</body>
+</html>
