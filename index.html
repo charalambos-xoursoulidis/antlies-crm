@@ -377,10 +377,7 @@ a{color:#2563eb}
           <button class="tog-btn" onclick="togPF('phase','tri',this)">⚡ 3φασικό</button>
         </div>
       </div>
-      <div class="fld"><label>Εμβαδό (m²)</label><input class="req-inp" id="pf-area" type="number" placeholder="120"></div>
-      <div class="fld"><label>Έτος κατασκευής</label><input class="req-inp" id="pf-year" type="number" placeholder="1995"></div>
-      <div class="fld"><label>Επίπεδα / Όροφοι</label><input class="req-inp" id="pf-floors" type="number" placeholder="2"></div>
-      <div class="fld"><label>Όροφος κατοικίας</label><input class="req-inp" id="pf-floor" placeholder="π.χ. 3ος"></div>
+
       <div class="fld form-full">
         <label>Σύστημα διανομής</label>
         <div class="tog-group" id="ptg-distrib">
@@ -492,7 +489,7 @@ a{color:#2563eb}
           <div style="display:flex;gap:5px;flex-wrap:wrap">
             <button type="button" data-hl-floor="ground"   onclick="setHL('floor','ground')"  class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">🏠 Επί εδάφους / Ισόγειο</button>
             <button type="button" data-hl-floor="pilotis"  onclick="setHL('floor','pilotis')" class="hl-tog hl-tog-on" style="background:#eff6ff;border:1.5px solid #3b82f6;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600;color:#1d4ed8">🅿 Πυλωτή / Εκτεθειμένο</button>
-            <button type="button" data-hl-floor="heated"   onclick="setHL('floor','heated')"  class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">🔥 Πάνω από θερμαινόμενο</button>
+            <button type="button" data-hl-floor="closed"   onclick="setHL('floor','closed')"  class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">🚪 Πάνω από κλειστό χώρο</button>
           </div>
         </div>
         <!-- Οροφή -->
@@ -501,7 +498,7 @@ a{color:#2563eb}
           <div style="display:flex;gap:5px;flex-wrap:wrap">
             <button type="button" data-hl-ceil="roof"   onclick="setHL('ceil','roof')"   class="hl-tog hl-tog-on" style="background:#eff6ff;border:1.5px solid #3b82f6;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600;color:#1d4ed8">🏔 Ταράτσα / Τελ. όροφος</button>
             <button type="button" data-hl-ceil="attic"  onclick="setHL('ceil','attic')"  class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">🏚 Σοφίτα (μη θερμαινόμενη)</button>
-            <button type="button" data-hl-ceil="heated" onclick="setHL('ceil','heated')" class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">🔥 Κάτω από θερμαινόμενο</button>
+            <button type="button" data-hl-ceil="closed" onclick="setHL('ceil','closed')" class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">🚪 Κάτω από κλειστό χώρο</button>
           </div>
         </div>
         <!-- Εκτεθειμένες πλευρές -->
@@ -2634,7 +2631,7 @@ async function assignQuoteToProp(qid) {
 
 
 // ── ΥΠΟΛΟΓΙΣΤΗΣ ΘΕΡΜΙΚΩΝ ΑΠΩΛΕΙΩΝ (EN 12831 απλοποιημένη) ─────
-var HL = { floor: 'pilotis', ceil: 'roof', sides: 2 };
+var HL = { floor: 'closed', ceil: 'roof', sides: 2 };
 
 function setHL(key, val) {
   HL[key] = val;
@@ -2683,11 +2680,11 @@ function calcHL() {
   var Qwalls = HL.sides * Awall1 * Uwall_eff * dT;
 
   // Δάπεδο
-  var fFloor = {ground:0.45, pilotis:1.0, heated:0.0};
+  var fFloor = {ground:0.45, pilotis:1.0, closed:0.35}; // κλειστός=35% (μη θερμαινόμενος γείτονας)
   var Qfloor = area * U.fl * dT * (fFloor[HL.floor] != null ? fFloor[HL.floor] : 0.45);
 
   // Οροφή
-  var fCeil  = {roof:1.0, attic:0.5, heated:0.0};
+  var fCeil  = {roof:1.0, attic:0.5, closed:0.35}; // κλειστός=35% (μη θερμαινόμενος γείτονας)
   var Qceil  = area * U.ce * dT * (fCeil[HL.ceil] != null ? fCeil[HL.ceil] : 1.0);
 
   // Αερισμός (0.5 ach)
