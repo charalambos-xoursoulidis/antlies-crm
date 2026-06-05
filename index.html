@@ -280,6 +280,7 @@ a{color:#2563eb}
   <button class="conn-badge" id="conn-badge" onclick="openSetup()">⚙ Ρυθμίσεις</button>
   <button class="hdr-btn" onclick="call(goCustomers)">👥 Πελάτες</button>
   <button class="hdr-btn grn" id="hdr-new-cust" onclick="openNewCustomer()" style="display:none">+ Νέος Πελάτης</button>
+  <button class="hdr-btn grn" id="hdr-new-prop" onclick="openNewProperty()" style="display:none">🏠 Νέο Ακίνητο</button>
   <button class="hdr-btn grn" id="hdr-new-quote" onclick="call(newQuoteForCurrent)" style="display:none">+ Νέα Προσφορά</button>
 </div>
 
@@ -2267,10 +2268,16 @@ async function saveCustomer() {
     data.created_at = new Date().toISOString();
   }
   await DB.saveCust(data);
-  APP._custCache = data;  // Ανανέωση cache αμέσως
+  APP._custCache = data;
   g('modal-cust').classList.add('hidden');
-  await renderCustomers();
-  if(APP.custId) { await renderCustomerDetail(); }
+  // Επιστροφή στο σωστό view
+  if (APP.propId) {
+    await goProperty();       // ήταν σε ακίνητο → πίσω στο ακίνητο
+  } else if (APP.custId) {
+    await renderCustomerDetail(); // ήταν σε πελάτη → πίσω στον πελάτη
+  } else {
+    await renderCustomers();  // νέος πελάτης → λίστα
+  }
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -2349,6 +2356,9 @@ function showView(id) {
   var hC=g('hdr-new-cust'), hQ=g('hdr-new-quote');
   if(hC) hC.style.display = id==='v-customers'?'':'none';
   if(hQ) hQ.style.display = id==='v-property'?'':'none';
+  // Κουμπί Νέο Ακίνητο στη header όταν στο customer view
+  var hP=g('hdr-new-prop');
+  if(hP) hP.style.display = id==='v-customer'?'':'none';
 }
 
 // ── RENDER PROPERTIES (in customer detail) ────────────────────────
