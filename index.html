@@ -347,8 +347,15 @@ a{color:#2563eb}
 
 <!-- MODAL: PROPERTY FORM -->
 <div id="modal-prop" class="modal-back hidden">
-  <div class="modal" style="max-width:680px;padding:20px">
-    <h3 id="prop-modal-title" style="font-size:15px;margin-bottom:14px">Νέο Ακίνητο</h3>
+  <div class="modal" style="max-width:680px;padding:0;overflow:hidden">
+    <!-- Sticky top bar -->
+    <div style="position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid #e2e8f0;padding:12px 20px;display:flex;align-items:center;gap:8px">
+      <h3 id="prop-modal-title" style="font-size:15px;font-weight:700;flex:1;margin:0">Νέο Ακίνητο</h3>
+      <button class="btn btn-ghost" onclick="g('modal-prop').classList.add('hidden')" style="padding:6px 12px;font-size:12px">✕ Ακύρωση</button>
+      <button id="pf-del-btn" class="btn btn-danger" onclick="call(deleteCurrentProperty)" style="display:none;padding:6px 12px;font-size:12px">🗑 Διαγραφή</button>
+      <button class="btn btn-primary" onclick="call(saveProperty)" style="padding:6px 14px;font-size:12px">💾 Αποθήκευση</button>
+    </div>
+    <div style="padding:16px 20px;max-height:calc(90vh - 60px);overflow-y:auto">
     <div class="form-grid">
       <div class="fld form-full"><label>Ονομασία Ακινήτου *</label>
         <input class="req-inp" id="pf-name" placeholder="π.χ. Κατοικία Βέροια, Εξοχικό Φλώρινα, Επαγγελματικός χώρος..."></div>
@@ -483,11 +490,7 @@ a{color:#2563eb}
         <div id="hl-note" style="font-size:11px;color:#94a3b8;margin-top:8px;text-align:center"></div>
       </div>
     </div>
-<div class="modal-actions" style="margin-top:12px">
-      <button class="btn btn-danger" id="pf-del-btn" onclick="call(deleteCurrentProperty)" style="display:none;margin-right:auto">🗑 Διαγραφή</button>
-      <button class="btn btn-ghost" onclick="g('modal-prop').classList.add('hidden')">Ακύρωση</button>
-      <button class="btn btn-primary" onclick="call(saveProperty)">💾 Αποθήκευση</button>
-    </div>
+
   </div>
 </div>
 
@@ -501,6 +504,14 @@ a{color:#2563eb}
     <span class="bc-cur" id="bc-equote">Νέα Προσφορά</span>
   </div>
   <div class="editor-wrap">
+    <div id="hl-quote-banner" style="display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:8px 14px;margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <span style="font-size:12px;font-weight:700;color:#15803d">⚡ Απώλειες ακινήτου:</span>
+      <span style="font-size:12px;color:#166534">Εκτιμώμενες: <strong id="hq-kw">—</strong></span>
+      <span style="color:#86efac">|</span>
+      <span style="font-size:12px;color:#166534">+20%: <strong id="hq-safe">—</strong></span>
+      <span style="color:#86efac">|</span>
+      <span style="font-size:12px;color:#166534">Ελάχ. αντλία: <strong id="hq-pump" style="color:#15803d;font-size:13px">—</strong></span>
+    </div>
     <div class="emeta">
       <div class="em-fld"><span class="em-lbl">Αρ. Προσφοράς</span><input class="em-inp" id="e-num" style="width:140px"></div>
       <div class="em-fld"><span class="em-lbl">Ημερομηνία</span><input class="em-inp" type="date" id="e-date" style="width:140px"></div>
@@ -629,7 +640,7 @@ CREATE POLICY "allow_all" ON quotes FOR ALL USING (true) WITH CHECK (true);<butt
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeSetup()">Ακύρωση</button>
       <button class="btn btn-primary" onclick="call(applyMode)">✔ Εφαρμογή</button>
-    </div>
+    </div><!-- end scroll -->
   </div>
 </div>
 
@@ -1840,6 +1851,14 @@ async function openEditor(qid){
   if(eqgas)eqgas.classList.toggle('active',ES.equipType==='gas');
   var bt=g('brand-card-title');if(bt)bt.textContent=(ES.equipType==='hp')?'Marka antlias':'Marka lebita';
   toggleAgreed();
+  // Εμφάνιση banner απωλειών αν υπάρχουν
+  var hlb = document.getElementById('hl-quote-banner');
+  if (hlb && APP.propHL) {
+    document.getElementById('hq-kw').textContent   = APP.propHL.kw   + ' kW';
+    document.getElementById('hq-safe').textContent = APP.propHL.safe + ' kW';
+    document.getElementById('hq-pump').textContent = APP.propHL.pump + ' kW';
+    hlb.style.display = 'flex';
+  } else if (hlb) { hlb.style.display = 'none'; }
   showView('v-editor');rBrands();rTypeTabs();rPumps();rMats();rSum();
 }
 
@@ -2571,13 +2590,9 @@ function calcHL() {
   }
   var ins  = parseFloat(document.getElementById('hl-ins').value);
   var zone = parseFloat(document.getElementById('hl-zone').value);
-
-  // Θερμικές απώλειες: Q(W) = Area × q_specific(W/m²) × zone_factor
   var qW   = area * ins * zone;
   var qKw  = qW / 1000;
-  var safe = qKw * 1.20; // +20% ασφάλεια
-
-  // Προτεινόμενο μέγεθος αντλίας (στρογγυλοποίηση πάνω)
+  var safe = qKw * 1.20;
   var sizes = [4,6,8,10,12,14,16,18,20,22,24,26,30];
   var pump  = sizes.find(function(s){ return s >= safe; }) || 30;
 
@@ -2585,8 +2600,11 @@ function calcHL() {
   document.getElementById('hl-safe').textContent = safe.toFixed(1) + ' kW';
   document.getElementById('hl-pump').textContent = pump + ' kW';
   document.getElementById('hl-note').textContent =
-    'Εμβαδόν: ' + area + ' m²  |  Ειδικές απώλειες: ' + ins + ' W/m²  |  Συντελεστής ζώνης: ×' + zone;
+    'Εμβαδόν: ' + area + ' m²  |  ' + ins + ' W/m²  |  Ζώνη ×' + zone;
   document.getElementById('hl-result').style.display = 'block';
+
+  // Αποθήκευση στο APP για χρήση στη φόρμα προσφοράς
+  APP.propHL = { kw: qKw.toFixed(1), safe: safe.toFixed(1), pump: pump };
 }
 </script>
 </body>
