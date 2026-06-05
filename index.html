@@ -447,47 +447,99 @@ a{color:#2563eb}
         <textarea class="req-inp" id="pf-notes" rows="2" placeholder="Επιπλέον πληροφορίες..."></textarea></div>
     </div>
         <!-- ΥΠΟΛΟΓΙΣΤΗΣ ΘΕΡΜΙΚΩΝ ΑΠΩΛΕΙΩΝ -->
-    <div style="background:#f0f7ff;border:1.5px solid #93c5fd;border-radius:10px;padding:14px;margin:14px 0 4px">
-      <div style="font-size:13px;font-weight:700;color:#1e3a5f;margin-bottom:10px">⚡ Γρήγορος Υπολογισμός Θερμικών Απωλειών</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-        <div class="fld">
-          <label>Τύπος κτηρίου / Μόνωση</label>
-          <select id="hl-ins" style="width:100%;border:1px solid #cbd5e1;border-radius:7px;padding:6px 10px;font-size:13px" onchange="calcHL()">
-            <option value="125">Πριν 1979 — χωρίς Κανονισμό Θερμομόνωσης</option>
-            <option value="100">1979–1989 — Κ.Θ. 1979, αρχή εφαρμογής (ελάχιστη μόνωση)</option>
-            <option value="75" selected>1990–1999 — Κ.Θ. 1979, τυπική εφαρμογή 10ετίας 90</option>
-            <option value="60">2000–2009 — Κ.Θ. 1979, ενισχυμένη μόνωση 10ετίας 2000</option>
-            <option value="50">2010+ — ΚΕΝΑΚ (Κανονισμός Ενεργειακής Απόδοσης Κτιρίων)</option>
-            <option value="25">ΚΕΝΑΚ+ — Κτήριο σχεδόν μηδενικής ενέργειας (nZEB)</option>
-          </select>
-        </div>
-        <div class="fld">
-          <label>Κλιματική Ζώνη</label>
-          <select id="hl-zone" style="width:100%;border:1px solid #cbd5e1;border-radius:7px;padding:6px 10px;font-size:13px" onchange="calcHL()">
-            <option value="0.85">Ζώνη Α — Αθήνα, Νησιά, Πελοπόννησος</option>
-            <option value="1.00" selected>Ζώνη Β — Κ. Ελλάδα, Ήπειρος</option>
-            <option value="1.15">Ζώνη Γ — Β. Ελλάδα, Μακεδονία</option>
-            <option value="1.35">Ζώνη Δ — Ορεινά</option>
-          </select>
-        </div>
+    <div style="background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:10px;margin:14px 0 4px;overflow:hidden">
+      <div style="background:#1e3a5f;color:#fff;padding:9px 14px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px">
+        ⚡ Υπολογισμός Θερμικών Απωλειών
+        <span style="font-size:10px;opacity:.7;font-weight:400">(EN 12831 απλοποιημένη μέθοδος)</span>
       </div>
-      <button type="button" onclick="calcHL()" style="background:#1e3a5f;color:#fff;border:none;border-radius:7px;padding:7px 18px;font-size:12px;font-weight:700;cursor:pointer">🔢 Υπολογισμός</button>
-      <div id="hl-result" style="display:none;margin-top:10px;background:#fff;border-radius:8px;padding:12px;border:1px solid #bfdbfe">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
-          <div>
-            <div style="font-size:10px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:3px">Θερμικές Απώλειες</div>
-            <div id="hl-kw" style="font-size:24px;font-weight:700;color:#1e3a5f"></div>
+      <div style="padding:12px 14px">
+        <!-- Βασικά στοιχεία -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+          <div class="fld">
+            <label>Εμβαδόν (m²)</label>
+            <input id="hl-area" type="number" placeholder="από πεδίο πάνω" step="1" min="0" style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:13px">
           </div>
-          <div style="border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0">
-            <div style="font-size:10px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:3px">Με +20% ασφάλεια</div>
-            <div id="hl-safe" style="font-size:20px;font-weight:700;color:#c2410c"></div>
+          <div class="fld">
+            <label>Ύψος ορόφου (m)</label>
+            <input id="hl-h" type="number" value="2.80" step="0.05" min="2" max="5" style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:13px">
           </div>
-          <div>
-            <div style="font-size:10px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:3px">Ελάχ. μέγεθος αντλίας</div>
-            <div id="hl-pump" style="font-size:20px;font-weight:700;color:#16a34a"></div>
+          <div class="fld">
+            <label>Κλιματική Ζώνη</label>
+            <select id="hl-zone" style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:12px">
+              <option value="A">Α — Αθήνα, Νησιά, Πελ/σος (ΔΤ=25°C)</option>
+              <option value="B" selected>Β — Κ. Ελλάδα, Ήπειρος (ΔΤ=30°C)</option>
+              <option value="C">Γ — Β. Ελλάδα, Μακεδονία (ΔΤ=35°C)</option>
+              <option value="D">Δ — Ορεινά (ΔΤ=42°C)</option>
+            </select>
           </div>
         </div>
-        <div id="hl-note" style="font-size:11px;color:#94a3b8;margin-top:8px;text-align:center"></div>
+        <!-- Τύπος κτηρίου -->
+        <div class="fld" style="margin-bottom:10px">
+          <label>Τύπος κτηρίου / Μόνωση</label>
+          <select id="hl-ins" style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:12px">
+            <option value="pre1979">Πριν 1979 — χωρίς Κανονισμό Θερμομόνωσης</option>
+            <option value="1979_1989">1979–1989 — Κ.Θ. 1979, αρχή εφαρμογής</option>
+            <option value="1990_1999" selected>1990–1999 — Κ.Θ. 1979, τυπική εφαρμογή</option>
+            <option value="2000_2009">2000–2009 — Κ.Θ. 1979, ενισχυμένη μόνωση</option>
+            <option value="2010plus">2010+ — ΚΕΝΑΚ</option>
+            <option value="nzeb">ΚΕΝΑΚ+ — Σχεδόν μηδενικής ενέργειας (nZEB)</option>
+          </select>
+        </div>
+        <!-- Δάπεδο -->
+        <div style="margin-bottom:8px">
+          <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Δάπεδο</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <button type="button" data-hl-floor="ground"   onclick="setHL('floor','ground')"  class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">🏠 Επί εδάφους / Ισόγειο</button>
+            <button type="button" data-hl-floor="pilotis"  onclick="setHL('floor','pilotis')" class="hl-tog hl-tog-on" style="background:#eff6ff;border:1.5px solid #3b82f6;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600;color:#1d4ed8">🅿 Πυλωτή / Εκτεθειμένο</button>
+            <button type="button" data-hl-floor="heated"   onclick="setHL('floor','heated')"  class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">🔥 Πάνω από θερμαινόμενο</button>
+          </div>
+        </div>
+        <!-- Οροφή -->
+        <div style="margin-bottom:8px">
+          <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Οροφή</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <button type="button" data-hl-ceil="roof"   onclick="setHL('ceil','roof')"   class="hl-tog hl-tog-on" style="background:#eff6ff;border:1.5px solid #3b82f6;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600;color:#1d4ed8">🏔 Ταράτσα / Τελ. όροφος</button>
+            <button type="button" data-hl-ceil="attic"  onclick="setHL('ceil','attic')"  class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">🏚 Σοφίτα (μη θερμαινόμενη)</button>
+            <button type="button" data-hl-ceil="heated" onclick="setHL('ceil','heated')" class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">🔥 Κάτω από θερμαινόμενο</button>
+          </div>
+        </div>
+        <!-- Εκτεθειμένες πλευρές -->
+        <div style="margin-bottom:12px">
+          <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Εκτεθειμένες τοιχοποιίες</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <button type="button" data-hl-sides="1" onclick="setHL('sides',1)" class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">1 πλευρά<br><span style="font-size:9px;color:#94a3b8">Ενδιάμεσο</span></button>
+            <button type="button" data-hl-sides="2" onclick="setHL('sides',2)" class="hl-tog hl-tog-on" style="background:#eff6ff;border:1.5px solid #3b82f6;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600;color:#1d4ed8">2 πλευρές<br><span style="font-size:9px">Γωνιακό</span></button>
+            <button type="button" data-hl-sides="3" onclick="setHL('sides',3)" class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">3 πλευρές<br><span style="font-size:9px;color:#94a3b8">Μεσαία μον.</span></button>
+            <button type="button" data-hl-sides="4" onclick="setHL('sides',4)" class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">4 πλευρές<br><span style="font-size:9px;color:#94a3b8">Μονοκατοικία</span></button>
+          </div>
+        </div>
+        <!-- Κουμπί -->
+        <button type="button" onclick="calcHL()" style="background:#1e3a5f;color:#fff;border:none;border-radius:7px;padding:8px 20px;font-size:12px;font-weight:700;cursor:pointer;width:100%">🔢 Υπολογισμός Απωλειών</button>
+        <!-- Αποτέλεσμα -->
+        <div id="hl-result" style="display:none;margin-top:10px;background:#fff;border-radius:8px;border:1px solid #bfdbfe;overflow:hidden">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;text-align:center">
+            <div style="padding:10px;border-right:1px solid #e2e8f0">
+              <div style="font-size:9px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:2px">Απώλειες</div>
+              <div id="hl-kw" style="font-size:22px;font-weight:700;color:#1e3a5f"></div>
+            </div>
+            <div style="padding:10px;border-right:1px solid #e2e8f0">
+              <div style="font-size:9px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:2px">+20% ασφάλεια</div>
+              <div id="hl-safe" style="font-size:18px;font-weight:700;color:#c2410c"></div>
+            </div>
+            <div style="padding:10px">
+              <div style="font-size:9px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:2px">Ελάχ. αντλία</div>
+              <div id="hl-pump" style="font-size:18px;font-weight:700;color:#16a34a"></div>
+            </div>
+          </div>
+          <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:8px 12px">
+            <div style="font-size:10px;color:#64748b;display:grid;grid-template-columns:1fr 1fr;gap:2px">
+              <span>🧱 Τοιχοποιία: <strong id="hl-br-walls">—</strong></span>
+              <span>🏠 Δάπεδο: <strong id="hl-br-floor">—</strong></span>
+              <span>🏔 Οροφή: <strong id="hl-br-ceil">—</strong></span>
+              <span>💨 Αερισμός: <strong id="hl-br-vent">—</strong></span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2580,30 +2632,82 @@ async function assignQuoteToProp(qid) {
 }
 
 
-// ── ΥΠΟΛΟΓΙΣΤΗΣ ΘΕΡΜΙΚΩΝ ΑΠΩΛΕΙΩΝ ───────────────────────────────
-function calcHL() {
-  var area = parseFloat((document.getElementById('pf-area')||{}).value) || 0;
-  if (!area || area <= 0) {
-    document.getElementById('hl-result').style.display='none';
-    alert('Συμπληρώστε πρώτα το Εμβαδόν (m²) στη φόρμα.');
-    return;
-  }
-  var ins  = parseFloat(document.getElementById('hl-ins').value);
-  var zone = parseFloat(document.getElementById('hl-zone').value);
-  var qW   = area * ins * zone;
-  var qKw  = qW / 1000;
-  var safe = qKw * 1.20;
-  var sizes = [4,6,8,10,12,14,16,18,20,22,24,26,30];
-  var pump  = sizes.find(function(s){ return s >= safe; }) || 30;
+// ── ΥΠΟΛΟΓΙΣΤΗΣ ΘΕΡΜΙΚΩΝ ΑΠΩΛΕΙΩΝ (EN 12831 απλοποιημένη) ─────
+var HL = { floor: 'pilotis', ceil: 'roof', sides: 2 };
 
-  document.getElementById('hl-kw').textContent   = qKw.toFixed(1) + ' kW';
-  document.getElementById('hl-safe').textContent = safe.toFixed(1) + ' kW';
-  document.getElementById('hl-pump').textContent = pump + ' kW';
-  document.getElementById('hl-note').textContent =
-    'Εμβαδόν: ' + area + ' m²  |  ' + ins + ' W/m²  |  Ζώνη ×' + zone;
+function setHL(key, val) {
+  HL[key] = val;
+  var attr = 'data-hl-' + key;
+  document.querySelectorAll('[' + attr + ']').forEach(function(b) {
+    var isOn = b.getAttribute(attr) === String(val);
+    b.style.background    = isOn ? '#eff6ff' : '#f1f5f9';
+    b.style.borderColor   = isOn ? '#3b82f6' : '#cbd5e1';
+    b.style.color         = isOn ? '#1d4ed8'  : '';
+    b.style.fontWeight    = isOn ? '700' : '400';
+  });
+}
+
+function calcHL() {
+  // Εμβαδόν: πρώτα από hl-area, αλλιώς από pf-area
+  var area = parseFloat((document.getElementById('hl-area')||{}).value)
+          || parseFloat((document.getElementById('pf-area')||{}).value) || 0;
+  if (!area) { alert('Συμπληρώστε εμβαδόν (m²).'); return; }
+
+  var h    = parseFloat((document.getElementById('hl-h')||{}).value) || 2.80;
+  var insK = (document.getElementById('hl-ins')||{}).value || '1990_1999';
+  var zone = (document.getElementById('hl-zone')||{}).value || 'B';
+
+  // U-τιμές ανά περίοδο (W/m²K)
+  var UV = {
+    pre1979:   {wall:1.40, win:3.5, fl:1.00, ce:1.00},
+    '1979_1989':{wall:1.00, win:3.0, fl:0.70, ce:0.70},
+    '1990_1999':{wall:0.70, win:2.5, fl:0.55, ce:0.55},
+    '2000_2009':{wall:0.55, win:2.0, fl:0.45, ce:0.45},
+    '2010plus': {wall:0.35, win:1.5, fl:0.30, ce:0.30},
+    nzeb:       {wall:0.18, win:0.9, fl:0.18, ce:0.18}
+  };
+  // ΔΤ σχεδιασμού ανά ζώνη (°C)
+  var DT = {A:25, B:30, C:35, D:42};
+
+  var U  = UV[insK] || UV['1990_1999'];
+  var dT = DT[zone] || 30;
+  var V  = area * h;
+
+  // Γεωμετρία — τετράγωνη κάτοψη
+  var side   = Math.sqrt(area);         // μήκος πλευράς (m)
+  var Awall1 = side * h;                // εμβαδόν 1 τοίχου
+
+  // Τοιχοποιία: 80% αδιαφανές + 20% παράθυρα
+  var Uwall_eff = 0.80 * U.wall + 0.20 * U.win;
+  var Qwalls = HL.sides * Awall1 * Uwall_eff * dT;
+
+  // Δάπεδο
+  var fFloor = {ground:0.45, pilotis:1.0, heated:0.0};
+  var Qfloor = area * U.fl * dT * (fFloor[HL.floor] != null ? fFloor[HL.floor] : 0.45);
+
+  // Οροφή
+  var fCeil  = {roof:1.0, attic:0.5, heated:0.0};
+  var Qceil  = area * U.ce * dT * (fCeil[HL.ceil] != null ? fCeil[HL.ceil] : 1.0);
+
+  // Αερισμός (0.5 ach)
+  var Qvent  = 0.5 * V * 0.34 * dT;
+
+  var Qtotal = Qwalls + Qfloor + Qceil + Qvent;
+  var qKw    = Qtotal / 1000;
+  var safe   = qKw * 1.20;
+  var sizes  = [4,6,8,10,12,14,16,18,20,22,24,26,30];
+  var pump   = sizes.find(function(s){ return s >= safe; }) || 30;
+
+  var f1 = function(w){ return (w/1000).toFixed(1) + ' kW'; };
+  document.getElementById('hl-kw').textContent      = qKw.toFixed(1) + ' kW';
+  document.getElementById('hl-safe').textContent    = safe.toFixed(1) + ' kW';
+  document.getElementById('hl-pump').textContent    = pump + ' kW';
+  document.getElementById('hl-br-walls').textContent = f1(Qwalls);
+  document.getElementById('hl-br-floor').textContent = f1(Qfloor);
+  document.getElementById('hl-br-ceil').textContent  = f1(Qceil);
+  document.getElementById('hl-br-vent').textContent  = f1(Qvent);
   document.getElementById('hl-result').style.display = 'block';
 
-  // Αποθήκευση στο APP για χρήση στη φόρμα προσφοράς
   APP.propHL = { kw: qKw.toFixed(1), safe: safe.toFixed(1), pump: pump };
 }
 </script>
