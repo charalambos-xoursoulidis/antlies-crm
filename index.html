@@ -439,7 +439,49 @@ a{color:#2563eb}
       <div class="fld form-full"><label>Σημειώσεις</label>
         <textarea class="req-inp" id="pf-notes" rows="2" placeholder="Επιπλέον πληροφορίες..."></textarea></div>
     </div>
-    <div class="modal-actions" style="margin-top:12px">
+        <!-- ΥΠΟΛΟΓΙΣΤΗΣ ΘΕΡΜΙΚΩΝ ΑΠΩΛΕΙΩΝ -->
+    <div style="background:#f0f7ff;border:1.5px solid #93c5fd;border-radius:10px;padding:14px;margin:14px 0 4px">
+      <div style="font-size:13px;font-weight:700;color:#1e3a5f;margin-bottom:10px">⚡ Γρήγορος Υπολογισμός Θερμικών Απωλειών</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div class="fld">
+          <label>Τύπος κτηρίου / Μόνωση</label>
+          <select id="hl-ins" style="width:100%;border:1px solid #cbd5e1;border-radius:7px;padding:6px 10px;font-size:13px" onchange="calcHL()">
+            <option value="125">Παλαιό — χωρίς μόνωση (π.χ. &lt;1980)</option>
+            <option value="85" selected>Μεσαίο — μερική μόνωση (1980–2000)</option>
+            <option value="55">Νέο — καλή μόνωση (2000+)</option>
+            <option value="30">Σύγχρονο — εξαιρετική μόνωση (ΚΕΝΑΚ+)</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label>Κλιματική Ζώνη</label>
+          <select id="hl-zone" style="width:100%;border:1px solid #cbd5e1;border-radius:7px;padding:6px 10px;font-size:13px" onchange="calcHL()">
+            <option value="0.85">Ζώνη Α — Αθήνα, Νησιά, Πελοπόννησος</option>
+            <option value="1.00" selected>Ζώνη Β — Κ. Ελλάδα, Ήπειρος</option>
+            <option value="1.15">Ζώνη Γ — Β. Ελλάδα, Μακεδονία</option>
+            <option value="1.35">Ζώνη Δ — Ορεινά</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" onclick="calcHL()" style="background:#1e3a5f;color:#fff;border:none;border-radius:7px;padding:7px 18px;font-size:12px;font-weight:700;cursor:pointer">🔢 Υπολογισμός</button>
+      <div id="hl-result" style="display:none;margin-top:10px;background:#fff;border-radius:8px;padding:12px;border:1px solid #bfdbfe">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+          <div>
+            <div style="font-size:10px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:3px">Θερμικές Απώλειες</div>
+            <div id="hl-kw" style="font-size:24px;font-weight:700;color:#1e3a5f"></div>
+          </div>
+          <div style="border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0">
+            <div style="font-size:10px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:3px">Με +20% ασφάλεια</div>
+            <div id="hl-safe" style="font-size:20px;font-weight:700;color:#c2410c"></div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:3px">Ελάχ. μέγεθος αντλίας</div>
+            <div id="hl-pump" style="font-size:20px;font-weight:700;color:#16a34a"></div>
+          </div>
+        </div>
+        <div id="hl-note" style="font-size:11px;color:#94a3b8;margin-top:8px;text-align:center"></div>
+      </div>
+    </div>
+<div class="modal-actions" style="margin-top:12px">
       <button class="btn btn-danger" id="pf-del-btn" onclick="call(deleteCurrentProperty)" style="display:none;margin-right:auto">🗑 Διαγραφή</button>
       <button class="btn btn-ghost" onclick="g('modal-prop').classList.add('hidden')">Ακύρωση</button>
       <button class="btn btn-primary" onclick="call(saveProperty)">💾 Αποθήκευση</button>
@@ -2516,6 +2558,34 @@ async function assignQuoteToProp(qid) {
   await renderQuotes();
 }
 
+
+// ── ΥΠΟΛΟΓΙΣΤΗΣ ΘΕΡΜΙΚΩΝ ΑΠΩΛΕΙΩΝ ───────────────────────────────
+function calcHL() {
+  var area = parseFloat((document.getElementById('pf-area')||{}).value) || 0;
+  if (!area || area <= 0) {
+    document.getElementById('hl-result').style.display='none';
+    alert('Συμπληρώστε πρώτα το Εμβαδόν (m²) στη φόρμα.');
+    return;
+  }
+  var ins  = parseFloat(document.getElementById('hl-ins').value);
+  var zone = parseFloat(document.getElementById('hl-zone').value);
+
+  // Θερμικές απώλειες: Q(W) = Area × q_specific(W/m²) × zone_factor
+  var qW   = area * ins * zone;
+  var qKw  = qW / 1000;
+  var safe = qKw * 1.20; // +20% ασφάλεια
+
+  // Προτεινόμενο μέγεθος αντλίας (στρογγυλοποίηση πάνω)
+  var sizes = [4,6,8,10,12,14,16,18,20,22,24,26,30];
+  var pump  = sizes.find(function(s){ return s >= safe; }) || 30;
+
+  document.getElementById('hl-kw').textContent   = qKw.toFixed(1) + ' kW';
+  document.getElementById('hl-safe').textContent = safe.toFixed(1) + ' kW';
+  document.getElementById('hl-pump').textContent = pump + ' kW';
+  document.getElementById('hl-note').textContent =
+    'Εμβαδόν: ' + area + ' m²  |  Ειδικές απώλειες: ' + ins + ' W/m²  |  Συντελεστής ζώνης: ×' + zone;
+  document.getElementById('hl-result').style.display = 'block';
+}
 </script>
 </body>
 </html>
