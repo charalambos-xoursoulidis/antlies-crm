@@ -2247,36 +2247,42 @@ function readCustForm() {
   };
 }
 
-// Override openNewCustomer to use new form
+// openNewCustomer — ΔΕΝ αγγίζει APP.custId (διατηρεί current customer context)
+var EDIT_CUST_ID = null; // null=νέος, string=επεξεργασία
 function openNewCustomer() {
-  APP.custId = null;
+  EDIT_CUST_ID = null;
   clearCustForm();
   g('modal-cust-title').textContent = 'Νέος Πελάτης';
   g('modal-cust').classList.remove('hidden');
 }
 
-// Override saveCustomer to use readCustForm
+// saveCustomer: χρησιμοποιεί EDIT_CUST_ID για νέο/επεξεργασία
 async function saveCustomer() {
   var data = readCustForm();
   if (!data.lastname.trim()) { alert('Απαιτείται το επώνυμο.'); return; }
-  if (APP.custId) {
-    data.id = APP.custId;
+  if (EDIT_CUST_ID) {
+    // Επεξεργασία υπάρχοντος
+    data.id = EDIT_CUST_ID;
     data.created_at = APP._custCache && APP._custCache.created_at
       ? APP._custCache.created_at : new Date().toISOString();
   } else {
+    // Νέος πελάτης
     data.id = 'c'+Date.now()+Math.random().toString(36).slice(2,6);
     data.created_at = new Date().toISOString();
   }
   await DB.saveCust(data);
   APP._custCache = data;
   g('modal-cust').classList.add('hidden');
-  // Επιστροφή στο σωστό view
-  if (APP.propId) {
-    await goProperty();       // ήταν σε ακίνητο → πίσω στο ακίνητο
-  } else if (APP.custId) {
-    await renderCustomerDetail(); // ήταν σε πελάτη → πίσω στον πελάτη
+  var wasEditing = !!EDIT_CUST_ID;
+  EDIT_CUST_ID = null;
+  if (wasEditing) {
+    // Επεξεργασία: μείνε στο τρέχον view
+    if (APP.propId) { await goProperty(); }
+    else if (APP.custId) { APP._custCache=data; await renderCustomerDetail(); }
   } else {
-    await renderCustomers();  // νέος πελάτης → λίστα
+    // Νέος πελάτης: πήγαινε στον νέο
+    APP.custId = data.id; APP._custCache = data;
+    await goCustomer();
   }
 }
 
