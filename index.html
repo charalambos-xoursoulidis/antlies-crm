@@ -1677,6 +1677,9 @@ async function saveQuote(){
 }
 
 async function openEditor(qid){
+  // DIAGNOSTIC
+  console.log('[openEditor] qid='+qid+' APP.custId='+APP.custId+' APP.propId='+APP.propId);
+  if (!APP.custId) { alert('ΣΦΑΛΜΑ: APP.custId=null - δεν έχει επιλεγεί πελάτης'); return; }
   EDIT_QID=qid;
   var c=APP._custCache;
   var cn=c?c.lastname+(c.firstname?' '+c.firstname:''):'---';
@@ -1901,6 +1904,9 @@ async function saveQuote(){
 
 // Override openEditor to restore pump price overrides
 async function openEditor(qid){
+  // DIAGNOSTIC
+  console.log('[openEditor] qid='+qid+' APP.custId='+APP.custId+' APP.propId='+APP.propId);
+  if (!APP.custId) { alert('ΣΦΑΛΜΑ: APP.custId=null - δεν έχει επιλεγεί πελάτης'); return; }
   EDIT_QID=qid;
   var c=APP._custCache;
   var cn=c?c.lastname+(c.firstname?' '+c.firstname:''):'---';
