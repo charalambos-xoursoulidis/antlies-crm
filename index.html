@@ -1127,10 +1127,9 @@ async function renderCustomers(){
 let editCustId=null;
 function openNewCustomer(){editCustId=null;g('modal-cust-title').textContent='Νέος Πελάτης';clearCustForm();g('modal-cust').classList.remove('hidden');}
 function openEditCustomer(id) {
-  // id may be omitted — fallback to current customer
   var cid = id || APP.custId;
   if (!cid) return;
-  APP.custId = cid;
+  EDIT_CUST_ID = cid; // σήμα επεξεργασίας — δεν αγγίζουμε APP.custId
   clearCustForm();
   g('modal-cust-title').textContent = 'Επεξεργασία Πελάτη';
   var c = APP._custCache;
