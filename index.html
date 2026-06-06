@@ -6,8 +6,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Αντλίες Θερμότητας — Διαχείριση Προσφορών</title>
-<meta name="build" content="202606051451">
+<title>Αντλίες Θερμότητας — Διαχείριση Προσφορών </title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
@@ -280,7 +279,6 @@ a{color:#2563eb}
   <button class="conn-badge" id="conn-badge" onclick="openSetup()">⚙ Ρυθμίσεις</button>
   <button class="hdr-btn" onclick="call(goCustomers)">👥 Πελάτες</button>
   <button class="hdr-btn grn" id="hdr-new-cust" onclick="openNewCustomer()" style="display:none">+ Νέος Πελάτης</button>
-  <button class="hdr-btn grn" id="hdr-new-prop" onclick="openNewProperty()" style="display:none">🏠 Νέο Ακίνητο</button>
   <button class="hdr-btn grn" id="hdr-new-quote" onclick="call(newQuoteForCurrent)" style="display:none">+ Νέα Προσφορά</button>
 </div>
 
@@ -349,15 +347,8 @@ a{color:#2563eb}
 
 <!-- MODAL: PROPERTY FORM -->
 <div id="modal-prop" class="modal-back hidden">
-  <div class="modal" style="max-width:860px;padding:0;overflow:hidden">
-    <!-- Sticky top bar -->
-    <div style="position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid #e2e8f0;padding:12px 20px;display:flex;align-items:center;gap:8px">
-      <h3 id="prop-modal-title" style="font-size:15px;font-weight:700;flex:1;margin:0">Νέο Ακίνητο</h3>
-      <button class="btn btn-ghost" onclick="g('modal-prop').classList.add('hidden')" style="padding:6px 12px;font-size:12px">✕ Ακύρωση</button>
-      <button id="pf-del-btn" class="btn btn-danger" onclick="call(deleteCurrentProperty)" style="display:none;padding:6px 12px;font-size:12px">🗑 Διαγραφή</button>
-      <button class="btn btn-primary" onclick="call(saveProperty)" style="padding:6px 14px;font-size:12px">💾 Αποθήκευση</button>
-    </div>
-    <div style="padding:16px 20px;max-height:calc(90vh - 60px);overflow-y:auto">
+  <div class="modal" style="max-width:680px;padding:20px">
+    <h3 id="prop-modal-title" style="font-size:15px;margin-bottom:14px">Νέο Ακίνητο</h3>
     <div class="form-grid">
       <div class="fld form-full"><label>Ονομασία Ακινήτου *</label>
         <input class="req-inp" id="pf-name" placeholder="π.χ. Κατοικία Βέροια, Εξοχικό Φλώρινα, Επαγγελματικός χώρος..."></div>
@@ -378,7 +369,10 @@ a{color:#2563eb}
           <button class="tog-btn" onclick="togPF('phase','tri',this)">⚡ 3φασικό</button>
         </div>
       </div>
-
+      <div class="fld"><label>Εμβαδό (m²)</label><input class="req-inp" id="pf-area" type="number" placeholder="120"></div>
+      <div class="fld"><label>Έτος κατασκευής</label><input class="req-inp" id="pf-year" type="number" placeholder="1995"></div>
+      <div class="fld"><label>Επίπεδα / Όροφοι</label><input class="req-inp" id="pf-floors" type="number" placeholder="2"></div>
+      <div class="fld"><label>Όροφος κατοικίας</label><input class="req-inp" id="pf-floor" placeholder="π.χ. 3ος"></div>
       <div class="fld form-full">
         <label>Σύστημα διανομής</label>
         <div class="tog-group" id="ptg-distrib">
@@ -421,141 +415,7 @@ a{color:#2563eb}
           <button class="tog-btn" onclick="togPF('renov','partial',this)">Μερική</button>
         </div>
       </div>
-      <!-- ΥΠΟΛΟΓΙΣΤΗΣ ΘΕΡΜΙΚΩΝ ΑΠΩΛΕΙΩΝ -->
-      <div style="background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:10px;margin:0 0 10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)">
-        <div style="background:#1e3a5f;color:#fff;padding:9px 14px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px">
-          ⚡ Υπολογισμός Θερμικών Απωλειών
-          <span style="font-size:10px;opacity:.7;font-weight:400">(EN 12831 απλοποιημένη)</span>
-        </div>
-        <div style="padding:12px 14px">
-          <!-- Βασικά -->
-          <div style="display:grid;grid-template-columns:140px 140px 1fr;gap:10px;margin-bottom:10px;align-items:end">
-            <div class="fld">
-              <label>Εμβαδόν (m²)</label>
-              <input id="hl-area" type="number" placeholder="π.χ. 90" step="1" min="0" style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:13px">
-            </div>
-            <div class="fld">
-              <label>Ύψος ορόφου (m)</label>
-              <input id="hl-h" type="number" value="2.80" step="0.05" min="2" max="5" style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:13px">
-            </div>
-            <div class="fld">
-              <label>Κλιματική Ζώνη</label>
-              <select id="hl-zone" style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:11px">
-                <option value="A">Α — Αθήνα, Νησιά, Πελ/σος</option>
-                <option value="B" selected>Β — Κ. Ελλάδα, Ήπειρος</option>
-                <option value="C">Γ — Β. Ελλάδα, Μακεδονία</option>
-                <option value="D">Δ — Ορεινά</option>
-              </select>
-            </div>
-          </div>
-          <!-- Τύπος κτηρίου -->
-          <div class="fld" style="margin-bottom:10px">
-            <label>Τύπος κτηρίου / Μόνωση</label>
-            <select id="hl-ins" style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:12px">
-              <option value="pre1979">Πριν 1979 — χωρίς Κανονισμό Θερμομόνωσης</option>
-              <option value="1979_1989">1979–1989 — Κ.Θ. 1979, αρχή εφαρμογής</option>
-              <option value="1990_1999" selected>1990–1999 — Κ.Θ. 1979, τυπική εφαρμογή</option>
-              <option value="2000_2009">2000–2009 — Κ.Θ. 1979, ενισχυμένη μόνωση</option>
-              <option value="2010plus">2010+ — ΚΕΝΑΚ</option>
-              <option value="nzeb">ΚΕΝΑΚ+ — nZEB</option>
-            </select>
-          </div>
-          <!-- Αναβαθμίσεις -->
-          <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;margin-bottom:10px">
-            <div style="font-size:10px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">🔧 Αναβαθμίσεις που έχουν γίνει</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px">
-              <label style="display:flex;align-items:center;gap:7px;font-size:12px;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid #e2e8f0;background:#fff">
-                <input type="checkbox" id="hl-ren-win"   style="width:15px;height:15px;cursor:pointer">
-                <span>🪟 Κουφώματα ΙΙ τζάμι</span>
-              </label>
-              <label style="display:flex;align-items:center;gap:7px;font-size:12px;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid #e2e8f0;background:#fff">
-                <input type="checkbox" id="hl-ren-wall"  style="width:15px;height:15px;cursor:pointer">
-                <span>🧱 Θερμοπρόσοψη</span>
-              </label>
-              <label style="display:flex;align-items:center;gap:7px;font-size:12px;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid #e2e8f0;background:#fff">
-                <input type="checkbox" id="hl-ren-ceil"  style="width:15px;height:15px;cursor:pointer">
-                <span>🏔 Μόνωση οροφής</span>
-              </label>
-              <label style="display:flex;align-items:center;gap:7px;font-size:12px;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid #e2e8f0;background:#fff">
-                <input type="checkbox" id="hl-ren-floor" style="width:15px;height:15px;cursor:pointer">
-                <span>🅿 Μόνωση πυλωτής</span>
-              </label>
-            </div>
-          </div>
-          <!-- Δάπεδο -->
-          <div style="margin-bottom:8px">
-            <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Δάπεδο</div>
-            <div style="display:flex;gap:5px;flex-wrap:wrap">
-              <button type="button" data-hl-floor="ground"  onclick="setHL('floor','ground')"  class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">🏠 Επί εδάφους / Ισόγειο</button>
-              <button type="button" data-hl-floor="pilotis" onclick="setHL('floor','pilotis')" class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">🅿 Πυλωτή / Εκτεθειμένο</button>
-              <button type="button" data-hl-floor="closed"  onclick="setHL('floor','closed')"  class="hl-tog hl-tog-on" style="background:#eff6ff;border:1.5px solid #3b82f6;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600;color:#1d4ed8">🚪 Πάνω από κλειστό χώρο</button>
-            </div>
-          </div>
-          <!-- Οροφή -->
-          <div style="margin-bottom:8px">
-            <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Οροφή</div>
-            <div style="display:flex;gap:5px;flex-wrap:wrap">
-              <button type="button" data-hl-ceil="roof"   onclick="setHL('ceil','roof')"   class="hl-tog hl-tog-on" style="background:#eff6ff;border:1.5px solid #3b82f6;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600;color:#1d4ed8">🏔 Ταράτσα / Τελ. όροφος</button>
-              <button type="button" data-hl-ceil="attic"  onclick="setHL('ceil','attic')"  class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">🏚 Κεραμοσκεπή (μη θερμαινόμενη)</button>
-              <button type="button" data-hl-ceil="closed" onclick="setHL('ceil','closed')" class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">🚪 Κάτω από κλειστό χώρο</button>
-            </div>
-          </div>
-          <!-- Εκτεθειμένες πλευρές -->
-          <div style="margin-bottom:12px">
-            <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Εκτεθειμένες τοιχοποιίες (πρός εξωτερικό)</div>
-            <div style="display:flex;gap:5px;flex-wrap:wrap">
-              <button type="button" data-hl-sides="1" onclick="setHL('sides',1)" class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">1 πλευρά<br><span style="font-size:9px;color:#94a3b8">Ενδιάμεσο</span></button>
-              <button type="button" data-hl-sides="2" onclick="setHL('sides',2)" class="hl-tog hl-tog-on" style="background:#eff6ff;border:1.5px solid #3b82f6;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600;color:#1d4ed8">2 πλευρές<br><span style="font-size:9px">Γωνιακό</span></button>
-              <button type="button" data-hl-sides="3" onclick="setHL('sides',3)" class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">3 πλευρές<br><span style="font-size:9px;color:#94a3b8">Μεσαία μον.</span></button>
-              <button type="button" data-hl-sides="4" onclick="setHL('sides',4)" class="hl-tog" style="background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">4 πλευρές<br><span style="font-size:9px;color:#94a3b8">Μονοκατοικία</span></button>
-            </div>
-          </div>
-          <!-- Κουμπί -->
-          <button type="button" onclick="calcHL()" style="background:#1e3a5f;color:#fff;border:none;border-radius:7px;padding:8px 20px;font-size:12px;font-weight:700;cursor:pointer;width:100%">🔢 Υπολογισμός Απωλειών</button>
-          <!-- Αποτέλεσμα -->
-          <div id="hl-result" style="display:none;margin-top:10px">
-            <!-- Κύριο αποτέλεσμα -->
-            <div style="background:#fff;border-radius:8px;border:1.5px solid #bfdbfe;overflow:hidden;margin-bottom:8px">
-              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;text-align:center">
-                <div style="padding:12px;border-right:1px solid #e2e8f0">
-                  <div style="font-size:9px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:3px">Θερμικές Απώλειες</div>
-                  <div id="hl-kw" style="font-size:26px;font-weight:700;color:#1e3a5f"></div>
-                </div>
-                <div style="padding:12px;border-right:1px solid #e2e8f0">
-                  <div style="font-size:9px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:3px">+20% ασφάλεια</div>
-                  <div id="hl-safe" style="font-size:22px;font-weight:700;color:#c2410c"></div>
-                </div>
-                <div style="padding:12px;background:#f0fdf4">
-                  <div style="font-size:9px;color:#15803d;text-transform:uppercase;font-weight:700;margin-bottom:3px">Ελάχ. μέγεθος αντλίας</div>
-                  <div id="hl-pump" style="font-size:22px;font-weight:700;color:#16a34a"></div>
-                </div>
-              </div>
-              <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:7px 14px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px">
-                <span style="font-size:10px;color:#64748b">🧱 Τοιχοποιία: <strong id="hl-br-walls">—</strong></span>
-                <span style="font-size:10px;color:#64748b">🏠 Δάπεδο: <strong id="hl-br-floor">—</strong></span>
-                <span style="font-size:10px;color:#64748b">🏔 Οροφή: <strong id="hl-br-ceil">—</strong></span>
-                <span style="font-size:10px;color:#64748b">💨 Αερισμός: <strong id="hl-br-vent">—</strong></span>
-              </div>
-            </div>
-            <!-- Ανάλυση επίδρασης αναβαθμίσεων -->
-            <div id="hl-impact" style="background:#fff;border-radius:8px;border:1px solid #e2e8f0;overflow:hidden">
-              <div style="background:#475569;color:#fff;padding:7px 12px;font-size:11px;font-weight:700">📊 Επίδραση αναβαθμίσεων στην επιλογή αντλίας</div>
-              <table style="width:100%;border-collapse:collapse;font-size:11px">
-                <thead>
-                  <tr style="background:#f8fafc">
-                    <th style="padding:6px 10px;text-align:left;font-weight:700;color:#475569;border-bottom:1px solid #e2e8f0">Σενάριο</th>
-                    <th style="padding:6px 10px;text-align:center;font-weight:700;color:#475569;border-bottom:1px solid #e2e8f0">Απώλειες</th>
-                    <th style="padding:6px 10px;text-align:center;font-weight:700;color:#475569;border-bottom:1px solid #e2e8f0">Αντλία</th>
-                    <th style="padding:6px 10px;text-align:center;font-weight:700;color:#475569;border-bottom:1px solid #e2e8f0">Μείωση</th>
-                    <th style="padding:6px 10px;text-align:center;font-weight:700;color:#475569;border-bottom:1px solid #e2e8f0">Αλλαγή μεγέθους;</th>
-                  </tr>
-                </thead>
-                <tbody id="hl-impact-body"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>      <div class="cf-sec" style="padding-top:8px">📋 ΔΙΑΧΕΙΡΙΣΗ</div>
+      <div class="cf-sec" style="padding-top:8px">📋 ΔΙΑΧΕΙΡΙΣΗ</div>
       <div class="fld"><label>Ανέλαβε ο/η</label><input class="req-inp" id="pf-assigned" placeholder="Υπεύθυνος"></div>
       <div class="fld"><label>Εκτιμώμενο ποσό (€)</label><input class="req-inp" id="pf-amount" type="number" placeholder="0.00"></div>
       <div class="fld"><label>Ημ/νία ζήτησης</label><input class="req-inp" id="pf-reqdate" type="date"></div>
@@ -579,7 +439,11 @@ a{color:#2563eb}
       <div class="fld form-full"><label>Σημειώσεις</label>
         <textarea class="req-inp" id="pf-notes" rows="2" placeholder="Επιπλέον πληροφορίες..."></textarea></div>
     </div>
-    
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn btn-danger" id="pf-del-btn" onclick="call(deleteCurrentProperty)" style="display:none;margin-right:auto">🗑 Διαγραφή</button>
+      <button class="btn btn-ghost" onclick="g('modal-prop').classList.add('hidden')">Ακύρωση</button>
+      <button class="btn btn-primary" onclick="call(saveProperty)">💾 Αποθήκευση</button>
+    </div>
   </div>
 </div>
 
@@ -593,14 +457,6 @@ a{color:#2563eb}
     <span class="bc-cur" id="bc-equote">Νέα Προσφορά</span>
   </div>
   <div class="editor-wrap">
-    <div id="hl-quote-banner" style="display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:8px 14px;margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-      <span style="font-size:12px;font-weight:700;color:#15803d">⚡ Απώλειες ακινήτου:</span>
-      <span style="font-size:12px;color:#166534">Εκτιμώμενες: <strong id="hq-kw">—</strong></span>
-      <span style="color:#86efac">|</span>
-      <span style="font-size:12px;color:#166534">+20%: <strong id="hq-safe">—</strong></span>
-      <span style="color:#86efac">|</span>
-      <span style="font-size:12px;color:#166534">Ελάχ. αντλία: <strong id="hq-pump" style="color:#15803d;font-size:13px">—</strong></span>
-    </div>
     <div class="emeta">
       <div class="em-fld"><span class="em-lbl">Αρ. Προσφοράς</span><input class="em-inp" id="e-num" style="width:140px"></div>
       <div class="em-fld"><span class="em-lbl">Ημερομηνία</span><input class="em-inp" type="date" id="e-date" style="width:140px"></div>
@@ -729,7 +585,7 @@ CREATE POLICY "allow_all" ON quotes FOR ALL USING (true) WITH CHECK (true);<butt
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeSetup()">Ακύρωση</button>
       <button class="btn btn-primary" onclick="call(applyMode)">✔ Εφαρμογή</button>
-    </div><!-- end scroll -->
+    </div>
   </div>
 </div>
 
@@ -1127,9 +983,10 @@ async function renderCustomers(){
 let editCustId=null;
 function openNewCustomer(){editCustId=null;g('modal-cust-title').textContent='Νέος Πελάτης';clearCustForm();g('modal-cust').classList.remove('hidden');}
 function openEditCustomer(id) {
+  // id may be omitted — fallback to current customer
   var cid = id || APP.custId;
   if (!cid) return;
-  EDIT_CUST_ID = cid; // σήμα επεξεργασίας — δεν αγγίζουμε APP.custId
+  APP.custId = cid;
   clearCustForm();
   g('modal-cust-title').textContent = 'Επεξεργασία Πελάτη';
   var c = APP._custCache;
@@ -1677,9 +1534,6 @@ async function saveQuote(){
 }
 
 async function openEditor(qid){
-  // DIAGNOSTIC
-  console.log('[openEditor] qid='+qid+' APP.custId='+APP.custId+' APP.propId='+APP.propId);
-  if (!APP.custId) { alert('ΣΦΑΛΜΑ: APP.custId=null - δεν έχει επιλεγεί πελάτης'); return; }
   EDIT_QID=qid;
   var c=APP._custCache;
   var cn=c?c.lastname+(c.firstname?' '+c.firstname:''):'---';
@@ -1904,9 +1758,6 @@ async function saveQuote(){
 
 // Override openEditor to restore pump price overrides
 async function openEditor(qid){
-  // DIAGNOSTIC
-  console.log('[openEditor] qid='+qid+' APP.custId='+APP.custId+' APP.propId='+APP.propId);
-  if (!APP.custId) { alert('ΣΦΑΛΜΑ: APP.custId=null - δεν έχει επιλεγεί πελάτης'); return; }
   EDIT_QID=qid;
   var c=APP._custCache;
   var cn=c?c.lastname+(c.firstname?' '+c.firstname:''):'---';
@@ -1945,14 +1796,6 @@ async function openEditor(qid){
   if(eqgas)eqgas.classList.toggle('active',ES.equipType==='gas');
   var bt=g('brand-card-title');if(bt)bt.textContent=(ES.equipType==='hp')?'Marka antlias':'Marka lebita';
   toggleAgreed();
-  // Εμφάνιση banner απωλειών αν υπάρχουν
-  var hlb = document.getElementById('hl-quote-banner');
-  if (hlb && APP.propHL) {
-    document.getElementById('hq-kw').textContent   = APP.propHL.kw   + ' kW';
-    document.getElementById('hq-safe').textContent = APP.propHL.safe + ' kW';
-    document.getElementById('hq-pump').textContent = APP.propHL.pump + ' kW';
-    hlb.style.display = 'flex';
-  } else if (hlb) { hlb.style.display = 'none'; }
   showView('v-editor');rBrands();rTypeTabs();rPumps();rMats();rSum();
 }
 
@@ -2252,43 +2095,31 @@ function readCustForm() {
   };
 }
 
-// openNewCustomer — ΔΕΝ αγγίζει APP.custId (διατηρεί current customer context)
-var EDIT_CUST_ID = null; // null=νέος, string=επεξεργασία
+// Override openNewCustomer to use new form
 function openNewCustomer() {
-  EDIT_CUST_ID = null;
+  APP.custId = null;
   clearCustForm();
   g('modal-cust-title').textContent = 'Νέος Πελάτης';
   g('modal-cust').classList.remove('hidden');
 }
 
-// saveCustomer: χρησιμοποιεί EDIT_CUST_ID για νέο/επεξεργασία
+// Override saveCustomer to use readCustForm
 async function saveCustomer() {
   var data = readCustForm();
   if (!data.lastname.trim()) { alert('Απαιτείται το επώνυμο.'); return; }
-  if (EDIT_CUST_ID) {
-    // Επεξεργασία υπάρχοντος
-    data.id = EDIT_CUST_ID;
+  if (APP.custId) {
+    data.id = APP.custId;
     data.created_at = APP._custCache && APP._custCache.created_at
       ? APP._custCache.created_at : new Date().toISOString();
   } else {
-    // Νέος πελάτης
     data.id = 'c'+Date.now()+Math.random().toString(36).slice(2,6);
     data.created_at = new Date().toISOString();
   }
   await DB.saveCust(data);
-  APP._custCache = data;
+  APP._custCache = data;  // Ανανέωση cache αμέσως
   g('modal-cust').classList.add('hidden');
-  var wasEditing = !!EDIT_CUST_ID;
-  EDIT_CUST_ID = null;
-  if (wasEditing) {
-    // Επεξεργασία: μείνε στο τρέχον view
-    if (APP.propId) { await goProperty(); }
-    else if (APP.custId) { APP._custCache=data; await renderCustomerDetail(); }
-  } else {
-    // Νέος πελάτης: πήγαινε στον νέο
-    APP.custId = data.id; APP._custCache = data;
-    await goCustomer();
-  }
+  await renderCustomers();
+  if(APP.custId) { await renderCustomerDetail(); }
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -2367,9 +2198,6 @@ function showView(id) {
   var hC=g('hdr-new-cust'), hQ=g('hdr-new-quote');
   if(hC) hC.style.display = id==='v-customers'?'':'none';
   if(hQ) hQ.style.display = id==='v-property'?'':'none';
-  // Κουμπί Νέο Ακίνητο στη header όταν στο customer view
-  var hP=g('hdr-new-prop');
-  if(hP) hP.style.display = id==='v-customer'?'':'none';
 }
 
 // ── RENDER PROPERTIES (in customer detail) ────────────────────────
@@ -2688,132 +2516,6 @@ async function assignQuoteToProp(qid) {
   await renderQuotes();
 }
 
-
-// ── ΥΠΟΛΟΓΙΣΤΗΣ ΘΕΡΜΙΚΩΝ ΑΠΩΛΕΙΩΝ (EN 12831 απλοποιημένη) ─────
-var HL = { floor: 'closed', ceil: 'roof', sides: 2 };
-
-function setHL(key, val) {
-  HL[key] = val;
-  var attr = 'data-hl-' + key;
-  document.querySelectorAll('[' + attr + ']').forEach(function(b) {
-    var isOn = b.getAttribute(attr) === String(val);
-    b.style.background    = isOn ? '#eff6ff' : '#f1f5f9';
-    b.style.borderColor   = isOn ? '#3b82f6' : '#cbd5e1';
-    b.style.color         = isOn ? '#1d4ed8'  : '';
-    b.style.fontWeight    = isOn ? '700' : '400';
-  });
-}
-
-function calcHL() {
-  // Εμβαδόν: πρώτα από hl-area, αλλιώς από pf-area
-  var area = parseFloat((document.getElementById('hl-area')||{}).value)
-          || parseFloat((document.getElementById('pf-area')||{}).value) || 0;
-  if (!area) { alert('Συμπληρώστε εμβαδόν (m²).'); return; }
-
-  var h    = parseFloat((document.getElementById('hl-h')||{}).value) || 2.80;
-  var insK = (document.getElementById('hl-ins')||{}).value || '1990_1999';
-  var zone = (document.getElementById('hl-zone')||{}).value || 'B';
-
-  // U-τιμές ανά περίοδο (W/m²K)
-  var UV = {
-    pre1979:   {wall:1.40, win:3.5, fl:1.00, ce:1.00},
-    '1979_1989':{wall:1.00, win:3.0, fl:0.70, ce:0.70},
-    '1990_1999':{wall:0.70, win:2.5, fl:0.55, ce:0.55},
-    '2000_2009':{wall:0.55, win:2.0, fl:0.45, ce:0.45},
-    '2010plus': {wall:0.35, win:1.5, fl:0.30, ce:0.30},
-    nzeb:       {wall:0.18, win:0.9, fl:0.18, ce:0.18}
-  };
-  // ΔΤ σχεδιασμού ανά ζώνη (°C)
-  var DT = {A:25, B:30, C:35, D:42};
-
-  var U  = JSON.parse(JSON.stringify(UV[insK] || UV['1990_1999'])); // deep copy
-  // Εφαρμογή αναβαθμίσεων — override U-τιμών
-  if (document.getElementById('hl-ren-win')   && document.getElementById('hl-ren-win').checked)   U.win  = 1.80; // ΙΙ τζάμι
-  if (document.getElementById('hl-ren-wall')  && document.getElementById('hl-ren-wall').checked)  U.wall = 0.35; // Θερμοπρόσοψη
-  if (document.getElementById('hl-ren-ceil')  && document.getElementById('hl-ren-ceil').checked)  U.ce   = 0.25; // Μόνωση οροφής
-  if (document.getElementById('hl-ren-floor') && document.getElementById('hl-ren-floor').checked) U.fl   = 0.25; // Μόνωση πυλωτής
-  var dT = DT[zone] || 30;
-  var V  = area * h;
-
-  // Γεωμετρία — τετράγωνη κάτοψη
-  var side   = Math.sqrt(area);         // μήκος πλευράς (m)
-  var Awall1 = side * h;                // εμβαδόν 1 τοίχου
-
-  // Τοιχοποιία: 80% αδιαφανές + 20% παράθυρα
-  var Uwall_eff = 0.80 * U.wall + 0.20 * U.win;
-  var Qwalls = HL.sides * Awall1 * Uwall_eff * dT;
-
-  // Δάπεδο
-  var fFloor = {ground:0.45, pilotis:1.0, closed:0.35}; // κλειστός=35% (μη θερμαινόμενος γείτονας)
-  var Qfloor = area * U.fl * dT * (fFloor[HL.floor] != null ? fFloor[HL.floor] : 0.45);
-
-  // Οροφή
-  var fCeil  = {roof:1.0, attic:0.5, closed:0.35}; // κλειστός=35% (μη θερμαινόμενος γείτονας)
-  var Qceil  = area * U.ce * dT * (fCeil[HL.ceil] != null ? fCeil[HL.ceil] : 1.0);
-
-  // Αερισμός (0.5 ach)
-  var Qvent  = 0.5 * V * 0.34 * dT;
-
-  var Qtotal = Qwalls + Qfloor + Qceil + Qvent;
-  var qKw    = Qtotal / 1000;
-  var safe   = qKw * 1.20;
-  var sizes  = [4,6,8,10,12,14,16,18,20,22,24,26,30];
-  var pump   = sizes.find(function(s){ return s >= safe; }) || 30;
-
-  var f1 = function(w){ return (w/1000).toFixed(1) + ' kW'; };
-  document.getElementById('hl-kw').textContent      = qKw.toFixed(1) + ' kW';
-  document.getElementById('hl-safe').textContent    = safe.toFixed(1) + ' kW';
-  document.getElementById('hl-pump').textContent    = pump + ' kW';
-  document.getElementById('hl-br-walls').textContent = f1(Qwalls);
-  document.getElementById('hl-br-floor').textContent = f1(Qfloor);
-  document.getElementById('hl-br-ceil').textContent  = f1(Qceil);
-  document.getElementById('hl-br-vent').textContent  = f1(Qvent);
-  document.getElementById('hl-result').style.display = 'block';
-
-  APP.propHL = { kw: qKw.toFixed(1), safe: safe.toFixed(1), pump: pump };
-
-  // ── Ανάλυση επίδρασης αναβαθμίσεων ──────────────────────────────
-  function calcScenario(uOverride) {
-    var Usc = JSON.parse(JSON.stringify(UV[insK] || UV['1990_1999']));
-    if (uOverride) Object.assign(Usc, uOverride);
-    var Uw_eff = 0.80 * Usc.wall + 0.20 * Usc.win;
-    var Qw = HL.sides * Awall1 * Uw_eff * dT;
-    var Qf = area * Usc.fl * dT * (fFloor[HL.floor] != null ? fFloor[HL.floor] : 0.45);
-    var Qc = area * Usc.ce * dT * (fCeil[HL.ceil]  != null ? fCeil[HL.ceil]  : 1.0);
-    var Qv = 0.5 * V * 0.34 * dT;
-    var q  = (Qw+Qf+Qc+Qv)/1000;
-    var s  = q*1.20;
-    var p  = sizes.find(function(x){return x>=s;})||30;
-    return {kw:q,safe:s,pump:p};
-  }
-
-  var base   = calcScenario(null); // χωρίς καμία αναβάθμιση
-  var scenarios = [
-    {label:'Χωρίς αναβαθμίσεις (βάση)',   over:null},
-    {label:'🪟 + Κουφώματα ΙΙ τζάμι',     over:{win:1.80}},
-    {label:'🧱 + Θερμοπρόσοψη',            over:{wall:0.35}},
-    {label:'🏔 + Μόνωση οροφής',           over:{ce:0.25}},
-    {label:'🅿 + Μόνωση πυλωτής',          over:{fl:0.25}},
-    {label:'✅ Όλες οι αναβαθμίσεις',      over:{win:1.80,wall:0.35,ce:0.25,fl:0.25}},
-  ];
-  var tbody = document.getElementById('hl-impact-body');
-  if (tbody) {
-    tbody.innerHTML = scenarios.map(function(sc,i){
-      var r   = calcScenario(sc.over);
-      var dkw = base.kw - r.kw;
-      var pct = base.kw>0 ? (dkw/base.kw*100) : 0;
-      var pumpChange = (i===0) ? '—' : (r.pump < base.pump ? '<span style="color:#16a34a;font-weight:700">✅ Μικρότερη ('+r.pump+' kW)</span>' : '<span style="color:#94a3b8">Ίδιο μέγεθος</span>');
-      var rowBg = i===0 ? '#fef9c3' : (i===scenarios.length-1 ? '#f0fdf4' : '#fff');
-      return '<tr style="border-bottom:1px solid #f1f5f9;background:'+rowBg+'">'
-        +'<td style="padding:6px 10px;font-weight:'+(i===0||i===scenarios.length-1?'700':'400')+'">'+(sc.label)+'</td>'
-        +'<td style="padding:6px 10px;text-align:center;font-weight:600;color:#1e3a5f">'+r.kw.toFixed(1)+' kW</td>'
-        +'<td style="padding:6px 10px;text-align:center;font-weight:700;color:#16a34a">'+r.pump+' kW</td>'
-        +'<td style="padding:6px 10px;text-align:center;color:'+(dkw>0?'#16a34a':'#94a3b8')+'">'+(i===0?'—':('-'+dkw.toFixed(1)+' kW ('+pct.toFixed(0)+'%)'))+'</td>'
-        +'<td style="padding:6px 10px;text-align:center">'+pumpChange+'</td>'
-        +'</tr>';
-    }).join('');
-  }
-}
 </script>
 </body>
 </html>
