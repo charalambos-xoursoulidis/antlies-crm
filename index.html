@@ -347,7 +347,7 @@ a{color:#2563eb}
 
 <!-- MODAL: PROPERTY FORM -->
 <div id="modal-prop" class="modal-back hidden">
-  <div class="modal" style="max-width:680px;padding:20px">
+  <div class="modal" style="max-width:860px;padding:20px">
     <h3 id="prop-modal-title" style="font-size:15px;margin-bottom:14px">Νέο Ακίνητο</h3>
     <div class="form-grid">
       <div class="fld form-full"><label>Ονομασία Ακινήτου *</label>
@@ -416,6 +416,7 @@ a{color:#2563eb}
         </div>
       </div>
       <!-- ΥΠΟΛΟΓΙΣΤΗΣ ΘΕΡΜΙΚΩΝ ΑΠΩΛΕΙΩΝ -->
+    </div><!-- end form-grid -->
       <div class="cf-sec" style="padding-top:8px">⚡ Υπολογισμός Θερμικών Απωλειών</div>
       <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:12px;margin-bottom:8px">
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
@@ -2628,15 +2629,15 @@ var HL_FC = {roof:1.0,attic:0.5,closed:0.35};
 
 function hlSet(key, val) {
   HL_STATE[key] = val;
-  document.querySelectorAll('[data-hl]').forEach(function(b){
-    var parts = b.getAttribute('data-hl').split(':');
-    var bKey = parts[0], bVal = isNaN(parts[1]) ? parts[1] : parseInt(parts[1]);
-    var active = bKey===key && String(bVal)===String(val);
-    b.style.background   = active ? '#eff6ff' : '#f1f5f9';
-    b.style.borderColor  = active ? '#3b82f6' : '#cbd5e1';
-    b.style.borderWidth  = active ? '1.5px'   : '1px';
-    b.style.color        = active ? '#1d4ed8'  : '';
-    b.style.fontWeight   = active ? '600'      : '';
+  // Αλλάζει ΜΟΝΟ τα κουμπιά της ίδιας ομάδας (data-hl αρχίζει με key+:)
+  document.querySelectorAll('[data-hl^="' + key + ':']').forEach(function(b){
+    var bVal = b.getAttribute('data-hl').split(':')[1];
+    var active = (isNaN(bVal) ? bVal : parseInt(bVal)) === (isNaN(val) ? val : parseInt(val));
+    b.style.background  = active ? '#eff6ff' : '#f1f5f9';
+    b.style.borderColor = active ? '#3b82f6' : '#cbd5e1';
+    b.style.borderWidth = active ? '1.5px'   : '1px';
+    b.style.color       = active ? '#1d4ed8' : '#1e293b';
+    b.style.fontWeight  = active ? '600'     : '400';
   });
 }
 
