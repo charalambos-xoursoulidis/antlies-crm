@@ -555,6 +555,19 @@ a{color:#2563eb}
     <span class="bc-cur" id="bc-equote">Νέα Προσφορά</span>
   </div>
   <div class="editor-wrap">
+    <div id="hl-editor-banner" style="display:none;background:linear-gradient(135deg,#f0fdf4,#eff6ff);border:1.5px solid #86efac;border-radius:10px;padding:12px 18px;margin-bottom:12px;gap:12px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:11px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.05em">⚡ Θερμικές Απώλειες Ακινήτου</span>
+      <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-top:6px">
+        <div style="text-align:center"><div style="font-size:9px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:1px">Υπολ. Απώλειες</div><div id="hlb-kw" style="font-size:20px;font-weight:700;color:#1e3a5f"></div></div>
+        <div style="font-size:18px;color:#94a3b8">→</div>
+        <div style="text-align:center"><div style="font-size:9px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:1px">+20% ασφάλεια</div><div id="hlb-safe" style="font-size:20px;font-weight:700;color:#c2410c"></div></div>
+        <div style="font-size:18px;color:#94a3b8">→</div>
+        <div style="text-align:center;background:#dcfce7;border-radius:8px;padding:5px 18px;border:1.5px solid #86efac">
+          <div style="font-size:9px;color:#15803d;text-transform:uppercase;font-weight:700;margin-bottom:1px">✅ Ελάχ. Αντλία</div>
+          <div id="hlb-pump" style="font-size:24px;font-weight:800;color:#16a34a"></div>
+        </div>
+      </div>
+    </div>
     <div class="emeta">
       <div class="em-fld"><span class="em-lbl">Αρ. Προσφοράς</span><input class="em-inp" id="e-num" style="width:140px"></div>
       <div class="em-fld"><span class="em-lbl">Ημερομηνία</span><input class="em-inp" type="date" id="e-date" style="width:140px"></div>
@@ -1174,6 +1187,14 @@ async function openEditor(qid){
     g('bc-equote').textContent='Νέα Προσφορά';
     ES={brand:'bosch',typeIdx:0,pump:null};MSEC=JSON.parse(JSON.stringify(MAT_TPL));
   }
+  // HL banner: check localStorage + propCache
+  (function(){
+    var hlData=null, pc=APP._propCache;
+    if(pc&&pc.heat_kw) hlData={kw:String(pc.heat_kw),safe:String(pc.heat_safe),pump:pc.heat_pump};
+    if(!hlData&&APP.propId){try{var _s=localStorage.getItem('hl_'+APP.propId);if(_s)hlData=JSON.parse(_s);}catch(e){}}
+    var hlb=document.getElementById('hl-editor-banner');
+    if(hlb){if(hlData&&hlData.kw){g('hlb-kw').textContent=hlData.kw+' kW';g('hlb-safe').textContent=hlData.safe+' kW';g('hlb-pump').textContent=hlData.pump+' kW';hlb.style.display='flex';}else{hlb.style.display='none';}}
+  })();
   showView('v-editor');rBrands();rTypeTabs();rPumps();rMats();rSum();
 }
 
@@ -1662,6 +1683,14 @@ async function openEditor(qid){
   if(eqgas)eqgas.classList.toggle('active',ES.equipType==='gas');
   var bt=g('brand-card-title');if(bt)bt.textContent=(ES.equipType==='hp')?'Marka antlias':'Marka lebita';
   toggleAgreed();
+  // HL banner: check localStorage + propCache
+  (function(){
+    var hlData=null, pc=APP._propCache;
+    if(pc&&pc.heat_kw) hlData={kw:String(pc.heat_kw),safe:String(pc.heat_safe),pump:pc.heat_pump};
+    if(!hlData&&APP.propId){try{var _s=localStorage.getItem('hl_'+APP.propId);if(_s)hlData=JSON.parse(_s);}catch(e){}}
+    var hlb=document.getElementById('hl-editor-banner');
+    if(hlb){if(hlData&&hlData.kw){g('hlb-kw').textContent=hlData.kw+' kW';g('hlb-safe').textContent=hlData.safe+' kW';g('hlb-pump').textContent=hlData.pump+' kW';hlb.style.display='flex';}else{hlb.style.display='none';}}
+  })();
   showView('v-editor');rBrands();rTypeTabs();rPumps();rMats();rSum();
 }
 
@@ -1894,6 +1923,14 @@ async function openEditor(qid){
   if(eqgas)eqgas.classList.toggle('active',ES.equipType==='gas');
   var bt=g('brand-card-title');if(bt)bt.textContent=(ES.equipType==='hp')?'Marka antlias':'Marka lebita';
   toggleAgreed();
+  // HL banner: check localStorage + propCache
+  (function(){
+    var hlData=null, pc=APP._propCache;
+    if(pc&&pc.heat_kw) hlData={kw:String(pc.heat_kw),safe:String(pc.heat_safe),pump:pc.heat_pump};
+    if(!hlData&&APP.propId){try{var _s=localStorage.getItem('hl_'+APP.propId);if(_s)hlData=JSON.parse(_s);}catch(e){}}
+    var hlb=document.getElementById('hl-editor-banner');
+    if(hlb){if(hlData&&hlData.kw){g('hlb-kw').textContent=hlData.kw+' kW';g('hlb-safe').textContent=hlData.safe+' kW';g('hlb-pump').textContent=hlData.pump+' kW';hlb.style.display='flex';}else{hlb.style.display='none';}}
+  })();
   showView('v-editor');rBrands();rTypeTabs();rPumps();rMats();rSum();
 }
 
@@ -2562,6 +2599,9 @@ async function saveProperty() {
     distrib:PF_VALS.distrib||'',   gas:PF_VALS.gas||'',
     heatwork:PF_VALS.heatwork||'', renov:PF_VALS.renov||'',
     znx:PF_VALS.znx||'',
+    heat_kw:   (APP.propHL?parseFloat(APP.propHL.kw):null),
+    heat_safe: (APP.propHL?parseFloat(APP.propHL.safe):null),
+    heat_pump: (APP.propHL?APP.propHL.pump:null),
     created_at: EDIT_PID?undefined:new Date().toISOString(),
   };
   await savePropertyAPI(prop);
@@ -2675,7 +2715,11 @@ function calcHL() {
   document.getElementById('hl-r-ceil').textContent  = f1(Qc);
   document.getElementById('hl-r-vent').textContent  = f1(Qv);
   document.getElementById('hl-result').style.display = 'block';
-  if (typeof APP !== 'undefined') APP.propHL = {kw:qKw.toFixed(1),safe:safe.toFixed(1),pump:pump};
+  if (typeof APP !== 'undefined') {
+    APP.propHL = {kw:qKw.toFixed(1),safe:safe.toFixed(1),pump:pump};
+    if (typeof EDIT_PID!=='undefined'&&EDIT_PID) {
+      try{localStorage.setItem('hl_'+EDIT_PID,JSON.stringify(APP.propHL));}catch(e){}  }
+  }
 }
 </script>
 </body>
