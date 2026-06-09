@@ -2570,6 +2570,7 @@ function openEditProperty(pid) {
   var ps=g('pf-status'); if(ps&&prop.status) ps.value=prop.status;
   var pp=g('pf-priority'); if(pp&&prop.priority) pp.value=prop.priority;
   ['proptype','phase','distrib','gas','heatwork','renov','znx'].forEach(function(f){if(prop[f])setPFTog(f,prop[f]);});
+  if(prop.heat_kw){var hlr=g('hl-result');if(hlr){g('hl-kw').textContent=prop.heat_kw+' kW';g('hl-safe').textContent=prop.heat_safe+' kW';g('hl-pump').textContent=prop.heat_pump+' kW';hlr.style.display='block';APP.propHL={kw:String(prop.heat_kw),safe:String(prop.heat_safe),pump:String(prop.heat_pump)};}}else{var hlr2=g('hl-result');if(hlr2)hlr2.style.display='none';}
   g('modal-prop').classList.remove('hidden');
 }
 
