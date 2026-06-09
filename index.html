@@ -623,6 +623,18 @@ a{color:#2563eb}
                 <input id="pump-retail-inp" type="number" class="em-inp" style="width:100%;border-color:#93c5fd;font-size:15px;font-weight:600;color:#1d4ed8" step="0.01" min="0" oninput="updPumpRetail(this.value)" placeholder="0.00">
               </div>
             </div>
+            <div id="pump-custom-row" style="display:none;margin-top:12px;border-top:1px dashed #d1d5db;padding-top:12px">
+              <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px">
+                <div class="fld">
+                  <label style="font-weight:700">✏️ Ονομασία μοντέλου</label>
+                  <input id="pump-custom-name" type="text" class="em-inp" style="width:100%" placeholder="π.χ. Samsung Mono HQ 8kW" oninput="ES.customPumpName=this.value;rSum()">
+                </div>
+                <div class="fld">
+                  <label style="font-weight:700">⚡ Ισχύς</label>
+                  <input id="pump-custom-kw" type="text" class="em-inp" style="width:100%" placeholder="π.χ. 8 kW" oninput="ES.customPumpKw=this.value;rSum()">
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="card"><div class="card-hdr"><h2>📦 Υλικά εγκατάστασης</h2>
@@ -831,6 +843,11 @@ const BRANDS=[
       {id:'aux_h12t',kw:'12,2 kW',name:'ACHP-H12/5R3HA-ME',cost:3015.00,retail:6200.00},
       {id:'aux_h14t',kw:'14,5 kW',name:'ACHP-H14/5R3HA-ME',cost:3202.60,retail:6600.00},
       {id:'aux_h16t',kw:'16,1 kW',name:'ACHP-H16/5R3HA-ME',cost:3376.80,retail:6950.00},
+    ]}
+  ]},
+  {id:'other_pump',label:'Άλλο',icon:'⚙️',color:'#6b7280',sub:'Ελεύθερη επιλογή',types:[
+    {key:'other',label:'Άλλη αντλία',pumps:[
+      {id:'other_p1',kw:'',name:'Άλλη αντλία θερμότητας',cost:0,retail:0}
     ]}
   ]}
 ];
@@ -1260,6 +1277,10 @@ const GAS_BRANDS = [
   { id:'bongioanni', label:'Bongioanni', icon:'🟢', color:'#059669', sub:'Play S',
     models:[
       {id:'plays24', kw:'24 kW', name:'Play S24 + Καμινάδα + ΖΝΧ', cost:604.00, retail:785.20},
+    ]},
+  {id:'other_gas',label:'Άλλο',icon:'⚙️',color:'#6b7280',sub:'Ελεύθερη επιλογή',
+    models:[
+      {id:'other_g1',kw:'',name:'Άλλος λέβητας',cost:0,retail:0}
     ]}
 ];
 
@@ -1839,6 +1860,9 @@ function selPump(pid) {
     var ci = g('pump-cost-inp'); if (ci) ci.value = pump.cost;
     var ri = g('pump-retail-inp'); if (ri) ri.value = pump.retail;
     var pc = g('pump-price-card'); if (pc) pc.style.display = '';
+    var isOther=(pid==='other_p1'||pid==='other_g1');
+    var cr=g('pump-custom-row'); if(cr) cr.style.display=isOther?'block':'none';
+    if(isOther){var ni=g('pump-custom-name');if(ni)ni.value=ES.customPumpName||'';var ki=g('pump-custom-kw');if(ki)ki.value=ES.customPumpKw||'';} else {ES.customPumpName=null;ES.customPumpKw=null;}
   }
   rPumps(); rSum();
 }
@@ -1856,6 +1880,7 @@ async function saveQuote(){
     if(isGas){var gbr=GAS_BRANDS.find(function(b){return b.id===ES.brand;})||GAS_BRANDS[0];var pm=gbr?gbr.models.find(function(x){return x.id===ES.pump;}):null;if(pm){pName=pm.name;pKw=pm.kw;}}
     else{var htype=brand.types?brand.types[ES.typeIdx]:null;var pm2=htype?htype.pumps.find(function(x){return x.id===ES.pump;}):null;if(pm2){pName=pm2.name;pKw=pm2.kw;}}
   }
+  if(ES.customPumpName){pName=ES.customPumpName;pKw=ES.customPumpKw||'';}
   var pC=ES.pumpCostOvr||0,pR=ES.pumpRetailOvr||0;
   var tC=pC+MSEC.reduce(function(a,s){return a+sTotals(s.id).c;},0);
   var tR=pR+MSEC.reduce(function(a,s){return a+sTotals(s.id).r;},0);
@@ -2109,6 +2134,7 @@ function rSum(){
       if(pm2)pName=brand.icon+' '+brand.label+' '+pm2.name+' &middot; '+pm2.kw;
     }
   }
+  if(ES.customPumpName) pName='⚙️ '+ES.customPumpName+(ES.customPumpKw?' &middot; '+ES.customPumpKw:'');
   var activeSecs=MSEC.filter(function(s){return !s.hasToggle||s.on;});
   var tC=pC+MSEC.reduce(function(a,s){return a+sTotals(s.id).c;},0);
   var tR=pR+MSEC.reduce(function(a,s){return a+sTotals(s.id).r;},0);
