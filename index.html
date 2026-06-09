@@ -2599,9 +2599,6 @@ async function saveProperty() {
     distrib:PF_VALS.distrib||'',   gas:PF_VALS.gas||'',
     heatwork:PF_VALS.heatwork||'', renov:PF_VALS.renov||'',
     znx:PF_VALS.znx||'',
-    heat_kw:   (APP.propHL?parseFloat(APP.propHL.kw):null),
-    heat_safe: (APP.propHL?parseFloat(APP.propHL.safe):null),
-    heat_pump: (APP.propHL?APP.propHL.pump:null),
     created_at: EDIT_PID?undefined:new Date().toISOString(),
   };
   await savePropertyAPI(prop);
