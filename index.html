@@ -9,6 +9,7 @@
 <title>Αντλίες Θερμότητας — Διαχείριση Προσφορών </title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:14px;background:#f0f2f5;color:#1e293b;min-height:100vh}
@@ -585,6 +586,7 @@ a{color:#2563eb}
       </div>
       <div class="hdr-gap"></div>
       <button class="btn btn-green" onclick="call(saveQuote)">💾 Αποθήκευση</button>
+      <button class="btn" onclick="call(generateOfferDescription)" style="background:#7c3aed;color:#fff;border-color:#7c3aed">📝 Περιγραφή (Word)</button>
       <button class="btn btn-ghost" onclick="call(goCustomer)">✕ Ακύρωση</button>
     </div>
     <div class="elay">
@@ -1903,6 +1905,73 @@ async function saveQuote(){
   var bc=g('bc-equote');if(bc)bc.textContent=q.quote_number;
   alert('OK - Prosfora ' + q.quote_number + ' apotheikeyth.');
   await goCustomer();
+}
+
+// ── OFFER DESCRIPTION (WORD) ─────────────────────────────────────
+async function generateOfferDescription(){
+  if(typeof docx==='undefined'){alert('Δεν φορτώθηκε η βιβλιοθήκη Word. Ελέγξτε τη σύνδεση στο internet και δοκιμάστε ξανά.');return;}
+  if(ES.equipType==='gas'||ES.brand!=='atlantic'){alert('Η αυτόματη περιγραφή προσφοράς διατίθεται προς το παρόν μόνο για αντλίες θερμότητας Atlantic Alfea Extensa.');return;}
+  var brand=BRANDS.find(function(b){return b.id==='atlantic';});
+  var htype=(brand&&brand.types)?brand.types[ES.typeIdx]:null;
+  var pump=(htype&&ES.pump)?htype.pumps.find(function(x){return x.id===ES.pump;}):null;
+  var pumpName=ES.customPumpName||(pump?pump.name:'');
+  var pumpKw=ES.customPumpKw||(pump?pump.kw:'');
+  if(!ES.pump&&!ES.customPumpName){alert('Επιλέξτε πρώτα ένα μοντέλο αντλίας Atlantic Alfea Extensa.');return;}
+  if(pumpName.indexOf('Extensa')===-1){alert('Η αυτόματη περιγραφή διατίθεται προς το παρόν μόνο για μοντέλα της σειράς Alfea Extensa.');return;}
+  var pR=(ES.pumpRetailOvr!=null)?ES.pumpRetailOvr:(pump?pump.retail:0);
+  var tR=pR+MSEC.reduce(function(a,s){return a+sTotals(s.id).r;},0);
+  var vat=Math.round(tR*24)/100;
+  var totalWithVat=tR+vat;
+  var c=APP._custCache;
+  var custName=c?(c.lastname+(c.firstname?' '+c.firstname:'')):'';
+  var todayStr=new Date().toLocaleDateString('el-GR');
+
+  var D=docx,P=D.Paragraph,T=D.TextRun,H=D.HeadingLevel,A=D.AlignmentType;
+  var children=[];
+
+  children.push(new P({text:'Πρόταση Αναβάθμισης Συστήματος Θέρμανσης',heading:H.TITLE,alignment:A.CENTER,spacing:{after:120}}));
+  children.push(new P({children:[new T({text:'Atlantic '+pumpName+(pumpKw?' • '+pumpKw:''),bold:true,size:28,color:'0369A1'})],alignment:A.CENTER,spacing:{after:240}}));
+
+  if(custName){children.push(new P({children:[new T({text:'Πρόταση για: ',bold:true}),new T({text:custName})],spacing:{after:40}}));}
+  children.push(new P({children:[new T({text:'Ημερομηνία: ',bold:true}),new T({text:todayStr})],spacing:{after:240}}));
+
+  children.push(new P({text:'Σας προτείνουμε την αντλία θερμότητας Atlantic '+pumpName+(pumpKw?' ισχύος '+pumpKw:'')+', μία από τις πιο αξιόπιστες λύσεις θέρμανσης της κατηγορίας της. Η σειρά Alfea Extensa συνδυάζει υψηλή ενεργειακή απόδοση, οικολογικό ψυκτικό αέριο R32 και αθόρυβη λειτουργία, χαρίζοντας σημαντική μείωση στα έξοδα θέρμανσης και αναβάθμιση της ενεργειακής κλάσης του ακινήτου σας.',spacing:{after:200}}));
+
+  children.push(new P({text:'Τα οφέλη της αντλίας θερμότητας Atlantic Alfea Extensa',heading:H.HEADING_2,spacing:{before:120,after:120}}));
+
+  var benefits=[
+    ['Έως και 70% εξοικονόμηση στη θέρμανση','Αξιοποιεί την ανανεώσιμη θερμική ενέργεια του αέρα, μειώνοντας δραστικά το κόστος σε σχέση με πετρέλαιο, φυσικό αέριο ή ηλεκτρικές αντιστάσεις.'],
+    ['Οικολογικό ψυκτικό αέριο R32','Νέας γενιάς ψυκτικό μέσο, χαμηλότερου περιβαλλοντικού αποτυπώματος (GWP), σύμφωνα με τις πιο σύγχρονες ευρωπαϊκές προδιαγραφές.'],
+    ['Σταθερή απόδοση ακόμη και στο κρύο','Λειτουργεί αξιόπιστα έως και -20°C εξωτερικής θερμοκρασίας, ιδανική επιλογή για τον ελληνικό χειμώνα.'],
+    ['Αθόρυβη λειτουργία','Τεχνολογία inverter τελευταίας γενιάς και βελτιστοποιημένος ανεμιστήρας για ελάχιστο θόρυβο, ακόμη και σε αστικό περιβάλλον.'],
+    ['Έλεγχος από το κινητό, οπουδήποτε','Μέσω της εφαρμογής Naviclim ρυθμίζετε θέρμανση και ζεστό νερό από το κινητό σας, με λίγα μόνο κλικ.'],
+    ['Θέρμανση και ζεστό νερό από ένα σύστημα','Καλύπτει ταυτόχρονα τις ανάγκες θέρμανσης χώρου και ζεστού νερού χρήσης, απλοποιώντας την εγκατάσταση.'],
+    ['Συμβατή με κάθε σύστημα διανομής','Λειτουργεί άψογα με ενδοδαπέδια θέρμανση, θερμαντικά σώματα ή fan coils — χωρίς ανάγκη αλλαγής της υφιστάμενης εγκατάστασης.'],
+    ['Compact και σύγχρονος σχεδιασμός','Χαμηλό ύψος, μικρό αποτύπωμα και αθόρυβη εξωτερική μονάδα που εντάσσεται εύκολα σε κάθε χώρο.'],
+    ['Γαλλική τεχνογνωσία, εγγύηση και service','Δεκαετίες εμπειρίας στη θέρμανση, με διαθεσιμότητα ανταλλακτικών και τεχνική υποστήριξη.'],
+    ['Επιλέξιμη για επιδοτούμενα προγράμματα','Πληροί τις προϋποθέσεις προγραμμάτων ενεργειακής αναβάθμισης (π.χ. Εξοικονομώ), μειώνοντας περαιτέρω το πραγματικό κόστος.']
+  ];
+  benefits.forEach(function(b){
+    children.push(new P({children:[new T({text:b[0]+': ',bold:true}),new T({text:b[1]})],bullet:{level:0},spacing:{after:80}}));
+  });
+
+  children.push(new P({text:'Η επένδυση σε μία αντλία θερμότητας Atlantic Alfea Extensa αποσβένεται μέσα σε λίγα χρόνια χάρη στην εξοικονόμηση στους λογαριασμούς θέρμανσης, ενώ ταυτόχρονα αναβαθμίζει την ενεργειακή κλάση και την αξία του ακινήτου σας — μία επένδυση με διπλό όφελος, οικονομικό και περιβαλλοντικό.',spacing:{before:160,after:280}}));
+
+  children.push(new P({text:'Οικονομική Πρόταση',heading:H.HEADING_2,spacing:{before:80,after:120}}));
+  children.push(new P({children:[new T({text:'Μοντέλο: ',bold:true}),new T({text:'Atlantic '+pumpName})],spacing:{after:40}}));
+  if(pumpKw){children.push(new P({children:[new T({text:'Ισχύς: ',bold:true}),new T({text:pumpKw})],spacing:{after:160}}));}
+  children.push(new P({children:[new T({text:'Σύνολο (προ ΦΠΑ): ',bold:true}),new T({text:fmt(tR)})],spacing:{after:40}}));
+  children.push(new P({children:[new T({text:'ΦΠΑ 24%: ',bold:true}),new T({text:fmt(vat)})],spacing:{after:80}}));
+  children.push(new P({children:[new T({text:'ΤΕΛΙΚΗ ΤΙΜΗ ΠΡΟΣΦΟΡΑΣ: ',bold:true,size:28}),new T({text:fmt(totalWithVat),bold:true,size:28,color:'16A34A'})],spacing:{before:80,after:200}}));
+
+  var doc=new D.Document({sections:[{properties:{},children:children}]});
+  var blob=await D.Packer.toBlob(doc);
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='Perigrafi_'+(custName?custName.replace(/\s+/g,'_'):'Pelatis')+'_'+pumpName.replace(/\s+/g,'_')+'.docx';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},2000);
 }
 
 // Override openEditor to restore pump price overrides
