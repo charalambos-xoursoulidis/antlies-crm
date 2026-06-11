@@ -1941,6 +1941,7 @@ async function generateOfferDescription(){
     custAddress:pr.address||[c.address,c.city].filter(Boolean).join(', '),
     propName:pr.name||'',
     propHeating:pr.heating||'',
+    hl:(function(){var h=null;if(APP.propId){try{h=JSON.parse(localStorage.getItem('hl_'+APP.propId)||'null');}catch(e){}}return h;})(),
     todayStr:new Date().toLocaleDateString('el-GR')
   });
 }
@@ -2777,7 +2778,13 @@ function calcHL() {
   document.getElementById('hl-r-vent').textContent  = f1(Qv);
   document.getElementById('hl-result').style.display = 'block';
   if (typeof APP !== 'undefined') {
-    APP.propHL = {kw:qKw.toFixed(1),safe:safe.toFixed(1),pump:pump};
+    APP.propHL = {kw:qKw.toFixed(1),safe:safe.toFixed(1),pump:pump,
+      area:area,zone:zone,ins:insK,
+      upWin:!!(document.getElementById('hl-win')||{}).checked,
+      upWall:!!(document.getElementById('hl-wall')||{}).checked,
+      upCeil:!!(document.getElementById('hl-ceil')||{}).checked,
+      upFloor:!!(document.getElementById('hl-floor')||{}).checked,
+      floorType:HL_STATE.floor,ceilType:HL_STATE.ceil,sides:HL_STATE.sides};
     if (typeof EDIT_PID!=='undefined'&&EDIT_PID) {
       try{localStorage.setItem('hl_'+EDIT_PID,JSON.stringify(APP.propHL));}catch(e){}  }
   }
