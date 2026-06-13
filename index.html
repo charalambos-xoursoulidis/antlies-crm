@@ -740,117 +740,117 @@ CREATE POLICY "allow_all" ON quotes FOR ALL USING (true) WITH CHECK (true);<butt
 const BRANDS=[
   {id:'bosch',label:'Bosch',icon:'🔴',color:'#c0001a',sub:'CS200 AWF',types:[
     {key:'mono',label:'⚡ Μονοφ. R-S',pumps:[
-      {id:'bs4',kw:'4,4kW',name:'AWF 4 R‑S',cost:1431.44,retail:2095.63},{id:'bs6',kw:'6kW',name:'AWF 6 R‑S',cost:2478.34,retail:3628.29},
-      {id:'bs8',kw:'8kW',name:'AWF 8 R‑S',cost:2394,retail:3504.82},{id:'bs10',kw:'10kW',name:'AWF 10 R‑S',cost:2480,retail:3630.72},
-      {id:'bs12',kw:'12kW',name:'AWF 12 R‑S',cost:3388,retail:4960.03},{id:'bs14',kw:'14,5kW',name:'AWF 14 R‑S',cost:3548,retail:5194.27},
-      {id:'bs16',kw:'15,9kW',name:'AWF 16 R‑S',cost:3667,retail:5368.49},
+      {id:'bs4',kw:'4,4kW',name:'AWF 4 R‑S',cost:1431.44,retail:2089.90},{id:'bs6',kw:'6kW',name:'AWF 6 R‑S',cost:2478.34,retail:3618.38},
+      {id:'bs8',kw:'8kW',name:'AWF 8 R‑S',cost:2394,retail:3495.24},{id:'bs10',kw:'10kW',name:'AWF 10 R‑S',cost:2480,retail:3620.80},
+      {id:'bs12',kw:'12kW',name:'AWF 12 R‑S',cost:3388,retail:4946.48},{id:'bs14',kw:'14,5kW',name:'AWF 14 R‑S',cost:3548,retail:5180.08},
+      {id:'bs16',kw:'15,9kW',name:'AWF 16 R‑S',cost:3667,retail:5353.82},
     ]},
     {key:'tri',label:'⚡⚡ Τριφ. R-T',pumps:[
-      {id:'bt12',kw:'12kW',name:'AWF 12 R‑T',cost:3446,retail:5044.94},{id:'bt14',kw:'14,5kW',name:'AWF 14 R‑T',cost:3646,retail:5337.74},
-      {id:'bt16',kw:'15,9kW',name:'AWF 16 R‑T',cost:3813,retail:5582.23},{id:'bt18',kw:'18kW',name:'AWF 18 R‑T',cost:4889,retail:7157.5},
-      {id:'bt22',kw:'22kW',name:'AWF 22 R‑T',cost:5392,retail:7893.89},{id:'bt26',kw:'26kW',name:'AWF 26 R‑T',cost:5463,retail:7997.83},
-      {id:'bt30',kw:'30kW',name:'AWF 30 R‑T',cost:5675,retail:8308.2},
+      {id:'bt12',kw:'12kW',name:'AWF 12 R‑T',cost:3446,retail:5031.16},{id:'bt14',kw:'14,5kW',name:'AWF 14 R‑T',cost:3646,retail:5323.16},
+      {id:'bt16',kw:'15,9kW',name:'AWF 16 R‑T',cost:3813,retail:5566.98},{id:'bt18',kw:'18kW',name:'AWF 18 R‑T',cost:4889,retail:7137.94},
+      {id:'bt22',kw:'22kW',name:'AWF 22 R‑T',cost:5392,retail:7872.32},{id:'bt26',kw:'26kW',name:'AWF 26 R‑T',cost:5463,retail:7975.98},
+      {id:'bt30',kw:'30kW',name:'AWF 30 R‑T',cost:5675,retail:8285.50},
     ]}
   ]},
   {id:'hitachi',label:'Hitachi',icon:'⚫',color:'#1e293b',sub:'HZKF',types:[
-    {key:'mono',label:'⚡ KME-Q',pumps:[{id:'hm8',kw:'8kW',name:'HZKF08KME-Q',cost:2300,retail:3335},{id:'hm12',kw:'12kW',name:'HZKF12KME-Q',cost:2960,retail:4292},{id:'hm16',kw:'16kW',name:'HZKF16KME-Q',cost:3230,retail:4683.5}]},
-    {key:'tri',label:'⚡⚡ KMO-Q',pumps:[{id:'ht12',kw:'12kW',name:'HZKF12KMO-Q',cost:3050,retail:4422.5},{id:'ht16',kw:'16kW',name:'HZKF16KMO-Q',cost:3310,retail:4799.5}]}
+    {key:'mono',label:'⚡ KME-Q',pumps:[{id:'hm8',kw:'8kW',name:'HZKF08KME-Q',cost:2300,retail:3358.00},{id:'hm12',kw:'12kW',name:'HZKF12KME-Q',cost:2960,retail:4321.60},{id:'hm16',kw:'16kW',name:'HZKF16KME-Q',cost:3230,retail:4715.80}]},
+    {key:'tri',label:'⚡⚡ KMO-Q',pumps:[{id:'ht12',kw:'12kW',name:'HZKF12KMO-Q',cost:3050,retail:4453.00},{id:'ht16',kw:'16kW',name:'HZKF16KMO-Q',cost:3310,retail:4832.60}]}
   ]},
   {id:'inventor',label:'Inventor',icon:'🔵',color:'#1d4ed8',sub:'X FORCE',types:[
-    {key:'mono',label:'⚡ S3',pumps:[{id:'im8',kw:'8kW',name:'XFMH08S3',cost:1677,retail:2431.65},{id:'im10',kw:'10kW',name:'XFMH10S3',cost:1833,retail:2657.85},{id:'im16',kw:'16kW',name:'XFMH16S3',cost:2652,retail:3845.4}]},
-    {key:'tri',label:'⚡⚡ T9',pumps:[{id:'it12',kw:'12kW',name:'XFMH12T9',cost:2028,retail:2940.6},{id:'it14',kw:'14kW',name:'XFMH14T9',cost:2262,retail:3279.9},{id:'it16',kw:'16kW',name:'XFMH16T9',cost:2496,retail:3619.2}]}
+    {key:'mono',label:'⚡ S3',pumps:[{id:'im8',kw:'8kW',name:'XFMH08S3',cost:1677,retail:2448.42},{id:'im10',kw:'10kW',name:'XFMH10S3',cost:1833,retail:2676.18},{id:'im16',kw:'16kW',name:'XFMH16S3',cost:2652,retail:3871.92}]},
+    {key:'tri',label:'⚡⚡ T9',pumps:[{id:'it12',kw:'12kW',name:'XFMH12T9',cost:2028,retail:2960.88},{id:'it14',kw:'14kW',name:'XFMH14T9',cost:2262,retail:3302.52},{id:'it16',kw:'16kW',name:'XFMH16T9',cost:2496,retail:3644.16}]}
   ]},
   {id:'toyotomi',label:'Toyotomi',icon:'🟠',color:'#c2410c',sub:'HYDRIA/ATRIA',types:[
     {key:'h1',label:'HYDRIA 1PH',pumps:[
-      {id:'th1_6',kw:'6kW',name:'THMUSG406/1',cost:1944.76,retail:2819.9},{id:'th1_8',kw:'8kW',name:'THMUSG408/1',cost:2008.7,retail:2912.62},
-      {id:'th1_10',kw:'10kW',name:'THMUSG410/1',cost:2372.18,retail:3439.66},{id:'th1_12',kw:'12kW',name:'THMUSG412/1',cost:2679.92,retail:3885.88},
-      {id:'th1_14',kw:'14kW',name:'THMUSG414/1',cost:2731.21,retail:3960.25},{id:'th1_16',kw:'16kW',name:'THMUSG416/1',cost:3013.3,retail:4369.29},
+      {id:'th1_6',kw:'6kW',name:'THMUSG406/1',cost:1944.76,retail:2839.35},{id:'th1_8',kw:'8kW',name:'THMUSG408/1',cost:2008.7,retail:2932.70},
+      {id:'th1_10',kw:'10kW',name:'THMUSG410/1',cost:2372.18,retail:3463.38},{id:'th1_12',kw:'12kW',name:'THMUSG412/1',cost:2679.92,retail:3912.68},
+      {id:'th1_14',kw:'14kW',name:'THMUSG414/1',cost:2731.21,retail:3987.57},{id:'th1_16',kw:'16kW',name:'THMUSG416/1',cost:3013.3,retail:4399.42},
     ]},
     {key:'h3',label:'HYDRIA 3PH',pumps:[
-      {id:'th3_10',kw:'10kW',name:'THMUSG410/3',cost:2756.67,retail:3997.17},{id:'th3_12',kw:'12kW',name:'THMUSG412/3',cost:2799.6,retail:4059.42},
-      {id:'th3_14',kw:'14kW',name:'THMUSG414/3',cost:2885.08,retail:4183.37},{id:'th3_16',kw:'16kW',name:'THMUSG416/3',cost:3184.27,retail:4617.19},
+      {id:'th3_10',kw:'10kW',name:'THMUSG410/3',cost:2756.67,retail:4024.74},{id:'th3_12',kw:'12kW',name:'THMUSG412/3',cost:2799.6,retail:4087.42},
+      {id:'th3_14',kw:'14kW',name:'THMUSG414/3',cost:2885.08,retail:4212.22},{id:'th3_16',kw:'16kW',name:'THMUSG416/3',cost:3184.27,retail:4649.03},
     ]},
     {key:'at',label:'ATRIA 1PH',pumps:[
-      {id:'ta10',kw:'10kW',name:'ATRIA TAMUSG10/1',cost:1954.31,retail:2833.75},{id:'ta12',kw:'12kW',name:'ATRIA TAMUSG12/1',cost:2344.81,retail:3399.97},
-      {id:'ta14',kw:'14kW',name:'ATRIA TAMUSG14/1',cost:2458.86,retail:3565.35},{id:'ta16',kw:'16kW',name:'ATRIA TAMUSG16/1',cost:2573.35,retail:3731.36},
+      {id:'ta10',kw:'10kW',name:'ATRIA TAMUSG10/1',cost:1954.31,retail:2853.29},{id:'ta12',kw:'12kW',name:'ATRIA TAMUSG12/1',cost:2344.81,retail:3423.42},
+      {id:'ta14',kw:'14kW',name:'ATRIA TAMUSG14/1',cost:2458.86,retail:3589.94},{id:'ta16',kw:'16kW',name:'ATRIA TAMUSG16/1',cost:2573.35,retail:3757.09},
     ]}
   ]},
   {id:'atlantic',label:'Atlantic',icon:'🔷',color:'#0369a1',sub:'Alfea · Extensa · Excellia',types:[
     {key:'extm',  label:'Extensa M Compact R32 (1ph)', pumps:[
-      {id:'aem5', kw:'4 kW',  name:'Alfea Extensa M 5 Compact R32',  cost:2839.10,retail:4895.00},
-      {id:'aem6', kw:'5 kW',  name:'Alfea Extensa M 6 Compact R32',  cost:3059.50,retail:5275.00},
-      {id:'aem8', kw:'8 kW',  name:'Alfea Extensa M 8 Compact R32',  cost:3308.90,retail:5705.00},
-      {id:'aem11',kw:'10 kW', name:'Alfea Extensa M 11 Compact R32', cost:3511.90,retail:6055.00},
+      {id:'aem5', kw:'4 kW',  name:'Alfea Extensa M 5 Compact R32',  cost:2839.10,retail:4145.09},
+      {id:'aem6', kw:'5 kW',  name:'Alfea Extensa M 6 Compact R32',  cost:3059.50,retail:4466.87},
+      {id:'aem8', kw:'8 kW',  name:'Alfea Extensa M 8 Compact R32',  cost:3308.90,retail:4830.99},
+      {id:'aem11',kw:'10 kW', name:'Alfea Extensa M 11 Compact R32', cost:3511.90,retail:5127.37},
     ]},
     {key:'r290m', label:'M Compact R290 Mono (1ph)', pumps:[
-      {id:'ar290m6', kw:'~8 kW',  name:'Alfea M 6 Compact R290 mono',  cost:3854.10,retail:6645.00},
-      {id:'ar290m8', kw:'~11 kW', name:'Alfea M 8 Compact R290 mono',  cost:4178.90,retail:7205.00},
-      {id:'ar290m10',kw:'~14 kW', name:'Alfea M 10 Compact R290 mono', cost:4587.80,retail:7910.00},
-      {id:'ar290m12',kw:'~16 kW', name:'Alfea M 12 Compact R290 mono', cost:4770.50,retail:8225.00},
+      {id:'ar290m6', kw:'~8 kW',  name:'Alfea M 6 Compact R290 mono',  cost:3854.10,retail:5626.99},
+      {id:'ar290m8', kw:'~11 kW', name:'Alfea M 8 Compact R290 mono',  cost:4178.90,retail:6101.19},
+      {id:'ar290m10',kw:'~14 kW', name:'Alfea M 10 Compact R290 mono', cost:4587.80,retail:6698.19},
+      {id:'ar290m12',kw:'~16 kW', name:'Alfea M 12 Compact R290 mono', cost:4770.50,retail:6964.93},
     ]},
     {key:'r290t', label:'M Compact R290 TRI (3ph)', pumps:[
-      {id:'ar290t6', kw:'~8 kW',  name:'Alfea M 6 Compact R290 TRI',  cost:4007.80,retail:6910.00},
-      {id:'ar290t8', kw:'~11 kW', name:'Alfea M 8 Compact R290 TRI',  cost:4347.10,retail:7495.00},
-      {id:'ar290t10',kw:'~14 kW', name:'Alfea M 10 Compact R290 TRI', cost:4886.50,retail:8425.00},
-      {id:'ar290t12',kw:'~16 kW', name:'Alfea M 12 Compact R290 TRI', cost:4950.30,retail:8535.00},
+      {id:'ar290t6', kw:'~8 kW',  name:'Alfea M 6 Compact R290 TRI',  cost:4007.80,retail:5851.39},
+      {id:'ar290t8', kw:'~11 kW', name:'Alfea M 8 Compact R290 TRI',  cost:4347.10,retail:6346.77},
+      {id:'ar290t10',kw:'~14 kW', name:'Alfea M 10 Compact R290 TRI', cost:4886.50,retail:7134.29},
+      {id:'ar290t12',kw:'~16 kW', name:'Alfea M 12 Compact R290 TRI', cost:4950.30,retail:7227.44},
     ]},
     {key:'extensa',label:'Extensa S R32 (1ph)', pumps:[
-      {id:'ae5', kw:'4,5 kW',name:'Alfea Extensa S 5 R32',  cost:2804.30,retail:4835.00},
-      {id:'ae6', kw:'5,5 kW',name:'Alfea Extensa S 6 R32',  cost:3016.00,retail:5200.00},
-      {id:'ae8', kw:'7,5 kW',name:'Alfea Extensa S 8 R32',  cost:3242.20,retail:5590.00},
-      {id:'ae10',kw:'9,5 kW',name:'Alfea Extensa S 10 R32', cost:3683.00,retail:6350.00},
+      {id:'ae5', kw:'4,5 kW',name:'Alfea Extensa S 5 R32',  cost:2804.30,retail:4094.28},
+      {id:'ae6', kw:'5,5 kW',name:'Alfea Extensa S 6 R32',  cost:3016.00,retail:4403.36},
+      {id:'ae8', kw:'7,5 kW',name:'Alfea Extensa S 8 R32',  cost:3242.20,retail:4733.61},
+      {id:'ae10',kw:'9,5 kW',name:'Alfea Extensa S 10 R32', cost:3683.00,retail:5377.18},
     ]},
     {key:'mono',  label:'Excellia S R32 Mono (1ph)', pumps:[
-      {id:'am9', kw:'~10 kW',name:'Alfea Excellia S9 R32',       cost:3790.30,retail:6535.00},
-      {id:'am12',kw:'~12 kW',name:'Alfea Excellia S12 R32',      cost:4051.30,retail:6985.00},
-      {id:'am14',kw:'~14 kW',name:'Alfea Excellia S14 R32',      cost:4393.50,retail:7575.00},
+      {id:'am9', kw:'~10 kW',name:'Alfea Excellia S9 R32',       cost:3790.30,retail:5533.84},
+      {id:'am12',kw:'~12 kW',name:'Alfea Excellia S12 R32',      cost:4051.30,retail:5914.90},
+      {id:'am14',kw:'~14 kW',name:'Alfea Excellia S14 R32',      cost:4393.50,retail:6414.51},
     ]},
     {key:'tri',   label:'Excellia S R32 TRI (3ph)', pumps:[
-      {id:'at12',kw:'~12 kW',name:'Alfea Excellia S12 R32 TRI',  cost:4141.20,retail:7140.00},
-      {id:'at14',kw:'~14 kW',name:'Alfea Excellia S14 R32 TRI',  cost:4474.70,retail:7715.00},
+      {id:'at12',kw:'~12 kW',name:'Alfea Excellia S12 R32 TRI',  cost:4141.20,retail:6046.15},
+      {id:'at14',kw:'~14 kW',name:'Alfea Excellia S14 R32 TRI',  cost:4474.70,retail:6533.06},
     ]},
     {key:'hpai',  label:'Excellia HP AI TRI — Υψηλής Ισχύος (3ph)', pumps:[
-      {id:'ahp15',kw:'~16 kW',name:'Alfea Excellia HP AI 15 TRI', cost:5698.50,retail:9825.00},
-      {id:'ahp17',kw:'~18 kW',name:'Alfea Excellia HP AI 17 TRI', cost:6235.00,retail:10750.00},
+      {id:'ahp15',kw:'~16 kW',name:'Alfea Excellia HP AI 15 TRI', cost:5698.50,retail:8319.81},
+      {id:'ahp17',kw:'~18 kW',name:'Alfea Excellia HP AI 17 TRI', cost:6235.00,retail:9103.10},
     ]}
   ]}
   ,{id:'mdv',label:'MDV',icon:'🔵',color:'#1565c0',sub:'Arctic Series',types:[
     {key:'mono',label:'⚡ Μονοφ. 1-phase',pumps:[
-      {id:'mdv_v9_c2',  kw:'~10 kW',name:'MHC-V9W/D2N8-C2',    cost:2403.59,retail:3032.26},
-      {id:'mdv_v10_b2', kw:'~10 kW',name:'MHC-V10W/D2N8-B2',   cost:2537.04,retail:3185.48},
-      {id:'mdv_v12_b2', kw:'12 kW', name:'MHC-V12W/D2N8-B2/C2',cost:3494.47,retail:4072.58},
-      {id:'mdv_v14_b2', kw:'14 kW', name:'MHC-V14W/D2N8-B2/C2',cost:3658.62,retail:4330.65},
-      {id:'mdv_v16_b2', kw:'16 kW', name:'MHC-V16W/D2N8-B2/C2',cost:3781.84,retail:4411.29},
+      {id:'mdv_v9_c2',  kw:'~10 kW',name:'MHC-V9W/D2N8-C2',    cost:2403.59,retail:3509.24},
+      {id:'mdv_v10_b2', kw:'~10 kW',name:'MHC-V10W/D2N8-B2',   cost:2537.04,retail:3704.08},
+      {id:'mdv_v12_b2', kw:'12 kW', name:'MHC-V12W/D2N8-B2/C2',cost:3494.47,retail:5101.93},
+      {id:'mdv_v14_b2', kw:'14 kW', name:'MHC-V14W/D2N8-B2/C2',cost:3658.62,retail:5341.59},
+      {id:'mdv_v16_b2', kw:'16 kW', name:'MHC-V16W/D2N8-B2/C2',cost:3781.84,retail:5521.49},
     ]},
     {key:'tri',label:'⚡⚡ Τριφ. 3-phase',pumps:[
-      {id:'mdv_v12_rn8', kw:'12 kW',name:'MHC-V12W/D2RN8-B2/C2',cost:3520.05,retail:4161.29},
-      {id:'mdv_v14_rn8', kw:'14 kW',name:'MHC-V14W/D2RN8-B2/C2',cost:3725.58,retail:4379.03},
-      {id:'mdv_v16_rn8', kw:'16 kW',name:'MHC-V16W/D2RN8-B2/C2',cost:3894.84,retail:4548.39},
-      {id:'mdv_v18_rn8', kw:'18 kW',name:'MHC-V18W/D2RN8',        cost:4105.95,retail:5354.84},
-      {id:'mdv_v22_rn8', kw:'22 kW',name:'MHC-V22W/D2RN8',        cost:4240.80,retail:5588.71},
-      {id:'mdv_v26_rn8', kw:'26 kW',name:'MHC-V26W/D2RN8',        cost:4380.30,retail:5693.55},
-      {id:'mdv_v30_rn8', kw:'30 kW',name:'MHC-V30W/D2RN8',        cost:4538.40,retail:5887.10},
+      {id:'mdv_v12_rn8', kw:'12 kW',name:'MHC-V12W/D2RN8-B2/C2',cost:3520.05,retail:5139.27},
+      {id:'mdv_v14_rn8', kw:'14 kW',name:'MHC-V14W/D2RN8-B2/C2',cost:3725.58,retail:5439.35},
+      {id:'mdv_v16_rn8', kw:'16 kW',name:'MHC-V16W/D2RN8-B2/C2',cost:3894.84,retail:5686.47},
+      {id:'mdv_v18_rn8', kw:'18 kW',name:'MHC-V18W/D2RN8',        cost:4105.95,retail:5994.69},
+      {id:'mdv_v22_rn8', kw:'22 kW',name:'MHC-V22W/D2RN8',        cost:4240.80,retail:6191.57},
+      {id:'mdv_v26_rn8', kw:'26 kW',name:'MHC-V26W/D2RN8',        cost:4380.30,retail:6395.24},
+      {id:'mdv_v30_rn8', kw:'30 kW',name:'MHC-V30W/D2RN8',        cost:4538.40,retail:6626.06},
     ]}
   ]}
   ,{id:'aux',label:'AUX',icon:'🟡',color:'#d97706',sub:'ACHP Monoblock R32',types:[
     {key:'mono',label:'⚡ Μονοφ. /4R3HA (1Φ)',pumps:[
-      {id:'aux_h04',kw:'4,3 kW', name:'ACHP-H04/4R3HA-ME',cost:1963.10,retail:4040.00},
-      {id:'aux_h06',kw:'6,35 kW',name:'ACHP-H06/4R3HA-ME',cost:2036.80,retail:4200.00},
-      {id:'aux_h08',kw:'8,4 kW', name:'ACHP-H08/4R3HA-ME',cost:2056.90,retail:4230.00},
-      {id:'aux_h10',kw:'10 kW',  name:'ACHP-H10/4R3HA-ME',cost:2137.30,retail:4400.00},
-      {id:'aux_h12',kw:'12,2 kW',name:'ACHP-H12/4R3HA-ME',cost:2726.90,retail:5600.00},
-      {id:'aux_h14',kw:'14,5 kW',name:'ACHP-H14/4R3HA-ME',cost:2961.40,retail:6090.00},
-      {id:'aux_h16',kw:'16,1 kW',name:'ACHP-H16/4R3HA-ME',cost:3075.30,retail:6330.00},
+      {id:'aux_h04',kw:'4,3 kW', name:'ACHP-H04/4R3HA-ME',cost:1963.10,retail:2866.13},
+      {id:'aux_h06',kw:'6,35 kW',name:'ACHP-H06/4R3HA-ME',cost:2036.80,retail:2973.73},
+      {id:'aux_h08',kw:'8,4 kW', name:'ACHP-H08/4R3HA-ME',cost:2056.90,retail:3003.07},
+      {id:'aux_h10',kw:'10 kW',  name:'ACHP-H10/4R3HA-ME',cost:2137.30,retail:3120.46},
+      {id:'aux_h12',kw:'12,2 kW',name:'ACHP-H12/4R3HA-ME',cost:2726.90,retail:3981.27},
+      {id:'aux_h14',kw:'14,5 kW',name:'ACHP-H14/4R3HA-ME',cost:2961.40,retail:4323.64},
+      {id:'aux_h16',kw:'16,1 kW',name:'ACHP-H16/4R3HA-ME',cost:3075.30,retail:4489.94},
     ]},
     {key:'tri',label:'⚡⚡ Τριφ. /5R3HA (3Φ)',pumps:[
-      {id:'aux_h12t',kw:'12,2 kW',name:'ACHP-H12/5R3HA-ME',cost:3015.00,retail:6200.00},
-      {id:'aux_h14t',kw:'14,5 kW',name:'ACHP-H14/5R3HA-ME',cost:3202.60,retail:6600.00},
-      {id:'aux_h16t',kw:'16,1 kW',name:'ACHP-H16/5R3HA-ME',cost:3376.80,retail:6950.00},
+      {id:'aux_h12t',kw:'12,2 kW',name:'ACHP-H12/5R3HA-ME',cost:3015.00,retail:4401.90},
+      {id:'aux_h14t',kw:'14,5 kW',name:'ACHP-H14/5R3HA-ME',cost:3202.60,retail:4675.80},
+      {id:'aux_h16t',kw:'16,1 kW',name:'ACHP-H16/5R3HA-ME',cost:3376.80,retail:4930.13},
     ]}
   ]},
   {id:'other_pump',label:'Άλλο',icon:'⚙️',color:'#6b7280',sub:'Ελεύθερη επιλογή',types:[
     {key:'other',label:'Άλλη αντλία',pumps:[
-      {id:'other_p1',kw:'',name:'Άλλη αντλία θερμότητας',cost:0,retail:0}
+      {id:'other_p1',kw:'',name:'Άλλη αντλία θερμότητας',cost:0,retail:0.00}
     ]}
   ]}
 ];
@@ -861,7 +861,7 @@ const MAT_TPL=[
     {id:'pi',name:'Σωλήνα Πολυστρ. Φ26',unit:'μ',qty:20,on:true,cost:4.65,retail:6.74},
     {id:'mm',name:'Υλικά μηχανοστάσιο',unit:'σετ',qty:1,on:true,cost:130,retail:188.5},
     {id:'em',name:'Υλικά ηλεκτρολογικά',unit:'σετ',qty:1,on:true,cost:50,retail:72.5},
-    {id:'sc',name:'StopCOr A3',unit:'τεμ',qty:1,on:false,cost:54,retail:78.3},
+    {id:'sc',name:'StopCOr A3',unit:'τεμ',qty:1,on:false,cost:54,retail:103},
     {id:'mf',name:'Mag-Filter φίλτρα 1"',unit:'τεμ',qty:1,on:false,cost:139,retail:201.55},
     {id:'mg',name:'Μαγνητικό φίλτρο 1"',unit:'τεμ',qty:1,on:true,cost:20.32,retail:29.46},
     {id:'ap',name:'Αυτόματος Πληρωτής',unit:'τεμ',qty:1,on:true,cost:27.56,retail:39.96},
