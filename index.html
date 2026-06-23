@@ -272,9 +272,10 @@ a{color:#2563eb}
 </style>
 </head>
 <body>
+<div aria-hidden="true" id="co-bg" style="position:fixed;right:2vw;bottom:3vh;width:min(48vw,460px);height:min(48vw,460px);z-index:-1;opacity:0.06;pointer-events:none"><svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><defs><linearGradient id="pgB" x1="0.5" y1="0" x2="0.5" y2="1"><stop offset="0" stop-color="#e2001a"/><stop offset="0.5" stop-color="#e2001a" stop-opacity="0.72"/><stop offset="1" stop-color="#e2001a" stop-opacity="0.06"/></linearGradient><path id="ptB" d="M50 50 C 42 40 40 16 47 4 C 49 1 51 1 53 4 C 60 16 58 40 50 50 Z" fill="url(#pgB)"/></defs><g><use href="#ptB" transform="rotate(0 50 50)"/><use href="#ptB" transform="rotate(22.5 50 50)"/><use href="#ptB" transform="rotate(45 50 50)"/><use href="#ptB" transform="rotate(67.5 50 50)"/><use href="#ptB" transform="rotate(90 50 50)"/><use href="#ptB" transform="rotate(112.5 50 50)"/><use href="#ptB" transform="rotate(135 50 50)"/><use href="#ptB" transform="rotate(157.5 50 50)"/><use href="#ptB" transform="rotate(180 50 50)"/><use href="#ptB" transform="rotate(202.5 50 50)"/><use href="#ptB" transform="rotate(225 50 50)"/><use href="#ptB" transform="rotate(247.5 50 50)"/><use href="#ptB" transform="rotate(270 50 50)"/><use href="#ptB" transform="rotate(292.5 50 50)"/><use href="#ptB" transform="rotate(315 50 50)"/><use href="#ptB" transform="rotate(337.5 50 50)"/></g></svg></div>
 
 <div class="hdr">
-  <span style="font-size:20px">🌡️</span>
+  <span class="hdr-logo" style="display:inline-flex;align-items:center;width:30px;height:30px"><svg width="30" height="30" viewBox="0 0 100 100" style="display:block"><defs><linearGradient id="pgH" x1="0.5" y1="0" x2="0.5" y2="1"><stop offset="0" stop-color="#e2001a"/><stop offset="0.6" stop-color="#e2001a" stop-opacity="0.9"/><stop offset="1" stop-color="#e2001a" stop-opacity="0.3"/></linearGradient><path id="ptH" d="M50 50 C 42 40 40 16 47 4 C 49 1 51 1 53 4 C 60 16 58 40 50 50 Z" fill="url(#pgH)"/></defs><g><use href="#ptH" transform="rotate(0 50 50)"/><use href="#ptH" transform="rotate(22.5 50 50)"/><use href="#ptH" transform="rotate(45 50 50)"/><use href="#ptH" transform="rotate(67.5 50 50)"/><use href="#ptH" transform="rotate(90 50 50)"/><use href="#ptH" transform="rotate(112.5 50 50)"/><use href="#ptH" transform="rotate(135 50 50)"/><use href="#ptH" transform="rotate(157.5 50 50)"/><use href="#ptH" transform="rotate(180 50 50)"/><use href="#ptH" transform="rotate(202.5 50 50)"/><use href="#ptH" transform="rotate(225 50 50)"/><use href="#ptH" transform="rotate(247.5 50 50)"/><use href="#ptH" transform="rotate(270 50 50)"/><use href="#ptH" transform="rotate(292.5 50 50)"/><use href="#ptH" transform="rotate(315 50 50)"/><use href="#ptH" transform="rotate(337.5 50 50)"/></g></svg></span>
   <div><div class="hdr-title">Διαχείριση Προσφορών — Αντλίες Θερμότητας</div>
   <div class="hdr-sub">Bosch · Hitachi · Inventor · Toyotomi · Atlantic · MDV</div></div>
   <div class="hdr-gap"></div>
@@ -2647,7 +2648,7 @@ function setPFTog(field, val) {
 }
 
 function clearPropForm() {
-  PF_VALS={};
+  PF_VALS={}; APP.propHL=null;
   ['pf-name','pf-address','pf-area','pf-year','pf-floors','pf-floor',
    'pf-heating','pf-notes','pf-assigned','pf-amount','pf-reqdate',
    'pf-deadline','pf-budget','pf-when']
@@ -2699,6 +2700,9 @@ async function saveProperty() {
     id: EDIT_PID||('p'+Date.now()+Math.random().toString(36).slice(2,6)),
     customer_id: APP.custId,
     name: name.trim(),
+    heat_kw:(APP.propHL&&APP.propHL.kw!=null)?String(APP.propHL.kw):null,
+    heat_safe:(APP.propHL&&APP.propHL.safe!=null)?String(APP.propHL.safe):null,
+    heat_pump:(APP.propHL&&APP.propHL.pump!=null)?String(APP.propHL.pump):null,
     address:(g('pf-address')||{}).value||'',
     area:(g('pf-area')||{}).value||'',
     year:(g('pf-year')||{}).value||'',
