@@ -590,6 +590,7 @@ a{color:#2563eb}
       <div class="hdr-gap"></div>
       <button class="btn btn-green" onclick="call(saveQuote)">💾 Αποθήκευση</button>
       <button class="btn" onclick="call(generateOfferDescription)" style="background:#7c3aed;color:#fff;border-color:#7c3aed">📝 Περιγραφή (Word)</button>
+      <button class="btn" onclick="call(printCostAnalysis)" style="background:#0369a1;color:#fff;border-color:#0369a1">🖨️ Εκτύπωση κόστους</button>
       <button class="btn btn-ghost" onclick="call(goCustomer)">✕ Ακύρωση</button>
     </div>
     <div class="elay">
@@ -2084,6 +2085,101 @@ function sTotals(sid) {
   var lR=s.labor.on?s.labor.days*labRetailPerDay:0;
   return {c:mC+fC+lC, r:mR+fR+lR};
 }
+
+// ── Εκτύπωση εσωτερικής ανάλυσης κόστους/λιανικής/κέρδους (print → PDF) ──
+function printCostAnalysis(){
+  var isGas=(ES.equipType==='gas');
+  var brands=isGas?GAS_BRANDS:BRANDS;
+  var brand=brands.find(function(b){return b.id===ES.brand;})||brands[0];
+  var pC=(ES.pumpCostOvr!=null)?ES.pumpCostOvr:0;
+  var pR=(ES.pumpRetailOvr!=null)?ES.pumpRetailOvr:0;
+  var pName='';
+  if(ES.customPumpName){ pName=ES.customPumpName+(ES.customPumpKw?' · '+ES.customPumpKw:''); }
+  else if(ES.pump){
+    if(isGas){ var gbr=GAS_BRANDS.find(function(b){return b.id===ES.brand;}); var pm=gbr?gbr.models.find(function(x){return x.id===ES.pump;}):null; if(pm)pName=brand.label+' '+pm.name+(pm.kw?' · '+pm.kw:''); }
+    else{ var ht=brand.types?brand.types[ES.typeIdx]:null; var pm2=ht?ht.pumps.find(function(x){return x.id===ES.pump;}):null; if(pm2)pName=brand.label+' '+pm2.name+(pm2.kw?' · '+pm2.kw:''); }
+  }
+  if(!pName)pName='(χωρίς μοντέλο)';
+
+  var activeSecs=MSEC.filter(function(s){return !s.hasToggle||s.on;});
+  var tC=pC+MSEC.reduce(function(a,s){return a+sTotals(s.id).c;},0);
+  var tR=pR+MSEC.reduce(function(a,s){return a+sTotals(s.id).r;},0);
+  var agreed=parseFloat((g('e-agreed')||{}).value)||0;
+  var isAccepted=(g('e-status')||{}).value==='accepted';
+  var prof, vatBase;
+  if(isAccepted&&agreed>0){prof=agreed-tC;vatBase=agreed;}else{prof=tR-tC;vatBase=tR;}
+  var pct=tC>0?prof/tC*100:0;
+  var vat=Math.round(vatBase*24)/100, totalWithVat=vatBase+vat;
+
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function money(n){return fmt(n);}
+  function row(lbl,c,r,cls){
+    var pr=(c!=null&&r!=null)?(r-c):null;
+    return '<tr class="'+(cls||'')+'"><td class="d">'+lbl+'</td>'
+      +'<td class="n">'+(c!=null?money(c):'')+'</td>'
+      +'<td class="n">'+(r!=null?money(r):'')+'</td>'
+      +'<td class="n pf">'+(pr!=null?money(pr):'')+'</td></tr>';
+  }
+  var rows='';
+  rows+=row('🔧 '+esc(pName), pC, pR, 'pump');
+  activeSecs.forEach(function(s){
+    var st=sTotals(s.id);
+    rows+=row(esc(s.icon+' '+s.label), st.c, st.r, 'sec');
+    s.items.forEach(function(it){ if(it.on){ rows+=row('<span class="sub">'+esc(it.name)+(it.qty>1?' × '+it.qty+' '+esc(it.unit||''):'')+'</span>', it.cost*it.qty, it.retail*it.qty, 'item'); } });
+    if(s.free&&s.free.on){ rows+=row('<span class="sub">'+esc(s.free.desc||'Λοιπά / Έκτακτα')+'</span>', s.free.cost, s.free.cost*1.45, 'item'); }
+    if(s.labor&&s.labor.on){ var cpd=(s.labor.costPerDay!==undefined?s.labor.costPerDay:165); var rpd=(s.labor.retailPerDay!==undefined?s.labor.retailPerDay:230); rows+=row('<span class="sub">👷 Εργασία '+s.labor.days+' ημέρες</span>', s.labor.days*cpd, s.labor.days*rpd, 'item'); }
+  });
+
+  var c=APP._custCache||{}, prc=APP._propCache||{};
+  var custName=c.lastname?(c.lastname+(c.firstname?' '+c.firstname:'')):'—';
+  var num=(g('e-num')||{}).value||'—', date=(g('e-date')||{}).value||'';
+  var stMap={draft:'Πρόχειρη',sent:'Απεσταλμένη',accepted:'Αποδεκτή',rejected:'Απορρίφθηκε',pending:'Εκκρεμεί'};
+  var stVal=stMap[(g('e-status')||{}).value]||((g('e-status')||{}).value||'');
+  var today=new Date().toLocaleDateString('el-GR');
+  var pctTxt=(pct>=0?'+':'')+pct.toFixed(1)+'%';
+
+  var css='*{box-sizing:border-box}body{font-family:-apple-system,Segoe UI,Arial,sans-serif;color:#111827;margin:0;padding:22px 26px;font-size:12.5px}'
+    +'h1{font-size:17px;margin:0 0 2px}.muted{color:#6b7280}.top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #0f4c81;padding-bottom:8px;margin-bottom:10px}'
+    +'.meta{margin:8px 0 14px;font-size:12px}.meta b{display:inline-block;min-width:118px;color:#374151}'
+    +'.cards{display:flex;gap:10px;margin:12px 0}.cardx{flex:1;border:1px solid #e5e7eb;border-radius:9px;padding:9px 12px}.cardx .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;color:#6b7280}.cardx .v{font-size:19px;font-weight:800;margin-top:2px}'
+    +'table{width:100%;border-collapse:collapse;margin-top:6px}th,td{padding:5px 8px;border-bottom:1px solid #eef2f7;text-align:left}th{background:#0f4c81;color:#fff;font-size:11px;text-transform:uppercase;letter-spacing:.3px}th.n,td.n{text-align:right;white-space:nowrap}'
+    +'tr.pump td{font-weight:700;background:#eff6ff}tr.sec td{font-weight:700;background:#f8fafc;border-top:1px solid #dbe4ee}tr.item td{color:#4b5563}tr.item .d{padding-left:18px}.sub{font-size:11.5px}'
+    +'td.pf{color:#16a34a;font-weight:600}tr.tot td{font-size:14px;font-weight:800;border-top:2px solid #0f4c81;background:#f0fdf4}'
+    +'.vat{margin-top:10px;margin-left:auto;width:320px;font-size:12.5px}.vat div{display:flex;justify-content:space-between;padding:3px 0}.vat .big{font-weight:800;font-size:15px;border-top:1px solid #cbd5e1;padding-top:6px;margin-top:3px}'
+    +'.note{margin-top:16px;font-size:11px;color:#b91c1c;border:1px dashed #fca5a5;background:#fef2f2;border-radius:7px;padding:8px 10px}'
+    +'@media print{body{padding:0}@page{margin:14mm}}';
+
+  var html='<!DOCTYPE html><html lang="el"><head><meta charset="utf-8"><title>Ανάλυση κόστους '+esc(num)+'</title><style>'+css+'</style></head><body>'
+    +'<div class="top"><div><h1>Ανάλυση Κόστους Προσφοράς</h1><div class="muted">ΑΦΟΙ Χουρσουλίδη Κατασκευαστική Ο.Ε.</div></div>'
+    +'<div class="muted" style="text-align:right;font-size:11px">Εκτύπωση: '+today+'<br>Εσωτερικό έγγραφο</div></div>'
+    +'<div class="meta"><div><b>Αρ. προσφοράς:</b> '+esc(num)+(date?'  &nbsp;·&nbsp; <b style="min-width:auto">Ημ/νία:</b> '+esc(date):'')+(stVal?'  &nbsp;·&nbsp; <b style="min-width:auto">Κατάσταση:</b> '+esc(stVal):'')+'</div>'
+    +'<div><b>Πελάτης:</b> '+esc(custName)+'</div>'
+    +(prc.name?'<div><b>Ακίνητο:</b> '+esc(prc.name)+(prc.address?' — '+esc(prc.address):'')+'</div>':'')
+    +'<div><b>Μοντέλο:</b> '+esc(pName)+'</div></div>'
+    +'<div class="cards">'
+    +'<div class="cardx"><div class="l">Σύνολο κόστους</div><div class="v" style="color:#b45309">'+money(tC)+'</div></div>'
+    +'<div class="cardx"><div class="l">Λιανική (χωρίς ΦΠΑ)</div><div class="v" style="color:#0369a1">'+money(tR)+'</div></div>'
+    +'<div class="cardx"><div class="l">Κέρδος '+(isAccepted&&agreed>0?'(βάσει συμφωνίας)':'(εκτίμηση)')+'</div><div class="v" style="color:#16a34a">'+money(prof)+' <span style="font-size:12px">('+pctTxt+')</span></div></div>'
+    +'</div>'
+    +'<table><thead><tr><th>Περιγραφή</th><th class="n">Κόστος αγοράς</th><th class="n">Λιανική (χ/ΦΠΑ)</th><th class="n">Κέρδος</th></tr></thead><tbody>'
+    +rows
+    +'<tr class="tot"><td>ΣΥΝΟΛΟ</td><td class="n">'+money(tC)+'</td><td class="n">'+money(tR)+'</td><td class="n">'+money(tR-tC)+'</td></tr>'
+    +'</tbody></table>'
+    +'<div class="vat">'
+    +(isAccepted&&agreed>0?'<div><span>Ποσό συμφωνίας (χ/ΦΠΑ)</span><b>'+money(agreed)+'</b></div>':'<div><span>Λιανική (χ/ΦΠΑ)</span><b>'+money(tR)+'</b></div>')
+    +'<div><span>ΦΠΑ 24%</span><span>'+money(vat)+'</span></div>'
+    +'<div class="big"><span>Σύνολο με ΦΠΑ</span><span>'+money(totalWithVat)+'</span></div>'
+    +'<div style="color:#16a34a;margin-top:4px"><span>Κέρδος</span><b>'+money(prof)+' ('+pctTxt+')</b></div>'
+    +'</div>'
+    +'<div class="note">⚠️ Εσωτερικό έγγραφο — περιέχει κόστη αγοράς και κέρδος. ΔΕΝ παραδίδεται στον πελάτη.</div>'
+    +'<scr'+'ipt>window.onload=function(){setTimeout(function(){window.print();},250);};</scr'+'ipt>'
+    +'</body></html>';
+
+  var W=window.open('','_blank','width=980,height=760');
+  if(!W){ alert('Ο browser εμπόδισε το αναδυόμενο παράθυρο εκτύπωσης. Επιτρέψτε τα pop-ups για αυτή τη σελίδα και δοκιμάστε ξανά.'); return; }
+  W.document.open(); W.document.write(html); W.document.close(); W.focus();
+}
+
 
 // Override rMats — editable labor cost/day and retail/day inputs
 function rMats(){
