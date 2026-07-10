@@ -1214,7 +1214,7 @@ async function renderQuotes(){
       <div class="qcard-hdr"><div class="q-num">📄 ${q.quote_number||'—'}</div>
         <span class="qst" style="background:${st.bg};color:${st.color}">${st.icon} ${st.label}</span></div>
       <div class="qcard-body">
-        <div class="q-pump">${br.icon} ${q.pump_name||'—'} · ${q.pump_kw||''}</div>
+        <div class="q-pump">${br.icon} ${q.brand_label?q.brand_label+' ':''}${q.pump_name||'—'} · ${q.pump_kw||''}</div>
         <div class="q-date">📅 ${q.date||'—'}${q.notes?' · '+q.notes:''}</div>
         <div class="q-totals">
           <div class="qtb"><span class="qtb-lbl">Κόστος</span><span class="qtb-val">${fmt(t.total_c||0)}</span></div>
@@ -1523,7 +1523,7 @@ async function renderQuotes() {
       + '<div class="q-num">📄 ' + (q.quote_number || '-') + gasTag + '</div>'
       + '<span class="qst" style="background:' + st.bg + ';color:' + st.color + '">' + st.icon + ' ' + st.label + '</span>'
       + '</div><div class="qcard-body">'
-      + '<div class="q-pump">' + br.icon + ' ' + (q.pump_name || '-') + ' &middot; ' + (q.pump_kw || '') + '</div>'
+      + '<div class="q-pump">' + br.icon + ' ' + (q.brand_label ? q.brand_label + ' ' : '') + (q.pump_name || '-') + ' &middot; ' + (q.pump_kw || '') + '</div>'
       + '<div class="q-date">📅 ' + (q.date || '-') + (q.notes ? ' &middot; ' + q.notes : '') + '</div>'
       + '<div class="q-totals">'
       + '<div class="qtb"><span class="qtb-lbl">Κόστος</span><span class="qtb-val">' + fmt(t.total_c||0) + '</span></div>'
@@ -2689,7 +2689,7 @@ async function renderQuotes() {
       +'<span class="qst" style="background:'+st.bg+';color:'+st.color+'">'+st.icon+' '+st.label+'</span>'
       +'</div>'
       +'<div class="qcard-body">'
-      +'<div class="q-pump">'+br.icon+' '+(q.pump_name||'—')+' · '+(q.pump_kw||'')+'</div>'
+      +'<div class="q-pump">'+br.icon+' '+(q.brand_label?q.brand_label+' ':'')+(q.pump_name||'—')+' · '+(q.pump_kw||'')+'</div>'
       +'<div class="q-date">📅 '+(q.date||'—')+(q.notes?' · '+q.notes:'')+'</div>'
       +'<div class="q-totals">'
       +'<div class="qtb"><span class="qtb-lbl">Κόστος</span><span class="qtb-val">'+fmt(t.total_c||0)+'</span></div>'
