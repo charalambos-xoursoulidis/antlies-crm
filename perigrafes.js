@@ -133,7 +133,10 @@ window.PERIGRAFES=(function(){
     return works;
   }
   function boilerTypeFrom(name){
-    var t=String(name||'').replace(/boiler/ig,'').replace(/μπ[όο][ιϊ]λερ/ig,'').replace(/\d+\s*(?:[-–]\s*\d+)?\s*lit\w*/ig,'').replace(/ΑΘ/g,'').replace(/\s+/g,' ').trim();
+    var n=String(name||'');
+    var lit=litersFrom(n);
+    if(/BLS/i.test(n)) return 'BLS'+(lit?' '+lit:'')+(/ΑΘ/.test(n)?'ΑΘ':'');
+    var t=n.replace(/boiler/ig,'').replace(/μπ[όο][ιϊ]λερ/ig,'').replace(/\d+\s*(?:[-–]\s*\d+)?\s*lit\w*/ig,'').replace(/ΑΘ/g,'').replace(/\s+/g,' ').trim();
     return t||null;
   }
 
@@ -325,7 +328,8 @@ window.PERIGRAFES=(function(){
     }
     if(boilSec){
       var bo=null;
-      boilSec.items.forEach(function(i){if(!bo&&/boiler|μπ[όο][ιϊ]λερ/i.test(i.name))bo=i;});
+      boilSec.items.forEach(function(i){if(!bo&&i.on&&!/υλικ/i.test(i.name)&&/boiler|μπ[όο][ιϊ]λερ|BLS|\d+\s*lit/i.test(i.name))bo=i;});
+      if(!bo)boilSec.items.forEach(function(i){if(!bo&&!/υλικ/i.test(i.name)&&/boiler|μπ[όο][ιϊ]λερ|BLS|\d+\s*lit/i.test(i.name))bo=i;});
       xml=xml.split('@@BOILTYPE@@').join(escXml((bo?boilerTypeFrom(bo.name):null)||'—'));
       xml=xml.split('@@BOILLIT@@').join(escXml((bo?litersFrom(bo.name):null)||'—'));
     }

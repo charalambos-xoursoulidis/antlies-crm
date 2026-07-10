@@ -2205,7 +2205,7 @@ function rMats(){
       +'<th style="text-align:center">Ποσ.</th>'
       +'<th title="Τιμή κόστους/τεμ (επεξεργάσιμο)">Κόστ/τεμ ✏</th>'
       +'<th title="Τιμή λιανικής/τεμ (επεξεργάσιμο)">Λιαν/τεμ ✏</th>'
-      +'<th>Σύν.Κόστος</th></tr>';
+      +'<th>Σύν.Κόστος</th><th>Σύν.Λιανική</th></tr>';
 
     var rows=sec.items.map(function(it){
       var cl=it.on?'mon':'moff';
@@ -2216,7 +2216,7 @@ function rMats(){
         +'<td class="qty-c"><input type="number" class="qty-i" value="'+it.qty+'" min="0" step="1" onclick="event.stopPropagation()" onchange="updQty(\''+sec.id+'\',\''+it.id+'\',this.value)"></td>'
         +'<td class="qty-c"><input type="number" class="qty-i price-i" value="'+it.cost+'" min="0" step="0.01" onclick="event.stopPropagation()" onchange="updCost(\''+sec.id+'\',\''+it.id+'\',this.value)"></td>'
         +'<td class="qty-c"><input type="number" class="qty-i price-i" value="'+it.retail+'" min="0" step="0.01" onclick="event.stopPropagation()" onchange="updRetail(\''+sec.id+'\',\''+it.id+'\',this.value)"></td>'
-        +'<td class="mat-pr">'+(it.on?fmt(it.cost*it.qty):'—')+'</td>'
+        +'<td class="mat-pr">'+(it.on?fmt(it.cost*it.qty):'—')+'</td>'+'<td class="mat-pr">'+(it.on?fmt(it.retail*it.qty):'—')+'</td>'
         +'</tr>';
     }).join('');
 
@@ -2224,9 +2224,9 @@ function rMats(){
       +'<td class="chk-c"><div class="chk" onclick="togFree(\''+sec.id+'\')"><span class="chkm">✓</span></div></td>'
       +'<td><input class="free-desc" type="text" value="'+sec.free.desc+'" onclick="event.stopPropagation()" onchange="updFreeDesc(\''+sec.id+'\',this.value)" placeholder="Επικεφαλίδα..."></td>'
       +'<td class="mat-un">€</td>'
-      +'<td class="qty-c"><input type="number" class="qty-i" value="'+sec.free.cost+'" min="0" step="0.01" onclick="event.stopPropagation()" onchange="updFree(\''+sec.id+'\',this.value)"></td>'
-      +'<td class="qty-c"></td><td class="qty-c"></td>'
-      +'<td class="mat-pr">'+(sec.free.on?fmt(fC):'—')+'</td></tr>';
+      +'<td class="qty-c"></td>'
+      +'<td class="qty-c"><input type="number" class="qty-i price-i" value="'+sec.free.cost+'" min="0" step="0.01" onclick="event.stopPropagation()" onchange="updFree(\''+sec.id+'\',this.value)"></td><td class="qty-c"></td>'
+      +'<td class="mat-pr">'+(sec.free.on?fmt(fC):'—')+'</td>'+'<td class="mat-pr">'+(sec.free.on?fmt(fR):'—')+'</td></tr>';
 
     // Labor row — NOW with editable cost/day and retail/day
     var lRow='<tr class="lab-row '+(sec.labor.on?'mon':'moff')+'">'
@@ -2236,7 +2236,7 @@ function rMats(){
       +'<td class="qty-c"><input type="number" class="qty-i" value="'+sec.labor.days+'" min="0" step="0.5" onclick="event.stopPropagation()" onchange="updLab(\''+sec.id+'\',this.value)" title="Ημέρες εργασίας"></td>'
       +'<td class="qty-c"><input type="number" class="qty-i price-i" value="'+labCPD+'" min="0" step="1" onclick="event.stopPropagation()" onchange="updLabCost(\''+sec.id+'\',this.value)" title="Κόστος/ημέρα"></td>'
       +'<td class="qty-c"><input type="number" class="qty-i price-i" value="'+labRPD+'" min="0" step="1" onclick="event.stopPropagation()" onchange="updLabRetail(\''+sec.id+'\',this.value)" title="Λιανική/ημέρα"></td>'
-      +'<td class="mat-pr">'+(sec.labor.on?fmt(lC):'—')+'</td>'
+      +'<td class="mat-pr">'+(sec.labor.on?fmt(lC):'—')+'</td>'+'<td class="mat-pr">'+(sec.labor.on?fmt(lR):'—')+'</td>'
       +'</tr>';
 
     return'<div class="msec"><div class="msec-hdr '+sec.hdrClass+'"><span style="font-size:14px">'+sec.icon+'</span>'
