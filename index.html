@@ -280,6 +280,7 @@ a{color:#2563eb}
   <div><div class="hdr-title">Διαχείριση Προσφορών — Αντλίες Θερμότητας</div>
   <div class="hdr-sub">Bosch · Hitachi · Inventor · Toyotomi · Atlantic · MDV</div></div>
   <div class="hdr-gap"></div>
+  <button class="hdr-btn" onclick="openPricing()">💶 Τιμές</button>
   <button class="conn-badge" id="conn-badge" onclick="openSetup()">⚙ Ρυθμίσεις</button>
   <button class="hdr-btn" onclick="call(goCustomers)">👥 Πελάτες</button>
   <button class="hdr-btn grn" id="hdr-new-cust" onclick="openNewCustomer()" style="display:none">+ Νέος Πελάτης</button>
@@ -646,7 +647,7 @@ a{color:#2563eb}
         <div class="card"><div class="card-hdr"><h2>📦 Υλικά εγκατάστασης</h2>
           <span class="hint">✏️ επεξεργάσιμη επικεφαλίδα · ⚒ εργασία · 💧🔥 on/off</span></div>
           <div class="card-body" style="padding:0 11px 11px"><div id="mat-sections"></div></div></div>
-        <p class="note">* Χωρίς ΦΠΑ · Λιανική υλικών ×1,45 · Λιανική εργασίας ×1,30 (165€/ημ.)</p>
+        <p class="note">* Χωρίς ΦΠΑ · Κόστη και markup από τις «💶 Τιμές»</p>
       </div>
       <div class="esum"><div class="sum-card"><div class="sum-hdr">🧾 Σύνοψη</div>
         <div class="sum-body" id="sum-body"></div></div></div>
@@ -2078,7 +2079,7 @@ function sTotals(sid) {
   var mC=s.items.reduce(function(t,i){return t+(i.on?i.cost*i.qty:0);},0);
   var mR=s.items.reduce(function(t,i){return t+(i.on?i.retail*i.qty:0);},0);
   var fC=s.free.on?s.free.cost:0;
-  var fR=fC*1.45;
+  var fR=fC*((window.PSET&&PSET.matMarkup)||1.45);
   var labCostPerDay   = s.labor.costPerDay   !== undefined ? s.labor.costPerDay   : 165;
   var labRetailPerDay = s.labor.retailPerDay !== undefined ? s.labor.retailPerDay : 230;
   var lC=s.labor.on?s.labor.days*labCostPerDay:0;
@@ -2126,7 +2127,7 @@ function printCostAnalysis(){
     var st=sTotals(s.id);
     rows+=row(esc(s.icon+' '+s.label), st.c, st.r, 'sec');
     s.items.forEach(function(it){ if(it.on){ rows+=row('<span class="sub">'+esc(it.name)+(it.qty>1?' × '+it.qty+' '+esc(it.unit||''):'')+'</span>', it.cost*it.qty, it.retail*it.qty, 'item'); } });
-    if(s.free&&s.free.on){ rows+=row('<span class="sub">'+esc(s.free.desc||'Λοιπά / Έκτακτα')+'</span>', s.free.cost, s.free.cost*1.45, 'item'); }
+    if(s.free&&s.free.on){ rows+=row('<span class="sub">'+esc(s.free.desc||'Λοιπά / Έκτακτα')+'</span>', s.free.cost, s.free.cost*((window.PSET&&PSET.matMarkup)||1.45), 'item'); }
     if(s.labor&&s.labor.on){ var cpd=(s.labor.costPerDay!==undefined?s.labor.costPerDay:165); var rpd=(s.labor.retailPerDay!==undefined?s.labor.retailPerDay:230); rows+=row('<span class="sub">👷 Εργασία '+s.labor.days+' ημέρες</span>', s.labor.days*cpd, s.labor.days*rpd, 'item'); }
   });
 
@@ -2197,7 +2198,7 @@ function rMats(){
     var lC=sec.labor.on?sec.labor.days*labCPD:0;
     var lR=sec.labor.on?sec.labor.days*labRPD:0;
     var fC=sec.free.on?sec.free.cost:0;
-    var fR=fC*1.45;
+    var fR=fC*((window.PSET&&PSET.matMarkup)||1.45);
     var subC=sec.items.reduce(function(t,i){return t+(i.on?i.cost*i.qty:0);},0)+fC+lC;
     var subR=sec.items.reduce(function(t,i){return t+(i.on?i.retail*i.qty:0);},0)+fR+lR;
 
@@ -2344,8 +2345,11 @@ function rSum(){
   var sumSel=pName
     ?('<div class="sum-sel" style="background:color-mix(in srgb,'+brand.color+' 10%,#fff);color:'+brand.color+';border-color:color-mix(in srgb,'+brand.color+' 30%,#fff)">'+pName+'</div>')
     :'<div class="sum-ph">&larr; Επιλέξτε μοντέλο</div>';
-  var secRowsC=activeSecs.map(function(s){return'<div class="srow"><span class="slbl">'+s.icon+' '+s.label+'</span><span class="sval">'+fmt(sTotals(s.id).c)+'</span></div>';}).join('');
-  var secRowsR=activeSecs.map(function(s){return'<div class="srow"><span class="slbl">'+s.icon+' '+s.label+'</span><span class="sval">'+fmt(sTotals(s.id).r)+'</span></div>';}).join('');
+  var __labD=0,__labC=0,__labR=0;
+  activeSecs.forEach(function(s){if(s.labor&&s.labor.on){var _c=(s.labor.costPerDay!==undefined)?s.labor.costPerDay:165;var _r=(s.labor.retailPerDay!==undefined)?s.labor.retailPerDay:230;__labD+=s.labor.days;__labC+=s.labor.days*_c;__labR+=s.labor.days*_r;}});
+  function __labOf(s,kind){if(!s.labor||!s.labor.on)return 0;var _c=(s.labor.costPerDay!==undefined)?s.labor.costPerDay:165;var _r=(s.labor.retailPerDay!==undefined)?s.labor.retailPerDay:230;return s.labor.days*(kind==='c'?_c:_r);}
+  var secRowsC=activeSecs.map(function(s){return'<div class="srow"><span class="slbl">'+s.icon+' '+s.label+'</span><span class="sval">'+fmt(sTotals(s.id).c-__labOf(s,'c'))+'</span></div>';}).join('')+(__labC>0?'<div class="srow"><span class="slbl">⚒ Εργασία · '+__labD+' ημ.</span><span class="sval">'+fmt(__labC)+'</span></div>':'');
+  var secRowsR=activeSecs.map(function(s){return'<div class="srow"><span class="slbl">'+s.icon+' '+s.label+'</span><span class="sval">'+fmt(sTotals(s.id).r-__labOf(s,'r'))+'</span></div>';}).join('')+(__labR>0?'<div class="srow"><span class="slbl">⚒ Εργασία · '+__labD+' ημ.</span><span class="sval">'+fmt(__labR)+'</span></div>':'');
   var agreedSection='';
   if(isAccepted){
     agreedSection='<hr class="sdiv"><div class="sgt" style="color:#15803d">Ποσό Συμφωνίας</div>'
@@ -2944,6 +2948,207 @@ function calcHL() {
       try{localStorage.setItem('hl_'+EDIT_PID,JSON.stringify(APP.propHL));}catch(e){}  }
   }
 }
+</script>
+<script>
+// ══ ΡΥΘΜΙΣΕΙΣ ΤΙΜΩΝ (markup + χειροκίνητα κόστη/λιανικές καταλόγου) ══
+// Αποθήκευση: Supabase hm_settings (id='pricing', value=PSET) + localStorage.
+// Ισχύουν ΜΟΝΟ για νέες προσφορές — οι αποθηκευμένες κρατούν τα δικά τους ποσά.
+var PSET={pumpMarkup:1.46,matMarkup:1.45,laborCost:165,laborRetail:230,pumps:{},mats:{}};
+var PRICING_BASE=null;
+function psR2(n){return Math.round((parseFloat(n)||0)*100)/100;}
+function psSnapshotBase(){
+  if(PRICING_BASE)return;
+  PRICING_BASE={pumps:{},mats:{}};
+  BRANDS.forEach(function(b){(b.types||[]).forEach(function(t){(t.pumps||[]).forEach(function(p){PRICING_BASE.pumps[p.id]={c:p.cost,r:p.retail};});});});
+  MAT_TPL.forEach(function(s){s.items.forEach(function(it){PRICING_BASE.mats[s.id+'.'+it.id]={c:it.cost,r:it.retail};});});
+}
+function applyPricing(){
+  psSnapshotBase();
+  BRANDS.forEach(function(b){(b.types||[]).forEach(function(t){(t.pumps||[]).forEach(function(p){
+    var base=PRICING_BASE.pumps[p.id]||{c:p.cost,r:p.retail};
+    var o=PSET.pumps[p.id]||{};
+    p.cost=(o.c!=null)?o.c:base.c;
+    p.retail=(o.r!=null)?o.r:base.r;
+  });});});
+  MAT_TPL.forEach(function(s){
+    s.items.forEach(function(it){
+      var k=s.id+'.'+it.id, base=PRICING_BASE.mats[k]||{c:it.cost,r:it.retail}, o=PSET.mats[k]||{};
+      it.cost=(o.c!=null)?o.c:base.c;
+      it.retail=(o.r!=null)?o.r:base.r;
+    });
+    if(s.labor){s.labor.costPerDay=PSET.laborCost;s.labor.retailPerDay=PSET.laborRetail;}
+  });
+  try{var ve=g('v-editor');if(ve&&!ve.classList.contains('hidden')){rPumps();rSum();}}catch(e){}
+}
+async function loadPricing(){
+  psSnapshotBase();
+  var got=null;
+  try{
+    if(storageMode==='supa'){
+      var rows=await supaRest('hm_settings','GET',null,'id=eq.pricing&select=value');
+      if(rows&&rows[0]&&rows[0].value)got=rows[0].value;
+    }
+  }catch(e){console.warn('loadPricing supa:',e);}
+  if(!got){try{got=JSON.parse(localStorage.getItem('pset')||'null');}catch(e){}}
+  if(got){
+    if(got.pumpMarkup)PSET.pumpMarkup=parseFloat(got.pumpMarkup)||1.46;
+    if(got.matMarkup)PSET.matMarkup=parseFloat(got.matMarkup)||1.45;
+    if(got.laborCost)PSET.laborCost=parseFloat(got.laborCost)||165;
+    if(got.laborRetail)PSET.laborRetail=parseFloat(got.laborRetail)||230;
+    PSET.pumps=got.pumps||{};PSET.mats=got.mats||{};
+  }
+  applyPricing();
+}
+async function savePricing(){
+  try{localStorage.setItem('pset',JSON.stringify(PSET));}catch(e){}
+  var okSupa=false, errMsg='';
+  try{
+    if(storageMode==='supa'){await supaRest('hm_settings','POST',{id:'pricing',value:PSET},'on_conflict=id');okSupa=true;}
+  }catch(e){errMsg=String(e&&e.message||e);}
+  applyPricing();
+  return {supa:okSupa,err:errMsg};
+}
+// ── UI ──
+function psOverride(map,id,field,val){
+  var v=parseFloat(val);
+  if(isNaN(v)){return;}
+  var o=map[id]||(map[id]={});
+  o[field]=psR2(v);
+}
+function psPumpTableHtml(brandId,typeIdx){
+  var b=BRANDS.find(function(x){return x.id===brandId;})||BRANDS[0];
+  var t=(b.types||[])[typeIdx]||b.types[0];
+  var rows=(t.pumps||[]).map(function(p){
+    return '<tr><td style="padding:4px 8px;font-size:12px">'+p.name+(p.kw?' <span style="color:#94a3b8">· '+p.kw+'</span>':'')+'</td>'
+      +'<td style="padding:2px 4px"><input type="number" step="0.01" min="0" data-pk="'+p.id+'" data-f="c" value="'+p.cost+'" style="width:96px;padding:4px 6px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;text-align:right"></td>'
+      +'<td style="padding:2px 4px"><input type="number" step="0.01" min="0" data-pk="'+p.id+'" data-f="r" value="'+p.retail+'" style="width:96px;padding:4px 6px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;text-align:right"></td></tr>';
+  }).join('');
+  return '<table style="width:100%;border-collapse:collapse"><tr><th style="text-align:left;font-size:11px;color:#64748b;padding:4px 8px">ΜΟΝΤΕΛΟ</th><th style="font-size:11px;color:#64748b">ΚΟΣΤΟΣ €</th><th style="font-size:11px;color:#64748b">ΛΙΑΝΙΚΗ €</th></tr>'+rows+'</table>';
+}
+function psMatsHtml(){
+  return MAT_TPL.map(function(s){
+    var rows=s.items.map(function(it){
+      var k=s.id+'.'+it.id;
+      return '<tr><td style="padding:4px 8px;font-size:12px">'+it.name+' <span style="color:#94a3b8">('+(it.unit||'τεμ')+')</span></td>'
+        +'<td style="padding:2px 4px"><input type="number" step="0.01" min="0" data-mk="'+k+'" data-f="c" value="'+it.cost+'" style="width:96px;padding:4px 6px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;text-align:right"></td>'
+        +'<td style="padding:2px 4px"><input type="number" step="0.01" min="0" data-mk="'+k+'" data-f="r" value="'+it.retail+'" style="width:96px;padding:4px 6px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;text-align:right"></td></tr>';
+    }).join('');
+    return '<div style="margin-top:10px"><div style="font-weight:700;font-size:12.5px;margin-bottom:4px">'+s.icon+' '+s.label+'</div>'
+      +'<table style="width:100%;border-collapse:collapse"><tr><th style="text-align:left;font-size:11px;color:#64748b;padding:4px 8px">ΥΛΙΚΟ</th><th style="font-size:11px;color:#64748b">ΚΟΣΤΟΣ €</th><th style="font-size:11px;color:#64748b">ΛΙΑΝΙΚΗ €</th></tr>'+rows+'</table></div>';
+  }).join('');
+}
+function psWireInputs(root){
+  root.querySelectorAll('input[data-pk]').forEach(function(inp){
+    inp.addEventListener('input',function(){psOverride(PSET.pumps,inp.getAttribute('data-pk'),inp.getAttribute('data-f'),inp.value);applyPricing();});
+  });
+  root.querySelectorAll('input[data-mk]').forEach(function(inp){
+    inp.addEventListener('input',function(){psOverride(PSET.mats,inp.getAttribute('data-mk'),inp.getAttribute('data-f'),inp.value);applyPricing();});
+  });
+}
+function psRefreshPumps(){
+  var wrap=g('ps-pump-wrap');if(!wrap)return;
+  var bId=g('ps-brand').value, tIdx=parseInt(g('ps-type').value)||0;
+  wrap.innerHTML=psPumpTableHtml(bId,tIdx);
+  psWireInputs(wrap);
+}
+function psRefreshTypes(){
+  var b=BRANDS.find(function(x){return x.id===g('ps-brand').value})||BRANDS[0];
+  g('ps-type').innerHTML=(b.types||[]).map(function(t,i){return '<option value="'+i+'">'+t.label+'</option>';}).join('');
+  psRefreshPumps();
+}
+function psRefreshMats(){
+  var wrap=g('ps-mat-wrap');if(!wrap)return;
+  wrap.innerHTML=psMatsHtml();
+  psWireInputs(wrap);
+}
+function openPricing(){
+  psSnapshotBase();
+  var old=g('ps-ovl');if(old)old.remove();
+  var ovl=document.createElement('div');
+  ovl.id='ps-ovl';
+  ovl.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:9998;display:flex;align-items:center;justify-content:center;padding:16px';
+  var inpS='width:86px;padding:6px 8px;border:1.5px solid #cbd5e1;border-radius:7px;font-size:13px;text-align:right';
+  var btnS='border-radius:7px;padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;border:1.5px solid ';
+  ovl.innerHTML=
+    '<div style="background:#fff;border-radius:14px;width:820px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 12px 48px rgba(0,0,0,.3)">'
+    +'<div style="padding:16px 22px 10px;border-bottom:1px solid #e5e7eb">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between"><h3 style="margin:0;font-size:17px">💶 Ρυθμίσεις Τιμών</h3>'
+    +'<button id="ps-close" style="'+btnS+'#d1d5db;background:#fff;color:#374151">✕ Κλείσιμο</button></div>'
+    +'<div style="font-size:12px;color:#166534;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:6px 10px;margin-top:8px">Οι αλλαγές ισχύουν για <b>νέες προσφορές</b>. Οι αποθηκευμένες προσφορές διατηρούν τα ποσά τους και δεν επηρεάζονται.</div>'
+    +'</div>'
+    +'<div style="overflow:auto;padding:14px 22px;flex:1">'
+    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:10px">'
+    +'<div><label style="font-size:11px;font-weight:700;color:#475569">MARKUP ΑΝΤΛΙΩΝ ×</label><br><input id="ps-mk-pump" type="number" step="0.01" min="1" style="'+inpS+'" value="'+PSET.pumpMarkup+'"></div>'
+    +'<div><label style="font-size:11px;font-weight:700;color:#475569">MARKUP ΥΛΙΚΩΝ ×</label><br><input id="ps-mk-mat" type="number" step="0.01" min="1" style="'+inpS+'" value="'+PSET.matMarkup+'"></div>'
+    +'<div><label style="font-size:11px;font-weight:700;color:#475569">ΕΡΓΑΣΙΑ ΚΟΣΤΟΣ €/ΗΜ</label><br><input id="ps-lab-c" type="number" step="1" min="0" style="'+inpS+'" value="'+PSET.laborCost+'"></div>'
+    +'<div><label style="font-size:11px;font-weight:700;color:#475569">ΕΡΓΑΣΙΑ ΛΙΑΝΙΚΗ €/ΗΜ</label><br><input id="ps-lab-r" type="number" step="1" min="0" style="'+inpS+'" value="'+PSET.laborRetail+'"></div>'
+    +'</div>'
+    +'<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">'
+    +'<button id="ps-apply-pumps" style="'+btnS+'#0369a1;background:#eff6ff;color:#0369a1">↻ Λιανικές αντλιών = κόστος × markup</button>'
+    +'<button id="ps-apply-mats" style="'+btnS+'#0369a1;background:#eff6ff;color:#0369a1">↻ Λιανικές υλικών = κόστος × markup</button>'
+    +'<button id="ps-reset" style="'+btnS+'#dc2626;background:#fef2f2;color:#dc2626">⟲ Επαναφορά προεπιλογών</button>'
+    +'</div>'
+    +'<div style="font-weight:800;font-size:13.5px;border-top:2px solid #e5e7eb;padding-top:10px">🌡 Αντλίες θερμότητας — κατάλογος</div>'
+    +'<div style="display:flex;gap:10px;margin:8px 0">'
+    +'<select id="ps-brand" style="padding:6px 10px;border:1.5px solid #cbd5e1;border-radius:7px;font-size:13px">'+BRANDS.map(function(b){return '<option value="'+b.id+'">'+b.label+'</option>';}).join('')+'</select>'
+    +'<select id="ps-type" style="padding:6px 10px;border:1.5px solid #cbd5e1;border-radius:7px;font-size:13px"></select>'
+    +'</div>'
+    +'<div id="ps-pump-wrap"></div>'
+    +'<div style="font-weight:800;font-size:13.5px;border-top:2px solid #e5e7eb;padding-top:10px;margin-top:14px">🧰 Υλικά προσφοράς — κατάλογος</div>'
+    +'<div id="ps-mat-wrap"></div>'
+    +'</div>'
+    +'<div style="padding:12px 22px;border-top:1px solid #e5e7eb;display:flex;justify-content:flex-end;gap:10px">'
+    +'<span id="ps-msg" style="font-size:12px;color:#64748b;align-self:center"></span>'
+    +'<button id="ps-save" style="'+btnS+'#16a34a;background:#16a34a;color:#fff">💾 Αποθήκευση</button>'
+    +'</div></div>';
+  document.body.appendChild(ovl);
+  g('ps-close').onclick=function(){ovl.remove();};
+  g('ps-brand').onchange=psRefreshTypes;
+  g('ps-type').onchange=psRefreshPumps;
+  g('ps-mk-pump').oninput=function(){PSET.pumpMarkup=parseFloat(this.value)||1.46;};
+  g('ps-mk-mat').oninput=function(){PSET.matMarkup=parseFloat(this.value)||1.45;applyPricing();};
+  g('ps-lab-c').oninput=function(){PSET.laborCost=parseFloat(this.value)||165;applyPricing();};
+  g('ps-lab-r').oninput=function(){PSET.laborRetail=parseFloat(this.value)||230;applyPricing();};
+  g('ps-apply-pumps').onclick=function(){
+    var mk=PSET.pumpMarkup||1.46;
+    BRANDS.forEach(function(b){(b.types||[]).forEach(function(t){(t.pumps||[]).forEach(function(p){
+      if(!p.cost)return;
+      var o=PSET.pumps[p.id]||(PSET.pumps[p.id]={});
+      o.r=psR2(p.cost*mk);
+    });});});
+    applyPricing();psRefreshPumps();
+    g('ps-msg').textContent='Λιανικές αντλιών ενημερώθηκαν ×'+mk+' — πατήστε Αποθήκευση.';
+  };
+  g('ps-apply-mats').onclick=function(){
+    var mk=PSET.matMarkup||1.45;
+    MAT_TPL.forEach(function(s){s.items.forEach(function(it){
+      if(!it.cost)return;
+      var k=s.id+'.'+it.id;
+      var o=PSET.mats[k]||(PSET.mats[k]={});
+      o.r=psR2(it.cost*mk);
+    });});
+    applyPricing();psRefreshMats();
+    g('ps-msg').textContent='Λιανικές υλικών ενημερώθηκαν ×'+mk+' — πατήστε Αποθήκευση.';
+  };
+  g('ps-reset').onclick=function(){
+    if(!confirm('Επαναφορά όλων των τιμών και συντελεστών στις αρχικές προεπιλογές του προγράμματος;'))return;
+    PSET={pumpMarkup:1.46,matMarkup:1.45,laborCost:165,laborRetail:230,pumps:{},mats:{}};
+    applyPricing();
+    g('ps-mk-pump').value=PSET.pumpMarkup;g('ps-mk-mat').value=PSET.matMarkup;
+    g('ps-lab-c').value=PSET.laborCost;g('ps-lab-r').value=PSET.laborRetail;
+    psRefreshTypes();psRefreshMats();
+    g('ps-msg').textContent='Επαναφέρθηκαν — πατήστε Αποθήκευση για να ισχύσει μόνιμα.';
+  };
+  g('ps-save').onclick=function(){
+    g('ps-msg').textContent='Αποθήκευση...';
+    savePricing().then(function(res){
+      g('ps-msg').textContent=res.supa?'✓ Αποθηκεύτηκαν (βάση δεδομένων — ισχύουν σε όλες τις συσκευές).':'⚠ Αποθηκεύτηκαν μόνο τοπικά (σφάλμα βάσης: '+(res.err||'—')+')';
+    });
+  };
+  psRefreshTypes();
+  psRefreshMats();
+}
+window.addEventListener('load',function(){setTimeout(function(){loadPricing();},450);});
 </script>
 </body>
 </html>
