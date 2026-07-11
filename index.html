@@ -440,8 +440,8 @@ a{color:#2563eb}
             <label>Κλιματική Ζώνη</label>
             <select id="hl-zone" style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:12px">
               <option value="A">Α — Αθήνα, Νησιά (ΔΤ 25°C)</option>
-              <option value="B" selected>Β — Κ. Ελλάδα (ΔΤ 30°C)</option>
-              <option value="C">Γ — Β. Ελλάδα, Μακεδονία (ΔΤ 35°C)</option>
+              <option value="B">Β — Κ. Ελλάδα (ΔΤ 30°C)</option>
+              <option value="C" selected>Γ — Β. Ελλάδα, Μακεδονία (ΔΤ 35°C)</option>
               <option value="D">Δ — Ορεινά (ΔΤ 42°C)</option>
             </select>
           </div>
@@ -473,14 +473,14 @@ a{color:#2563eb}
             <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:4px">Δάπεδο</div>
             <div style="display:flex;flex-direction:column;gap:3px">
               <button type="button" data-hl="floor:ground"  onclick="hlSet('floor','ground')"  style="text-align:left;padding:4px 8px;border-radius:5px;border:1px solid #cbd5e1;background:#f1f5f9;font-size:11px;cursor:pointer">🏠 Επί εδάφους</button>
-              <button type="button" data-hl="floor:pilotis" onclick="hlSet('floor','pilotis')" style="text-align:left;padding:4px 8px;border-radius:5px;border:1.5px solid #3b82f6;background:#eff6ff;font-size:11px;cursor:pointer;font-weight:600;color:#1d4ed8">🅿 Πυλωτή</button>
+              <button type="button" data-hl="floor:pilotis" onclick="hlSet('floor','pilotis')" style="text-align:left;padding:4px 8px;border-radius:5px;border:1.5px solid #f97316;background:#fff7ed;font-size:11px;cursor:pointer;font-weight:600;color:#c2410c">🅿 Πυλωτή</button>
               <button type="button" data-hl="floor:closed"  onclick="hlSet('floor','closed')"  style="text-align:left;padding:4px 8px;border-radius:5px;border:1px solid #cbd5e1;background:#f1f5f9;font-size:11px;cursor:pointer">🚪 Κλειστός χώρος</button>
             </div>
           </div>
           <div>
             <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:4px">Οροφή</div>
             <div style="display:flex;flex-direction:column;gap:3px">
-              <button type="button" data-hl="ceil:roof"   onclick="hlSet('ceil','roof')"   style="text-align:left;padding:4px 8px;border-radius:5px;border:1.5px solid #3b82f6;background:#eff6ff;font-size:11px;cursor:pointer;font-weight:600;color:#1d4ed8">🏔 Ταράτσα / Τελ.όρ.</button>
+              <button type="button" data-hl="ceil:roof"   onclick="hlSet('ceil','roof')"   style="text-align:left;padding:4px 8px;border-radius:5px;border:1.5px solid #f97316;background:#fff7ed;font-size:11px;cursor:pointer;font-weight:600;color:#c2410c">🏔 Ταράτσα / Τελ.όρ.</button>
               <button type="button" data-hl="ceil:attic"  onclick="hlSet('ceil','attic')"  style="text-align:left;padding:4px 8px;border-radius:5px;border:1px solid #cbd5e1;background:#f1f5f9;font-size:11px;cursor:pointer">🏚 Κεραμοσκεπή</button>
               <button type="button" data-hl="ceil:closed" onclick="hlSet('ceil','closed')" style="text-align:left;padding:4px 8px;border-radius:5px;border:1px solid #cbd5e1;background:#f1f5f9;font-size:11px;cursor:pointer">🚪 Κλειστός χώρος</button>
             </div>
@@ -489,7 +489,7 @@ a{color:#2563eb}
             <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:4px">Εκτεθ. τοιχοποιίες</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px">
               <button type="button" data-hl="sides:1" onclick="hlSet('sides',1)" style="padding:4px 5px;border-radius:5px;border:1px solid #cbd5e1;background:#f1f5f9;font-size:11px;cursor:pointer">1 πλ.</button>
-              <button type="button" data-hl="sides:2" onclick="hlSet('sides',2)" style="padding:4px 5px;border-radius:5px;border:1.5px solid #3b82f6;background:#eff6ff;font-size:11px;cursor:pointer;font-weight:600;color:#1d4ed8">2 πλ.</button>
+              <button type="button" data-hl="sides:2" onclick="hlSet('sides',2)" style="padding:4px 5px;border-radius:5px;border:1.5px solid #f97316;background:#fff7ed;font-size:11px;cursor:pointer;font-weight:600;color:#c2410c">2 πλ.</button>
               <button type="button" data-hl="sides:3" onclick="hlSet('sides',3)" style="padding:4px 5px;border-radius:5px;border:1px solid #cbd5e1;background:#f1f5f9;font-size:11px;cursor:pointer">3 πλ.</button>
               <button type="button" data-hl="sides:4" onclick="hlSet('sides',4)" style="padding:4px 5px;border-radius:5px;border:1px solid #cbd5e1;background:#f1f5f9;font-size:11px;cursor:pointer">4 πλ.</button>
             </div>
@@ -2892,14 +2892,17 @@ var HL_FC = {roof:1.0,attic:0.5,closed:0.35};
 
 function hlSet(key, val) {
   HL_STATE[key] = val;
+  hlPaint();
+}
+function hlPaint(){
   document.querySelectorAll('[data-hl]').forEach(function(b){
     var parts = b.getAttribute('data-hl').split(':');
     var bKey = parts[0], bVal = isNaN(parts[1]) ? parts[1] : parseInt(parts[1]);
-    var active = bKey===key && String(bVal)===String(val);
-    b.style.background   = active ? '#eff6ff' : '#f1f5f9';
-    b.style.borderColor  = active ? '#3b82f6' : '#cbd5e1';
+    var active = String(bVal)===String(HL_STATE[bKey]);
+    b.style.background   = active ? '#fff7ed' : '#f1f5f9';
+    b.style.borderColor  = active ? '#f97316' : '#cbd5e1';
     b.style.borderWidth  = active ? '1.5px'   : '1px';
-    b.style.color        = active ? '#1d4ed8'  : '';
+    b.style.color        = active ? '#c2410c'  : '';
     b.style.fontWeight   = active ? '600'      : '';
   });
 }
@@ -2909,7 +2912,7 @@ function calcHL() {
   if (!area) { alert('Συμπληρώστε εμβαδόν (m²)'); return; }
   var h    = parseFloat((document.getElementById('hl-h')||{}).value) || 2.80;
   var insK = (document.getElementById('hl-ins')||{}).value || 'y1990';
-  var zone = (document.getElementById('hl-zone')||{}).value || 'B';
+  var zone = (document.getElementById('hl-zone')||{}).value || 'C';
   var U    = JSON.parse(JSON.stringify(HL_UV[insK] || HL_UV['y1990']));
   if ((document.getElementById('hl-win') ||{}).checked) U.win  = 1.80;
   if ((document.getElementById('hl-wall')||{}).checked) U.wall = 0.35;
