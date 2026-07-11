@@ -1963,7 +1963,7 @@ async function saveQuote(){
   await DB.saveQuote(q);EDIT_QID=q.id;
   var bc=g('bc-equote');if(bc)bc.textContent=q.quote_number;
   alert('OK - Prosfora ' + q.quote_number + ' apotheikeyth.');
-  await goCustomer();
+  if(APP.propId){await goProperty();}else{await goCustomer();}
 }
 
 // ── OFFER DESCRIPTION (WORD) ─────────────────────────────────────
