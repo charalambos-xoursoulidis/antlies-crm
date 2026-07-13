@@ -1146,21 +1146,23 @@ async function goCustomer(){if(APP.custId){showView('v-customer');await renderCu
 async function renderCustomers(){
   loading('cust-grid');
   const q=(g('cust-search').value||'').toLowerCase();
-  const all=(await DB.customers()).filter(c=>(c.lastname+' '+(c.firstname||'')+' '+(c.city||'')+' '+(c.phone||'')).toLowerCase().includes(q));
+  let all=(await DB.customers()).filter(c=>(c.lastname+' '+(c.firstname||'')+' '+(c.city||'')+' '+(c.phone||'')).toLowerCase().includes(q));
+  all.sort((a,b)=>((a.lastname||'')+' '+(a.firstname||'')).localeCompare(((b.lastname||'')+' '+(b.firstname||'')),'el',{sensitivity:'base'}));
   const grid=g('cust-grid');
+  grid.style.display='block';
   if(!all.length){grid.innerHTML=`<div class="empty-state"><div class="ei">👥</div><p style="font-weight:600;margin-bottom:5px">${q?'Δεν βρέθηκαν αποτελέσματα':'Δεν υπάρχουν πελάτες'}</p><p style="font-size:12px">${q?'Δοκιμάστε άλλη αναζήτηση':'Κάντε κλικ «+ Νέος Πελάτης»'}</p></div>`;return}
   const allQ = await DB.allQuotes();
   const qcnt={};allQ.forEach(q=>{qcnt[q.customer_id]=(qcnt[q.customer_id]||0)+1});
-  grid.innerHTML=all.map(c=>`
-    <div class="cust-card" onclick="call(()=>openCustomer('${c.id}'))">
-      <div class="c-av">${initials(c)}</div>
-      <div class="c-name">${c.lastname}${c.firstname?' '+c.firstname:''}</div>
-      ${c.city?`<div class="c-line">📍 ${c.city}</div>`:''}
-      ${c.phone?`<div class="c-line">📞 ${c.phone}</div>`:''}
-      ${c.email?`<div class="c-line" style="font-size:11px">✉ ${c.email}</div>`:''}
-      <div class="c-badges"><span class="badge b-blue">${qcnt[c.id]||0} προσφορ${(qcnt[c.id]||0)===1?'ά':'ές'}</span></div>
-      <div class="c-arr">›</div>
-    </div>`).join('');
+  grid.innerHTML=`<div style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;background:#fff">`+all.map((c,idx)=>`
+    <div onclick="call(()=>openCustomer('${c.id}'))" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'" style="display:flex;align-items:center;gap:12px;padding:9px 14px;cursor:pointer;${idx?'border-top:1px solid #f1f5f9':''}">
+      <div class="c-av" style="width:34px;height:34px;font-size:12px;flex-shrink:0">${initials(c)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.lastname}${c.firstname?' '+c.firstname:''}</div>
+        <div style="font-size:12px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${[c.city?'📍 '+c.city:'',c.phone?'📞 '+c.phone:'',c.email?'✉ '+c.email:''].filter(Boolean).join('  ·  ')||'—'}</div>
+      </div>
+      <span class="badge b-blue" style="flex-shrink:0">${qcnt[c.id]||0} προσφορ${(qcnt[c.id]||0)===1?'ά':'ές'}</span>
+      <span style="color:#cbd5e1;font-size:20px;flex-shrink:0">›</span>
+    </div>`).join('')+`</div>`;
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -1695,8 +1697,8 @@ async function exportQuotesToExcel() {
 // NEW: Editable prices, agreed amount, rMats/rSum/saveQuote/openEditor overrides
 // ═══════════════════════════════════════════════════════════════════
 
-function updCost(sid,iid,v){var s=MSEC.find(function(x){return x.id===sid;});if(!s)return;var it=s.items.find(function(i){return i.id===iid;});if(it){it.cost=Math.max(0,parseFloat(v)||0);rSum();}}
-function updRetail(sid,iid,v){var s=MSEC.find(function(x){return x.id===sid;});if(!s)return;var it=s.items.find(function(i){return i.id===iid;});if(it){it.retail=Math.max(0,parseFloat(v)||0);rSum();}}
+function updCost(sid,iid,v){var s=MSEC.find(function(x){return x.id===sid;});if(!s)return;var it=s.items.find(function(i){return i.id===iid;});if(it){it.cost=Math.max(0,parseFloat(v)||0);rMats();rSum();}}
+function updRetail(sid,iid,v){var s=MSEC.find(function(x){return x.id===sid;});if(!s)return;var it=s.items.find(function(i){return i.id===iid;});if(it){it.retail=Math.max(0,parseFloat(v)||0);rMats();rSum();}}
 function toggleAgreed(){var st=g('e-status');var wrap=g('agreed-wrap');if(wrap)wrap.style.display=(st&&st.value==='accepted')?'':'none';}
 
 
@@ -2061,15 +2063,15 @@ async function openEditor(qid){
 
 function updLab(sid, v) {
   var s=MSEC.find(function(x){return x.id===sid;});
-  if(s){s.labor.days=Math.max(0,parseFloat(v)||0);rSum();}
+  if(s){s.labor.days=Math.max(0,parseFloat(v)||0);rMats();rSum();}
 }
 function updLabCost(sid, v) {
   var s=MSEC.find(function(x){return x.id===sid;});
-  if(s){s.labor.costPerDay=Math.max(0,parseFloat(v)||0);rSum();}
+  if(s){s.labor.costPerDay=Math.max(0,parseFloat(v)||0);rMats();rSum();}
 }
 function updLabRetail(sid, v) {
   var s=MSEC.find(function(x){return x.id===sid;});
-  if(s){s.labor.retailPerDay=Math.max(0,parseFloat(v)||0);rSum();}
+  if(s){s.labor.retailPerDay=Math.max(0,parseFloat(v)||0);rMats();rSum();}
 }
 
 // Override sTotals to use per-section labor rates
