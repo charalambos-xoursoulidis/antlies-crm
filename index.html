@@ -2622,6 +2622,7 @@ async function openProperty(pid) {
   if (!prop) return;
   APP.propId = pid;
   APP._propCache = prop;
+  loadHLData(pid);
   await goProperty();
 }
 
@@ -2756,6 +2757,7 @@ function setPFTog(field, val) {
 
 function clearPropForm() {
   PF_VALS={}; APP.propHL=null;
+  if(typeof hlResetInputs==='function') hlResetInputs();
   ['pf-name','pf-address','pf-area','pf-year','pf-floors','pf-floor',
    'pf-heating','pf-notes','pf-assigned','pf-amount','pf-reqdate',
    'pf-deadline','pf-budget','pf-when']
@@ -2796,7 +2798,7 @@ function openEditProperty(pid) {
   var ps=g('pf-status'); if(ps&&prop.status) ps.value=prop.status;
   var pp=g('pf-priority'); if(pp&&prop.priority) pp.value=prop.priority;
   ['proptype','phase','distrib','gas','heatwork','renov','znx'].forEach(function(f){if(prop[f])setPFTog(f,prop[f]);});
-  if(prop.heat_kw){var hlr=g('hl-result');if(hlr){g('hl-kw').textContent=prop.heat_kw+' kW';g('hl-safe').textContent=prop.heat_safe+' kW';g('hl-pump').textContent=prop.heat_pump+' kW';hlr.style.display='block';APP.propHL={kw:String(prop.heat_kw),safe:String(prop.heat_safe),pump:String(prop.heat_pump)};}}else{var hlr2=g('hl-result');if(hlr2)hlr2.style.display='none';}
+  hlRestoreForProperty(id, prop);
   g('modal-prop').classList.remove('hidden');
 }
 
@@ -2832,6 +2834,7 @@ async function saveProperty() {
     created_at: EDIT_PID?undefined:new Date().toISOString(),
   };
   await savePropertyAPI(prop);
+  if(APP.propHL && APP.propHL.area!=null){ await saveHLData(prop.id, APP.propHL); }
   g('modal-prop').classList.add('hidden');
   await renderCustomerDetail();
   // If editing current property, refresh its detail
@@ -2947,7 +2950,7 @@ function calcHL() {
   document.getElementById('hl-result').style.display = 'block';
   if (typeof APP !== 'undefined') {
     APP.propHL = {kw:qKw.toFixed(1),safe:safe.toFixed(1),pump:pump,
-      area:area,zone:zone,ins:insK,
+      area:area,h:h,zone:zone,ins:insK,
       upWin:!!(document.getElementById('hl-win')||{}).checked,
       upWall:!!(document.getElementById('hl-wall')||{}).checked,
       upCeil:!!(document.getElementById('hl-ceil')||{}).checked,
@@ -2956,6 +2959,72 @@ function calcHL() {
     if (typeof EDIT_PID!=='undefined'&&EDIT_PID) {
       try{localStorage.setItem('hl_'+EDIT_PID,JSON.stringify(APP.propHL));}catch(e){}  }
   }
+}
+
+// ── Μόνιμη αποθήκευση ΠΛΗΡΟΥΣ υπολογισμού απωλειών ανά ακίνητο ──
+// Τα 3 αποτελέσματα (kw/safe/pump) μένουν στη γραμμή properties· η ΑΝΑΛΥΤΙΚΗ
+// κατάσταση (εμβαδόν/ύψος/ζώνη/μόνωση/αναβαθμίσεις/δάπεδο/οροφή/πλευρές)
+// αποθηκεύεται στο hm_settings (id='hl_<propId>', JSONB) + localStorage.
+function loadHLLocal(pid){
+  if(!pid) return null;
+  try{ return JSON.parse(localStorage.getItem('hl_'+pid)||'null'); }catch(e){ return null; }
+}
+async function saveHLData(pid, hl){
+  if(!pid||!hl) return;
+  try{ localStorage.setItem('hl_'+pid,JSON.stringify(hl)); }catch(e){}
+  try{ if(storageMode==='supa'){ await supaRest('hm_settings','POST',{id:'hl_'+pid,value:hl},'on_conflict=id'); } }
+  catch(e){ console.warn('saveHLData:',e); }
+}
+async function loadHLData(pid){
+  if(!pid) return null;
+  var got=null;
+  try{ if(storageMode==='supa'){
+    var rows=await supaRest('hm_settings','GET',null,'id=eq.hl_'+pid+'&select=value');
+    if(rows&&rows[0]&&rows[0].value) got=rows[0].value;
+  } }catch(e){ console.warn('loadHLData:',e); }
+  if(got){ try{ localStorage.setItem('hl_'+pid,JSON.stringify(got)); }catch(e){} }
+  else got=loadHLLocal(pid);
+  return got;
+}
+function hlResetInputs(){
+  var a=g('hl-area'); if(a) a.value='';
+  var h=g('hl-h'); if(h) h.value='2.80';
+  var zn=g('hl-zone'); if(zn) zn.value='C';
+  var ins=g('hl-ins'); if(ins) ins.value='y1990';
+  ['hl-win','hl-wall','hl-ceil','hl-floor'].forEach(function(id){var e=g(id); if(e) e.checked=false;});
+  HL_STATE={floor:'pilotis',ceil:'roof',sides:2};
+  if(typeof hlPaint==='function') hlPaint();
+  var r=g('hl-result'); if(r) r.style.display='none';
+}
+function hlRestoreInputs(s){
+  if(!s) return;
+  var sv=function(id,v){var el=g(id); if(el&&v!=null&&v!=='') el.value=v;};
+  sv('hl-area',s.area); sv('hl-h',s.h);
+  var ins=g('hl-ins'); if(ins&&s.ins) ins.value=s.ins;
+  var zn=g('hl-zone'); if(zn&&s.zone) zn.value=s.zone;
+  var ck=function(id,v){var el=g(id); if(el) el.checked=!!v;};
+  ck('hl-win',s.upWin); ck('hl-wall',s.upWall); ck('hl-ceil',s.upCeil); ck('hl-floor',s.upFloor);
+  if(s.floorType) HL_STATE.floor=s.floorType;
+  if(s.ceilType) HL_STATE.ceil=s.ceilType;
+  if(s.sides!=null) HL_STATE.sides=parseInt(s.sides,10)||2;
+  if(typeof hlPaint==='function') hlPaint();
+  if(parseFloat(s.area)>0 && typeof calcHL==='function'){ try{ calcHL(); }catch(e){} }
+}
+function hlRestoreForProperty(pid, prop){
+  hlResetInputs();
+  var local=loadHLLocal(pid);
+  if(local && local.area!=null){
+    APP.propHL=local; hlRestoreInputs(local);
+  } else if(prop && prop.heat_kw){
+    var hlr=g('hl-result');
+    if(hlr){ var k=g('hl-kw'),s=g('hl-safe'),p=g('hl-pump');
+      if(k)k.textContent=prop.heat_kw+' kW'; if(s)s.textContent=prop.heat_safe+' kW'; if(p)p.textContent=prop.heat_pump+' kW';
+      hlr.style.display='block'; }
+    APP.propHL={kw:String(prop.heat_kw),safe:String(prop.heat_safe),pump:String(prop.heat_pump)};
+  }
+  loadHLData(pid).then(function(full){
+    if(full && full.area!=null && EDIT_PID===pid){ APP.propHL=full; hlRestoreInputs(full); }
+  }).catch(function(){});
 }
 </script>
 <script>
