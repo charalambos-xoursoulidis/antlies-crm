@@ -280,6 +280,7 @@ a{color:#2563eb}
   <div><div class="hdr-title">Διαχείριση Προσφορών — Αντλίες Θερμότητας</div>
   <div class="hdr-sub">Bosch · Hitachi · Inventor · Toyotomi · Atlantic · MDV</div></div>
   <div class="hdr-gap"></div>
+  <button class="hdr-btn" onclick="showLanding()">🏠 Αρχική</button>
   <button class="hdr-btn" onclick="openPricing()">💶 Τιμές</button>
   <button class="conn-badge" id="conn-badge" onclick="openSetup()">⚙ Ρυθμίσεις</button>
   <button class="hdr-btn" onclick="call(goCustomers)">👥 Πελάτες</button>
@@ -288,6 +289,128 @@ a{color:#2563eb}
 </div>
 
 
+
+<style>
+/* ===== LANDING ===== */
+#v-landing{min-height:calc(100vh - 24px);display:flex;align-items:center;justify-content:center;padding:24px}
+.lp-wrap{max-width:820px;width:100%;text-align:center}
+.lp-brand{margin-bottom:36px}
+.lp-logo{width:82px;height:82px;display:inline-block;margin-bottom:10px}
+.lp-co{font-size:26px;font-weight:800;letter-spacing:.5px;color:#0f172a}
+.lp-sub{font-size:14px;color:#64748b;margin-top:2px}
+.lp-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:640px){.lp-cards{grid-template-columns:1fr}}
+.lp-card{border:1px solid #e2e8f0;border-radius:18px;background:#fff;padding:32px 22px;cursor:pointer;text-align:center;transition:transform .15s,box-shadow .15s,border-color .15s;box-shadow:0 2px 10px rgba(15,23,42,.04)}
+.lp-card:hover{transform:translateY(-4px);box-shadow:0 16px 32px rgba(15,23,42,.12)}
+.lp-wiz{border-color:#fdba74;background:linear-gradient(160deg,#fff,#fff7ed)}
+.lp-wiz:hover{border-color:#f97316}
+.lp-crm{border-color:#bfdbfe;background:linear-gradient(160deg,#fff,#eff6ff)}
+.lp-crm:hover{border-color:#3b82f6}
+.lp-ic{font-size:48px;line-height:1;margin-bottom:12px}
+.lp-ct{font-size:19px;font-weight:800;color:#0f172a}
+.lp-cd{font-size:13px;color:#64748b;margin-top:6px;line-height:1.4}
+/* ===== WIZARD ===== */
+#v-wizard{min-height:calc(100vh - 24px);display:flex;justify-content:center;padding:14px}
+.wz-shell{max-width:880px;width:100%;align-self:center;display:flex;flex-direction:column;background:#fff;border:1px solid #e2e8f0;border-radius:18px;box-shadow:0 12px 44px rgba(15,23,42,.09);overflow:hidden}
+.wz-top{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #f1f5f9;background:#fafcff}
+.wz-home{background:none;border:none;color:#64748b;font-size:13px;font-weight:600;cursor:pointer;padding:5px 8px;border-radius:6px}
+.wz-home:hover{background:#f1f5f9;color:#0f172a}
+.wz-progress{flex:1;height:8px;background:#eef2f7;border-radius:99px;overflow:hidden}
+.wz-bar-fill{height:100%;width:0;background:linear-gradient(90deg,#fb923c,#f97316);border-radius:99px;transition:width .35s ease}
+.wz-step-num{font-size:12px;font-weight:700;color:#94a3b8;min-width:64px;text-align:right}
+.wz-body{display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:center;padding:14px 10px;min-height:320px}
+@media(max-width:680px){.wz-body{grid-template-columns:1fr;min-height:0}.wz-visual{max-height:200px}}
+.wz-visual{display:flex;align-items:center;justify-content:center;padding:8px}
+.wz-panel{padding:10px 24px}
+.wz-eyebrow{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#f97316;margin-bottom:6px}
+.wz-q{font-size:22px;font-weight:800;color:#0f172a;line-height:1.2}
+.wz-sub{font-size:13px;color:#64748b;margin-top:6px;line-height:1.45}
+.wz-field{margin-top:16px}
+.wz-nav{display:flex;justify-content:space-between;gap:10px;padding:14px 18px;border-top:1px solid #f1f5f9;background:#fafcff}
+.wz-btn{border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:700;cursor:pointer}
+.wz-back{background:#fff;border:1.5px solid #cbd5e1;color:#475569}
+.wz-back:hover{background:#f1f5f9}
+.wz-next{background:linear-gradient(90deg,#fb923c,#f97316);color:#fff;min-width:150px}
+.wz-next:hover{filter:brightness(1.05)}
+.wz-next:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.wz-inp{width:100%;border:1.5px solid #cbd5e1;border-radius:10px;padding:12px 14px;font-size:16px;outline:none;transition:border-color .15s}
+.wz-inp:focus{border-color:#f97316}
+.wz-row{display:flex;gap:10px}
+.wz-lbl{font-size:12px;font-weight:700;color:#475569;margin:12px 0 4px}
+.wz-chips{display:flex;flex-direction:column;gap:8px}
+.wz-chip{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid #e2e8f0;background:#fff;border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600;color:#334155;cursor:pointer;transition:.12s}
+.wz-chip:hover{border-color:#fdba74;background:#fff7ed}
+.wz-chip.on{border-color:#f97316;background:#fff7ed;color:#c2410c;box-shadow:0 0 0 3px rgba(249,115,22,.12)}
+.wz-chip .wz-chic{font-size:20px;flex-shrink:0}
+.wz-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.wz-chip.center{justify-content:center;text-align:center;padding:14px 4px;font-size:15px}
+.wz-res{text-align:center;padding:6px}
+.wz-res-kw{font-size:46px;font-weight:800;color:#f97316;line-height:1}
+.wz-res-lbl{font-size:13px;color:#64748b;margin-top:4px}
+.wz-res-pump{margin-top:16px;display:inline-block;background:#f0fdf4;border:1.5px solid #86efac;color:#166534;font-weight:800;font-size:18px;padding:10px 20px;border-radius:12px}
+.wz-thanks{text-align:center;padding:34px 16px;grid-column:1/-1}
+.wz-thanks .em{font-size:58px}
+.wz-thanks h2{font-size:23px;color:#0f172a;margin:10px 0 6px}
+.wz-thanks p{font-size:14px;color:#64748b;max-width:440px;margin:0 auto;line-height:1.5}
+/* house svg */
+.house{width:100%;max-width:300px;height:auto}
+.house .floor{fill:#e5e9f0;stroke:#a3adba;stroke-width:2;stroke-linejoin:round;transition:.35s}
+.house .wall{fill:rgba(148,163,184,.10);stroke:#a3adba;stroke-width:2;stroke-linejoin:round;transition:.35s}
+.house .roof{fill:#eef1f6;stroke:#a3adba;stroke-width:2;stroke-linejoin:round;transition:.35s}
+.house .det{fill:none;stroke:#a3adba;stroke-width:1.6}
+.house .dim{opacity:0;transition:.35s}
+.house .dim line{stroke:#3b82f6;stroke-width:2}
+.house .dim path{fill:#3b82f6}
+.house .dim text{fill:#1d4ed8;font-size:13px;font-weight:700}
+.house .weather{opacity:0;transition:.35s}
+.house .badge{opacity:0;transition:.35s}
+.house.hl-floor .floor{fill:#f97316;stroke:#c2410c;filter:drop-shadow(0 3px 8px rgba(249,115,22,.5))}
+.house.hl-roof .roof{fill:#f97316;stroke:#c2410c;filter:drop-shadow(0 3px 8px rgba(249,115,22,.5))}
+.house.hl-walls .wall{fill:rgba(249,115,22,.32);stroke:#c2410c;stroke-width:2.5}
+.house.hl-ins .wall{stroke:#2563eb;stroke-width:5}
+.house.hl-height .dim{opacity:1}
+.house.hl-height .wall{stroke:#3b82f6}
+.house.hl-zone .weather{opacity:1}
+.house.hl-upg .badge{opacity:1}
+.house.hl-done .floor,.house.hl-done .roof{fill:#fed7aa;stroke:#f97316}
+.house.hl-done .wall{fill:rgba(249,115,22,.14);stroke:#f97316}
+</style>
+
+<!-- VIEW: LANDING -->
+<div id="v-landing" class="hidden">
+  <div class="lp-wrap">
+    <div class="lp-brand">
+      <span class="co-logo lp-logo"></span>
+      <div class="lp-co">ΑΦΟΙ ΧΟΥΡΣΟΥΛΙΔΗ</div>
+      <div class="lp-sub">Αντλίες Θερμότητας · Θέρμανση · Ψύξη</div>
+    </div>
+    <div class="lp-cards">
+      <button class="lp-card lp-wiz" onclick="startWizard()">
+        <div class="lp-ic">🏠</div>
+        <div class="lp-ct">Υπολογισμός Αντλίας</div>
+        <div class="lp-cd">Δώσε τα στοιχεία σου & μάθε δωρεάν την ισχύ που χρειάζεσαι</div>
+      </button>
+      <button class="lp-card lp-crm" onclick="call(goCustomers)">
+        <div class="lp-ic">🗂️</div>
+        <div class="lp-ct">Διαχείριση</div>
+        <div class="lp-cd">Πελάτες, ακίνητα & προσφορές (εσωτερική χρήση)</div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW: WIZARD (lead capture) -->
+<div id="v-wizard" class="hidden">
+  <div class="wz-shell">
+    <div class="wz-top">
+      <button class="wz-home" onclick="wizExit()">‹ Αρχική</button>
+      <div class="wz-progress"><div id="wz-bar" class="wz-bar-fill"></div></div>
+      <div class="wz-step-num" id="wz-stepnum"></div>
+    </div>
+    <div class="wz-body" id="wz-body"></div>
+    <div class="wz-nav" id="wz-nav"></div>
+  </div>
+</div>
 
 <!-- VIEW: CUSTOMERS -->
 <div id="v-customers" class="view-cust hidden">
@@ -1325,7 +1448,7 @@ const SUPA_KEY_DEFAULT = 'sb_publishable_xjrKqW_cm1sQBdjoY7mg7g_-E1bsUnQ';
 window.addEventListener('load', async ()=>{
   storageMode = 'supa';
   updateBadge();
-  await goCustomers();
+  showLanding();
 });
 
 // ═══════════════════════════════════════════════════════════════════
@@ -2551,10 +2674,12 @@ async function goProperty() {
 
 // Override showView to include v-property
 function showView(id) {
-  ['v-customers','v-customer','v-property','v-editor'].forEach(function(v){
+  ['v-landing','v-wizard','v-customers','v-customer','v-property','v-editor'].forEach(function(v){
     var el=g(v); if(el) el.classList.add('hidden');
   });
   var el=g(id); if(el) el.classList.remove('hidden');
+  var _hdr=document.querySelector('.hdr');
+  if(_hdr) _hdr.style.display=(id==='v-landing'||id==='v-wizard')?'none':'';
   var hC=g('hdr-new-cust'), hQ=g('hdr-new-quote');
   if(hC) hC.style.display = id==='v-customers'?'':'none';
   if(hQ) hQ.style.display = id==='v-property'?'':'none';
@@ -3228,6 +3353,262 @@ function openPricing(){
   psRefreshMats();
 }
 window.addEventListener('load',function(){setTimeout(function(){loadPricing();},450);});
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// ΑΡΧΙΚΗ ΣΕΛΙΔΑ + WIZARD ΣΥΛΛΟΓΗΣ ΣΤΟΙΧΕΙΩΝ ΥΠΟΨΗΦΙΩΝ ΠΕΛΑΤΩΝ
+// ═══════════════════════════════════════════════════════════════════
+function showLanding(){ if(typeof showView==='function') showView('v-landing'); }
+
+// Καθαρός υπολογισμός θερμικών απωλειών — ΙΔΙΑ μαθηματικά με το calcHL().
+// (Αν αλλάξει η φόρμουλα στο calcHL, ενημέρωσε και εδώ.)
+function hlCompute(o){
+  o=o||{};
+  var area=parseFloat(o.area)||0;
+  var h=parseFloat(o.h)||2.80;
+  var insK=o.ins||'y1990';
+  var zone=o.zone||'C';
+  var U=JSON.parse(JSON.stringify(HL_UV[insK]||HL_UV['y1990']));
+  if(o.upWin) U.win=1.80;
+  if(o.upWall) U.wall=0.35;
+  if(o.upCeil) U.ce=0.25;
+  if(o.upFloor) U.fl=0.25;
+  var dT=HL_DT[zone]||30;
+  var sides=(o.sides!=null)?o.sides:2;
+  var floorT=o.floorType||'pilotis', ceilT=o.ceilType||'roof';
+  var V=area*h, Aw=Math.sqrt(area)*h, Uw=0.80*U.wall+0.20*U.win;
+  var Qw=sides*Aw*Uw*dT;
+  var Qf=area*U.fl*dT*(HL_FF[floorT]!=null?HL_FF[floorT]:0.45);
+  var Qc=area*U.ce*dT*(HL_FC[ceilT]!=null?HL_FC[ceilT]:1.0);
+  var Qv=0.5*V*0.34*dT;
+  var Qt=Qw+Qf+Qc+Qv, qKw=Qt/1000, safe=qKw*1.20;
+  var sizes=[4,6,8,10,12,14,16,18,20,22,24,26,30];
+  var pump=sizes.find(function(s){return s>=safe;})||30;
+  return {kw:qKw, safe:safe, pump:pump};
+}
+
+var HOUSE_SVG='<svg viewBox="0 0 300 250" class="house" xmlns="http://www.w3.org/2000/svg">'
++'<g class="weather"><circle cx="42" cy="40" r="15" fill="#fbbf24"/>'
++'<g stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round">'
++'<line x1="42" y1="15" x2="42" y2="7"/><line x1="42" y1="65" x2="42" y2="73"/>'
++'<line x1="17" y1="40" x2="9" y2="40"/><line x1="67" y1="40" x2="75" y2="40"/>'
++'<line x1="24" y1="22" x2="18" y2="16"/><line x1="60" y1="58" x2="66" y2="64"/></g>'
++'<text x="248" y="48" font-size="30">❄️</text></g>'
++'<polygon class="floor" points="70,195 210,195 248,162 108,162"/>'
++'<g class="wall">'
++'<polygon points="70,195 210,195 210,137 70,137"/>'
++'<polygon points="210,195 248,162 248,104 210,137"/>'
++'<polygon points="70,195 108,162 108,104 70,137"/></g>'
++'<g class="roof">'
++'<polygon points="70,137 210,137 159,68"/>'
++'<polygon points="210,137 248,104 159,68"/>'
++'<polygon points="70,137 108,104 159,68"/></g>'
++'<g class="det"><rect x="128" y="159" width="30" height="36"/>'
++'<rect x="88" y="150" width="26" height="22"/><rect x="166" y="150" width="26" height="22"/></g>'
++'<g class="dim"><line x1="56" y1="137" x2="56" y2="195"/>'
++'<path d="M56,137 l-4,8 l8,0 z"/><path d="M56,195 l-4,-8 l8,0 z"/>'
++'<text x="14" y="170">ύψος</text></g>'
++'<g class="badge"><text x="159" y="122" font-size="24" text-anchor="middle">🔧</text></g>'
++'</svg>';
+
+var WZ, WZ_STEPS=['contact','dims','zone','ins','upg','floor','ceil','sides','result'];
+function wizDefaults(){ return {lastname:'',firstname:'',phone:'',email:'',city:'',area:'',h:'2.8',zone:'C',ins:'y1990',upWin:false,upWall:false,upCeil:false,upFloor:false,floorType:'pilotis',ceilType:'roof',sides:2}; }
+var WZ_BODY_HTML='<div class="wz-visual" id="wz-visual"></div><div class="wz-panel"><div class="wz-eyebrow" id="wz-eyebrow"></div><div class="wz-q" id="wz-q"></div><div class="wz-sub" id="wz-qsub"></div><div class="wz-field" id="wz-field"></div></div>';
+var WZ_NAV_HTML='<button class="wz-btn wz-back" id="wz-back" onclick="wizPrev()">‹ Πίσω</button><button class="wz-btn wz-next" id="wz-next" onclick="wizNext()">Συνέχεια ›</button>';
+
+function startWizard(){
+  WZ={i:0,data:wizDefaults()};
+  showView('v-wizard');
+  g('wz-body').innerHTML=WZ_BODY_HTML;
+  g('wz-visual').innerHTML=HOUSE_SVG;
+  g('wz-nav').innerHTML=WZ_NAV_HTML;
+  g('wz-nav').style.display='flex';
+  wizRender();
+}
+function wizExit(){ showLanding(); }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function wizHouse(cls){ var v=g('wz-visual'); var s=v?v.querySelector('svg'):null; if(s) s.setAttribute('class','house '+(cls||'')); }
+function wizSetData(k,v){ if(WZ) WZ.data[k]=v; }
+function wizPick(k,v){ WZ.data[k]=v; wizRender(); }
+function wizToggleKey(k){ WZ.data[k]=!WZ.data[k]; wizRender(); }
+function wzChip(key,val,icon,label,cc){
+  var on=String(WZ.data[key])===String(val);
+  var vs=(typeof val==='number')?val:("'"+val+"'");
+  return '<button class="wz-chip'+(on?' on':'')+(cc?' '+cc:'')+'" onclick="wizPick(\''+key+'\','+vs+')">'
+    +(icon?'<span class="wz-chic">'+icon+'</span>':'')+'<span>'+label+'</span></button>';
+}
+function wzToggle(key,icon,label){
+  var on=!!WZ.data[key];
+  return '<button class="wz-chip'+(on?' on':'')+'" onclick="wizToggleKey(\''+key+'\')">'
+    +'<span class="wz-chic">'+icon+'</span><span>'+label+'</span>'
+    +(on?'<span style="margin-left:auto;color:#f97316;font-weight:800">✓</span>':'')+'</button>';
+}
+function wizValidate(){
+  var step=WZ_STEPS[WZ.i], d=WZ.data;
+  if(step==='contact') return (d.lastname||'').trim().length>0 && (d.phone||'').trim().length>0;
+  if(step==='dims') return (parseFloat(d.area)||0)>0;
+  return true;
+}
+function wizUpdateNav(){ var n=g('wz-next'); if(n) n.disabled=!wizValidate(); }
+function wizPrev(){ if(WZ.i>0){ WZ.i--; wizRender(); } }
+function wizNext(){
+  var step=WZ_STEPS[WZ.i];
+  if(step==='result'){ call(wizSave); return; }
+  if(!wizValidate()) return;
+  if(WZ.i<WZ_STEPS.length-1){ WZ.i++; wizRender(); }
+}
+function wizRender(){
+  var step=WZ_STEPS[WZ.i], d=WZ.data;
+  var eb=g('wz-eyebrow'),q=g('wz-q'),sub=g('wz-qsub'),fld=g('wz-field');
+  var back=g('wz-back'),next=g('wz-next'),sn=g('wz-stepnum'),bar=g('wz-bar');
+  var total=WZ_STEPS.length;
+  if(bar) bar.style.width=Math.round((WZ.i/(total-1))*100)+'%';
+  if(sn) sn.textContent=(step==='result')?'Αποτέλεσμα':((WZ.i+1)+' / '+(total-1));
+  if(back) back.style.visibility=(WZ.i===0)?'hidden':'visible';
+  if(next){ next.textContent='Συνέχεια ›'; next.disabled=false; }
+  var house='';
+  if(step==='contact'){
+    house='';
+    eb.textContent='Στοιχεία επικοινωνίας'; q.textContent='Ας γνωριστούμε!';
+    sub.textContent='Συμπλήρωσε τα στοιχεία σου για να σου ετοιμάσουμε πρόταση.';
+    fld.innerHTML=
+      '<div class="wz-row"><div style="flex:1"><div class="wz-lbl">Επώνυμο *</div><input class="wz-inp" value="'+esc(d.lastname)+'" oninput="wizSetData(\'lastname\',this.value);wizUpdateNav()"></div>'
+      +'<div style="flex:1"><div class="wz-lbl">Όνομα</div><input class="wz-inp" value="'+esc(d.firstname)+'" oninput="wizSetData(\'firstname\',this.value)"></div></div>'
+      +'<div class="wz-lbl">Τηλέφωνο *</div><input class="wz-inp" type="tel" value="'+esc(d.phone)+'" oninput="wizSetData(\'phone\',this.value);wizUpdateNav()">'
+      +'<div class="wz-lbl">Email</div><input class="wz-inp" type="email" value="'+esc(d.email)+'" oninput="wizSetData(\'email\',this.value)">'
+      +'<div class="wz-lbl">Πόλη</div><input class="wz-inp" value="'+esc(d.city)+'" oninput="wizSetData(\'city\',this.value)">';
+  } else if(step==='dims'){
+    house='hl-floor';
+    eb.textContent='Το σπίτι σου'; q.textContent='Πόσα τετραγωνικά θερμαίνεις;';
+    sub.textContent='Η ωφέλιμη επιφάνεια που θέλεις να ζεσταίνεται — και το καθαρό ύψος.';
+    fld.innerHTML=
+      '<div class="wz-lbl">Εμβαδόν θέρμανσης (m²) *</div><input class="wz-inp" type="number" inputmode="decimal" placeholder="π.χ. 90" value="'+esc(d.area)+'" oninput="wizSetData(\'area\',this.value);wizUpdateNav()">'
+      +'<div class="wz-lbl">Ύψος ορόφου (m)</div><input class="wz-inp" type="number" step="0.05" value="'+esc(d.h)+'" oninput="wizSetData(\'h\',this.value)">';
+  } else if(step==='zone'){
+    house='hl-zone';
+    eb.textContent='Περιοχή'; q.textContent='Σε ποια κλιματική ζώνη είσαι;';
+    sub.textContent='Καθορίζει πόσο κρύο πιάνει τον χειμώνα.';
+    fld.innerHTML='<div class="wz-chips">'
+      +wzChip('zone','A','🏖️','Ζώνη Α — Αθήνα, Νησιά')
+      +wzChip('zone','B','🏙️','Ζώνη Β — Κεντρική Ελλάδα')
+      +wzChip('zone','C','⛰️','Ζώνη Γ — Β. Ελλάδα, Μακεδονία')
+      +wzChip('zone','D','🏔️','Ζώνη Δ — Ορεινά')
+      +'</div>';
+  } else if(step==='ins'){
+    house='hl-ins';
+    eb.textContent='Μόνωση'; q.textContent='Πότε χτίστηκε το κτήριο;';
+    sub.textContent='Δείχνει πόσο καλά κρατά τη θερμότητα.';
+    fld.innerHTML='<div class="wz-chips">'
+      +wzChip('ins','pre1979','🧱','Πριν το 1979 — χωρίς μόνωση')
+      +wzChip('ins','y1979','🏚️','1979–1989')
+      +wzChip('ins','y1990','🏠','1990–1999')
+      +wzChip('ins','y2000','🏡','2000–2009')
+      +wzChip('ins','kenak','🌿','2010+ (ΚΕΝΑΚ)')
+      +wzChip('ins','nzeb','♻️','nZEB — άριστη μόνωση')
+      +'</div>';
+  } else if(step==='upg'){
+    house='hl-ins';
+    eb.textContent='Αναβαθμίσεις'; q.textContent='Έχεις κάνει κάτι από αυτά;';
+    sub.textContent='Διάλεξε όσα ισχύουν (προαιρετικό).';
+    fld.innerHTML='<div class="wz-chips">'
+      +wzToggle('upWin','🪟','Διπλά τζάμια / νέα κουφώματα')
+      +wzToggle('upWall','🧱','Θερμοπρόσοψη')
+      +wzToggle('upCeil','🏔️','Μόνωση οροφής')
+      +wzToggle('upFloor','🅿️','Μόνωση δαπέδου / πυλωτής')
+      +'</div>';
+  } else if(step==='floor'){
+    house='hl-floor';
+    eb.textContent='Δάπεδο'; q.textContent='Τι έχεις από κάτω;';
+    sub.textContent='Τι υπάρχει κάτω από το δάπεδο του χώρου.';
+    fld.innerHTML='<div class="wz-chips">'
+      +wzChip('floorType','ground','🌍','Επί εδάφους (πατάει στο χώμα)')
+      +wzChip('floorType','pilotis','🅿️','Πυλωτή / ανοιχτός χώρος από κάτω')
+      +wzChip('floorType','closed','🚪','Κλειστός / θερμαινόμενος χώρος')
+      +'</div>';
+  } else if(step==='ceil'){
+    house='hl-roof';
+    eb.textContent='Οροφή'; q.textContent='Τι έχεις από πάνω;';
+    sub.textContent='Τι υπάρχει πάνω από την οροφή του χώρου.';
+    fld.innerHTML='<div class="wz-chips">'
+      +wzChip('ceilType','roof','🏔️','Ταράτσα / τελευταίος όροφος')
+      +wzChip('ceilType','attic','🏚️','Κεραμοσκεπή / σοφίτα')
+      +wzChip('ceilType','closed','🚪','Κλειστός / θερμαινόμενος χώρος')
+      +'</div>';
+  } else if(step==='sides'){
+    house='hl-walls';
+    eb.textContent='Εκτεθειμένες πλευρές'; q.textContent='Πόσες πλευρές «βλέπουν» έξω;';
+    sub.textContent='Πόσοι εξωτερικοί τοίχοι εκτίθενται στο κρύο.';
+    fld.innerHTML='<div class="wz-grid4">'
+      +wzChip('sides',1,'','1 πλ.','center')
+      +wzChip('sides',2,'','2 πλ.','center')
+      +wzChip('sides',3,'','3 πλ.','center')
+      +wzChip('sides',4,'','4 πλ.','center')
+      +'</div>';
+  } else if(step==='result'){
+    return wizRenderResult();
+  }
+  wizHouse(house);
+  wizUpdateNav();
+}
+function wizRenderResult(){
+  var hl=hlCompute(WZ.data); WZ._hl=hl;
+  var safeR=Math.round(hl.safe*10)/10;
+  g('wz-eyebrow').textContent='Αποτέλεσμα';
+  g('wz-q').textContent='Η πρότασή μας για εσένα';
+  g('wz-qsub').textContent='Με βάση τα στοιχεία που έδωσες, η εκτιμώμενη ισχύς:';
+  g('wz-field').innerHTML=
+    '<div class="wz-res">'
+    +'<div class="wz-res-kw">'+String(safeR).replace('.',',')+' kW</div>'
+    +'<div class="wz-res-lbl">εκτιμώμενες θερμικές ανάγκες (με περιθώριο ασφαλείας)</div>'
+    +'<div class="wz-res-pump">💧 Προτεινόμενη αντλία: '+hl.pump+' kW</div>'
+    +'<div style="font-size:11px;color:#94a3b8;margin-top:14px;line-height:1.4">* Ενδεικτικός υπολογισμός. Η τελική διαστασιολόγηση γίνεται από τον μηχανικό μας.</div>'
+    +'</div>';
+  wizHouse('hl-done');
+  var next=g('wz-next'); if(next){ next.textContent='✓ Ολοκλήρωση & Αποστολή'; next.disabled=false; }
+  var back=g('wz-back'); if(back) back.style.visibility='visible';
+  g('wz-stepnum').textContent='Αποτέλεσμα';
+  g('wz-bar').style.width='100%';
+}
+async function wizSave(){
+  var d=WZ.data, hl=WZ._hl||hlCompute(d);
+  var rid=function(p){return p+Date.now()+Math.random().toString(36).slice(2,6);};
+  var cust={ id:rid('c'), lastname:(d.lastname||'').trim(), firstname:(d.firstname||'').trim(),
+    phone:(d.phone||'').trim(), email:(d.email||'').trim(), address:'', zip:'', city:(d.city||'').trim(),
+    notes:'Υποψήφιος πελάτης — φόρμα υπολογισμού αντλίας', created_at:new Date().toISOString() };
+  var pid=rid('p');
+  var propHL={ kw:String(Math.round(hl.kw*10)/10), safe:String(Math.round(hl.safe*10)/10), pump:String(hl.pump),
+    area:parseFloat(d.area)||0, h:parseFloat(d.h)||2.8, zone:d.zone, ins:d.ins,
+    upWin:!!d.upWin, upWall:!!d.upWall, upCeil:!!d.upCeil, upFloor:!!d.upFloor,
+    floorType:d.floorType, ceilType:d.ceilType, sides:d.sides };
+  var prop={ id:pid, customer_id:cust.id, name:'Κατοικία',
+    heat_kw:propHL.kw, heat_safe:propHL.safe, heat_pump:propHL.pump,
+    address:'', area:String(d.area||''), year:'', floors:'', floor:'', heating:'', notes:'',
+    assigned:'', amount:'', reqdate:'', deadline:'', budget:'', when:'',
+    status:'pending', priority:'medium', proptype:'', phase:'', distrib:'', gas:'', heatwork:'', renov:'', znx:'',
+    created_at:new Date().toISOString() };
+  var next=g('wz-next'); if(next){ next.disabled=true; next.textContent='Αποθήκευση…'; }
+  try{
+    await DB.saveCust(cust);
+    await savePropertyAPI(prop);
+    if(typeof saveHLData==='function'){ try{ await saveHLData(pid, propHL); }catch(e){} }
+    wizThanks(hl);
+  }catch(e){
+    alert('Σφάλμα αποθήκευσης: '+(e&&e.message?e.message:e));
+    if(next){ next.disabled=false; next.textContent='✓ Ολοκλήρωση & Αποστολή'; }
+  }
+}
+function wizThanks(hl){
+  g('wz-body').innerHTML=
+    '<div class="wz-thanks">'
+    +'<div class="em">🎉</div>'
+    +'<h2>Ευχαριστούμε!</h2>'
+    +'<p>Λάβαμε τα στοιχεία σου. Η ομάδα μας θα επικοινωνήσει σύντομα μαζί σου με ολοκληρωμένη πρόταση.</p>'
+    +'<div class="wz-res-pump" style="margin-top:18px">💧 Εκτιμώμενη αντλία: '+hl.pump+' kW</div>'
+    +'</div>';
+  g('wz-bar').style.width='100%';
+  g('wz-stepnum').textContent='';
+  g('wz-nav').innerHTML='<button class="wz-btn wz-back" onclick="wizExit()">‹ Αρχική</button><button class="wz-btn wz-next" onclick="startWizard()">+ Νέα καταχώρηση</button>';
+}
 </script>
 </body>
 </html>
