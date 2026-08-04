@@ -285,12 +285,24 @@ a{color:#2563eb}
     <button onclick="crmLogin()" style="width:100%;margin-top:6px;background:linear-gradient(90deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer">Είσοδος</button>
   </div>
 </div>
+<div id="crm-pass-mod" style="position:fixed;inset:0;z-index:99998;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:16px;padding:24px 22px;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35)">
+    <div style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:4px">🔑 Αλλαγή κωδικού</div>
+    <div style="font-size:12.5px;color:#64748b;margin-bottom:14px">Ο νέος κωδικός θα ισχύει σε όλες τις συσκευές (γραφείο &amp; διαδίκτυο) στην επόμενη είσοδο.</div>
+    <input id="crm-newpass" type="text" autocomplete="off" placeholder="Νέος κωδικός" onkeydown="if(event.key==='Enter')crmChangePass()" style="width:100%;font-size:16px;border:1.5px solid #cbd5e1;border-radius:10px;padding:11px;outline:none">
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button onclick="closeChangePass()" style="flex:1;background:#fff;border:1.5px solid #cbd5e1;color:#475569;border-radius:10px;padding:10px;font-weight:700;cursor:pointer">Ακύρωση</button>
+      <button onclick="crmChangePass()" style="flex:1;background:linear-gradient(90deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;padding:10px;font-weight:700;cursor:pointer">Αποθήκευση</button>
+    </div>
+  </div>
+</div>
 <div class="hdr">
   <span class="hdr-logo co-logo" style="width:34px;height:34px;display:inline-block;flex-shrink:0"></span>
   <div><div class="hdr-title">Διαχείριση Προσφορών — Αντλίες Θερμότητας</div>
   <div class="hdr-sub">Bosch · Hitachi · Inventor · Toyotomi · Atlantic · MDV</div></div>
   <div class="hdr-gap"></div>
   <button class="hdr-btn" onclick="openPricing()">💶 Τιμές</button>
+  <button class="hdr-btn" onclick="openChangePass()">🔑 Κωδικός</button>
   <button class="conn-badge" id="conn-badge" onclick="openSetup()">⚙ Ρυθμίσεις</button>
   <button class="hdr-btn" onclick="call(goCustomers)">👥 Πελάτες</button>
   <button class="hdr-btn grn" id="hdr-new-cust" onclick="openNewCustomer()" style="display:none">+ Νέος Πελάτης</button>
@@ -1454,16 +1466,37 @@ function togLab(sid){const s=MSEC.find(x=>x.id===sid);if(s){s.labor.on=!s.labor.
 const SUPA_URL_DEFAULT = 'https://wdbgdrbkhkdtfmpdgzmy.supabase.co';
 const SUPA_KEY_DEFAULT = 'sb_publishable_xjrKqW_cm1sQBdjoY7mg7g_-E1bsUnQ';
 
-function crmLogin(){
+var CRM_PASS=null;
+async function loadCrmPass(){
+  var p=null;
+  try{ if(storageMode==='supa'){ var rows=await supaRest('hm_settings','GET',null,'id=eq.crm_pass&select=value'); if(rows&&rows[0]&&rows[0].value) p=rows[0].value.pass; } }catch(e){}
+  if(!p){ try{ var l=JSON.parse(localStorage.getItem('crm_pass')||'null'); if(l&&l.pass)p=l.pass; }catch(e){} }
+  CRM_PASS=(p!=null&&p!=='')?String(p):'0000';
+  return CRM_PASS;
+}
+async function crmLogin(){
   var v=(g('crm-pass')||{}).value||'';
-  if(v==='0000'){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
+  var pass=CRM_PASS; if(pass==null){ pass=await loadCrmPass(); }
+  if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
   else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
 }
 function crmBoot(){
+  loadCrmPass();
   var ok=false; try{ok=sessionStorage.getItem('crm_ok')==='1';}catch(e){}
   var gt=g('crm-gate');
   if(ok){ if(gt)gt.style.display='none'; call(goCustomers); }
   else { if(gt)gt.style.display='flex'; var p=g('crm-pass'); if(p)setTimeout(function(){p.focus();},120); }
+}
+function openChangePass(){ var m=g('crm-pass-mod'); if(m)m.style.display='flex'; var i=g('crm-newpass'); if(i){i.value='';setTimeout(function(){i.focus();},80);} }
+function closeChangePass(){ var m=g('crm-pass-mod'); if(m)m.style.display='none'; }
+async function crmChangePass(){
+  var np=((g('crm-newpass')||{}).value||'').trim();
+  if(np.length<1){ alert('Δώσε νέο κωδικό.'); return; }
+  try{ localStorage.setItem('crm_pass',JSON.stringify({pass:np})); }catch(e){}
+  try{ if(storageMode==='supa'){ await supaRest('hm_settings','POST',{id:'crm_pass',value:{pass:np}},'on_conflict=id'); } }
+  catch(e){ alert('Σφάλμα αποθήκευσης κωδικού: '+(e&&e.message?e.message:e)); return; }
+  CRM_PASS=np; closeChangePass();
+  alert('Ο κωδικός άλλαξε. Θα ισχύει στην επόμενη είσοδο, σε όλες τις συσκευές.');
 }
 window.addEventListener('load', async ()=>{
   storageMode = 'supa';
