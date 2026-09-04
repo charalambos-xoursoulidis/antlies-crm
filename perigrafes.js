@@ -77,6 +77,19 @@ window.PERIGRAFES=(function(){
       controller:function(ctx){return 'Όλες οι λειτουργίες της αντλίας, καθώς και η θερμοκρασία του χώρου, ελέγχονται κεντρικά από τον μικροεπεξεργαστή της αντλίας, ο οποίος ρυθμίζει τη λειτουργία της ανάλογα με τις μεταβολές της εξωτερικής θερμοκρασίας. Για τον καλύτερο χειρισμό της εγκατάστασης τοποθετείται χειριστήριο χώρου για τον απομακρυσμένο έλεγχο της μονάδας από το σαλόνι· αντίστροφα, το χειριστήριο λειτουργεί ως αισθητήριο και μεταφέρει την ένδειξη θερμοκρασίας του χώρου στον επεξεργαστή, για τη βελτιστοποίηση της λειτουργίας του συστήματος.';},
       descRid:function(ctx){return 'rId153';},
       ctrlRid:function(ctx){return 'rId154';}
+    },
+    {
+      key:'buderus_gas',
+      seriesLabel:'Buderus Logamax (Αέριο)',
+      match:function(ctx){return ctx.equipType==='gas'&&ctx.brandId==='buderus'&&!!ctx.pumpName;},
+      title:function(ctx){return 'Πρόταση: Επίτοιχος λέβητας αερίου Buderus '+ctx.pumpName+(ctx.pumpKw?' ('+ctx.pumpKw+')':'');},
+      techA:function(ctx){return 'Ο λέβητας αερίου Buderus '+ctx.pumpName+' της γερμανικής εταιρίας Buderus είναι επίτοιχη μονάδα αερίου ολικής ανάκτησης ενέργειας (συμπύκνωσης), κατάλληλη για την καύση φυσικού αερίου και υγραερίου, με λειτουργία θέρμανσης και ζεστού νερού χρήσης και ';},
+      techB:function(ctx){return 'αναλογική ρύθμιση ισχύος 1:8, ώστε να προσαρμόζεται στις εκάστοτε ανάγκες της εγκατάστασης. Ο εναλλάκτης του είναι κατασκευασμένος από χυτό κράμα αλουμινίου μεγάλης αντοχής στα συμπυκνώματα, ενώ διαθέτει ενσωματωμένο σύστημα αντιστάθμισης με δυνατότητα αυτοδιάγνωσης. Χάρη στην τεχνολογία συμπύκνωσης αξιοποιεί και τη λανθάνουσα θερμότητα των καυσαερίων, επιτυγχάνοντας υψηλό βαθμό απόδοσης και χαμηλή κατανάλωση καυσίμου.';},
+      caption:function(ctx){return 'Ο λέβητας Buderus '+ctx.pumpName+' εντάσσεται διακριτικά και αρμονικά σε κάθε χώρο.';},
+      adv1:function(ctx){return 'Ο λέβητας συμπύκνωσης Buderus αποτελεί μια αξιόπιστη και αποδοτική λύση θέρμανσης και ζεστού νερού χρήσης, με χαμηλή κατανάλωση καυσίμου χάρη στην τεχνολογία συμπύκνωσης και τη μεγάλη διαβάθμιση ισχύος, καθώς και ευκολία στη συντήρηση.';},
+      controller:function(ctx){return 'Ο λέβητας συνδέεται με θερμοστάτη χώρου – αισθητήριο για τον καλύτερο έλεγχο της θερμοκρασίας και την απλούστευση των χειρισμών, ρυθμίζοντας αυτόματα τη λειτουργία του ανάλογα με τις ανάγκες του χώρου.';},
+      descRid:function(ctx){return 'rId25';},
+      ctrlRid:function(ctx){return 'rId154';}
     }
   ];
 
@@ -144,6 +157,31 @@ window.PERIGRAFES=(function(){
     works.push('Τοποθέτηση του χειριστηρίου – αισθητηρίου χώρου.');
     works.push('Θέση σε λειτουργία, δοκιμές και παράδοση με οδηγίες χρήσης.');
     return works;
+  }
+  function removeRunContaining(xml,needle){
+    var p=xml.indexOf(needle); if(p<0)return xml;
+    var a=xml.lastIndexOf('<w:r ',p), b=xml.lastIndexOf('<w:r>',p); var rs=(b>a)?b:a; if(rs<0)return xml;
+    var re=xml.indexOf('</w:r>',p); if(re<0)return xml;
+    return xml.substring(0,rs)+xml.substring(re+6);
+  }
+  function gasMaterialsList(ctx,opts){
+    return [
+      'Επίτοιχη μονάδα αερίου (λέβητας συμπύκνωσης) με τα εξαρτήματά της.',
+      'Σωληνώσεις φυσικού αερίου από γαλβανισμένο σωλήνα πράσινης ετικέτας, με τα εξαρτήματα και τις βάνες αερίου.',
+      'Σωληνώσεις ζεστού & κρύου νερού χρήσης από πολυστρωματικό σωλήνα.',
+      'Θερμοστάτης χώρου – αισθητήριο και υλικά σύνδεσης της εγκατάστασης.'
+    ];
+  }
+  function gasWorksList(ctx,opts){
+    var w=[];
+    if(opts.rmBoiler||opts.rmTank){var rp=[];if(opts.rmBoiler)rp.push('του υφιστάμενου λέβητα');if(opts.rmTank)rp.push('της δεξαμενής πετρελαίου');w.push('Αποξήλωση / αποσύνδεση '+rp.join(' και ')+' από την εγκατάσταση.');}
+    w.push('Κατασκευή των σωληνώσεων τροφοδοσίας φυσικού αερίου, από το σημείο παροχής έως τη μονάδα.');
+    w.push('Τοποθέτηση της μονάδας αερίου'+(opts.place?' '+opts.place:'')+'.');
+    w.push('Κατασκευή των σωληνώσεων παροχής ζεστού νερού χρήσης, από τη μονάδα έως την κοντινότερη παροχή.');
+    w.push('Τοποθέτηση και σύνδεση του θερμοστάτη χώρου, καθώς και σύνδεση της παροχής ρεύματος στη μονάδα.');
+    w.push('Σύνδεση της μονάδας με το δίκτυο των θερμαντικών σωμάτων, της ύδρευσης και της παροχής αερίου.');
+    w.push('Θέση σε λειτουργία, δοκιμές και παράδοση με οδηγίες χρήσης.');
+    return w;
   }
   function boilerTypeFrom(name){
     var n=String(name||'');
@@ -302,6 +340,13 @@ window.PERIGRAFES=(function(){
     // Εικόνα χειριστηρίου ανά μοντέλο (ctrlRid). Default rId26 = εικόνα Atlantic Navilink.
     var _crid=model.ctrlRid?model.ctrlRid(ctx):'rId26';
     if(_crid&&_crid!=='rId26'){ xml=xml.split('r:embed="rId26"').join('r:embed="'+_crid+'"'); }
+    if(ctx.equipType==='gas'){
+      xml=xml.split('Τοποθέτηση Αντλίας Θερμότητας').join('Τοποθέτηση Λέβητα Αερίου');
+      xml=xml.split('Στην παρακάτω οικονομική προσφορά θα βρείτε δύο προτεινόμενες λύσεις για αντλία θερμότητας.').join('Στην παρακάτω οικονομική προσφορά θα βρείτε την προτεινόμενη λύση για λέβητα αερίου.');
+      xml=xml.split('Υλικά μηχανοστασίου').join('Υλικά εγκατάστασης');
+      xml=removeParaContaining(xml,'καταναλώνει έως και 75%');
+      xml=removeRunContaining(xml,'r:embed="rId25"');
+    }
 
     var pumpSec=null,bufSec=null,boilSec=null;
     ctx.secs.forEach(function(s){
@@ -321,11 +366,14 @@ window.PERIGRAFES=(function(){
     }
 
     // 2) Λίστες υλικών / εργασιών
-    xml=expandListMarker(xml,'@@MATS@@',materialsList(pumpSec,bufSec,boilSec,opts));
-    xml=expandListMarker(xml,'@@WORKS@@',worksList(pumpSec,bufSec,boilSec,opts));
+    var _mats=(ctx.equipType==='gas')?gasMaterialsList(ctx,opts):materialsList(pumpSec,bufSec,boilSec,opts);
+    xml=expandListMarker(xml,'@@MATS@@',_mats);
+    var _works=(ctx.equipType==='gas')?gasWorksList(ctx,opts):worksList(pumpSec,bufSec,boilSec,opts);
+    xml=expandListMarker(xml,'@@WORKS@@',_works);
 
     // 3) Γραμμές πίνακα αξιών
-    var rows=[['Προμήθεια αντλίας θερμότητας '+(ctx.brandLabel?ctx.brandLabel+' ':'')+ctx.pumpName+(ctx.pumpKw?' ('+ctx.pumpKw+')':''),fmtE(ctx.pumpRetail)]];
+    var _lead=(ctx.equipType==='gas')?'Προμήθεια & τοποθέτηση λέβητα αερίου ':'Προμήθεια αντλίας θερμότητας ';
+    var rows=[[_lead+(ctx.brandLabel?ctx.brandLabel+' ':'')+ctx.pumpName+(ctx.pumpKw?' ('+ctx.pumpKw+')':''),fmtE(ctx.pumpRetail)]];
     ctx.secs.forEach(function(s){
       if(!s.retail||s.retail<=0)return;
       rows.push([s.label+' — υλικά & εργασία',fmtE(s.retail)]);
