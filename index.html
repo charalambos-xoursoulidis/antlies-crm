@@ -2,7 +2,7 @@
 <html lang="el"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cachebust" content="202608040801">
+<meta name="cachebust" content="202609111454">
 <title>Υπολογιστής Αντλίας Θερμότητας</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -69,6 +69,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 .house.hl-zone .weather{opacity:1}
 .house.hl-done .floor,.house.hl-done .roof{fill:#fed7aa;stroke:#f97316}
 .house.hl-done .wall{fill:rgba(249,115,22,.14);stroke:#f97316}
+.house.hl-openings .det{stroke:#f97316;stroke-width:2.6}
+.house.hl-openings .det rect{fill:rgba(249,115,22,.20)}
 /* ---- printout ---- */
 #printout{display:none}
 @media print{
@@ -128,8 +130,17 @@ function hlCompute(o){
   if(o.upWin)U.win=1.80; if(o.upWall)U.wall=0.35; if(o.upCeil)U.ce=0.25; if(o.upFloor)U.fl=0.25;
   var dT=HL_DT[o.zone]||30, sides=(o.sides!=null)?o.sides:2;
   var floorT=o.floorType||'pilotis', ceilT=o.ceilType||'roof';
-  var V=area*h, Aw=Math.sqrt(area)*h, Uw=0.80*U.wall+0.20*U.win;
-  var Qw=sides*Aw*Uw*dT;
+  var V=area*h, Awall=sides*Math.sqrt(area)*h;
+  var nWin=Math.max(0,parseInt(o.nWindows)||0), nDoor=Math.max(0,parseInt(o.nDoors)||0);
+  var Aopen=nWin*1.5+nDoor*2.2;               // παράθυρο ~1,5 m², μπαλκονόπορτα ~2,2 m²
+  var Qw;
+  if(Aopen>0){
+    Aopen=Math.min(Aopen,Awall*0.7);          // όριο ασφαλείας: ≤70% της τοιχοποιίας
+    var Aop=Math.max(Awall-Aopen,0);
+    Qw=(Aop*U.wall+Aopen*U.win)*dT;
+  } else {
+    Qw=Awall*(0.80*U.wall+0.20*U.win)*dT;     // fallback χωρίς δηλωμένα ανοίγματα
+  }
   var Qf=area*U.fl*dT*(HL_FF[floorT]!=null?HL_FF[floorT]:0.45);
   var Qc=area*U.ce*dT*(HL_FC[ceilT]!=null?HL_FC[ceilT]:1.0);
   var Qv=0.5*V*0.34*dT;
@@ -170,8 +181,8 @@ var HOUSE_SVG='<svg class="house" viewBox="0 0 300 250" xmlns="http://www.w3.org
 +'<text x="14" y="170">ύψος</text></g>'
 +'</svg>';
 
-var WZ, WZ_STEPS=['name','dims','zone','ins','upg','floor','ceil','sides','result'];
-function wizDefaults(){return {calcName:'Σπίτι μου',area:'',h:'2.8',zone:'C',ins:'y1990',upWin:false,upWall:false,upCeil:false,upFloor:false,floorType:'pilotis',ceilType:'roof',sides:2};}
+var WZ, WZ_STEPS=['name','dims','zone','ins','upg','floor','ceil','sides','openings','result'];
+function wizDefaults(){return {calcName:'Σπίτι μου',area:'',h:'2.8',zone:'C',ins:'y1990',upWin:false,upWall:false,upCeil:false,upFloor:false,floorType:'pilotis',ceilType:'roof',sides:2,nDoors:1,nWindows:4};}
 var WZ_BODY_HTML='<div class="wz-visual" id="wz-visual"></div><div class="wz-panel"><div class="wz-eyebrow" id="wz-eyebrow"></div><div class="wz-q" id="wz-q"></div><div class="wz-sub" id="wz-qsub"></div><div class="wz-field" id="wz-field"></div></div>';
 var WZ_NAV_HTML='<button class="wz-btn wz-back" id="wz-back" onclick="wizPrev()">‹ Πίσω</button><button class="wz-btn wz-next" id="wz-next" onclick="wizNext()">Συνέχεια ›</button>';
 
@@ -278,6 +289,12 @@ function wizRender(){
     fld.innerHTML='<div class="wz-grid4">'
       +wzChip('sides',1,'','1 πλ.','center')+wzChip('sides',2,'','2 πλ.','center')
       +wzChip('sides',3,'','3 πλ.','center')+wzChip('sides',4,'','4 πλ.','center')+'</div>';
+  } else if(step==='openings'){
+    house='hl-openings';
+    eb.textContent='Ανοίγματα'; q.textContent='Πόσα ανοίγματα έχει ο χώρος;';
+    sub.textContent='Οι μπαλκονόπορτες και τα παράθυρα χάνουν περισσότερη θερμότητα από τον τοίχο — έτσι ο υπολογισμός γίνεται πιο ακριβής.';
+    fld.innerHTML='<div class="wz-lbl">🚪 Μπαλκονόπορτες</div><input class="wz-inp" type="number" inputmode="numeric" min="0" value="'+esc(d.nDoors)+'" oninput="wizSetData(\'nDoors\',this.value)">'
+      +'<div class="wz-lbl">🪟 Παράθυρα</div><input class="wz-inp" type="number" inputmode="numeric" min="0" value="'+esc(d.nWindows)+'" oninput="wizSetData(\'nWindows\',this.value)">';
   } else if(step==='result'){
     return wizRenderResult();
   }
@@ -320,6 +337,7 @@ function doPrint(){
     +row('Δάπεδο', (LBL.floorType[d.floorType]||d.floorType))
     +row('Οροφή', (LBL.ceilType[d.ceilType]||d.ceilType))
     +row('Εκτεθειμένες πλευρές', d.sides)
+    +row('Μπαλκονόπορτες / Παράθυρα', (d.nDoors||0)+' / '+(d.nWindows||0))
     +'</table>'
     +'<div class="pr-res"><div class="k">'+(Math.round(hl.safe*10)/10).toString().replace('.',',')+' kW</div>'
     +'<div style="font-size:11px;color:#64748b;margin-top:2px">εκτιμώμενες θερμικές ανάγκες (με περιθώριο)</div>'
