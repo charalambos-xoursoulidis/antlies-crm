@@ -2,7 +2,7 @@
 <html lang="el"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cachebust" content="202609111522">
+<meta name="cachebust" content="202609121047">
 <title>Υπολογιστής Αντλίας Θερμότητας</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -196,7 +196,7 @@ var HOUSE_SVG='<svg class="house" viewBox="0 0 300 250" xmlns="http://www.w3.org
 +'</svg>';
 
 var WZ, WZ_STEPS=['name','dims','zone','ins','upg','floor','ceil','sides','openings','phase','result'];
-function wizDefaults(){return {calcName:'Σπίτι μου',area:'',h:'2.8',zone:'C',ins:'y1990',upWin:false,upWall:false,upCeil:false,upFloor:false,floorType:'pilotis',ceilType:'roof',sides:2,nDoors:1,nWindows:4,phase:'mono'};}
+function wizDefaults(){return {calcName:'Σπίτι μου',area:'',h:'2.8',zone:'C',ins:'y1990',upWin:false,upWall:false,upCeil:false,upFloor:false,floorType:'pilotis',ceilType:'roof',sides:2,nDoors:3,nWindows:1,phase:'mono'};}
 var WZ_BODY_HTML='<div class="wz-visual" id="wz-visual"></div><div class="wz-panel"><div class="wz-eyebrow" id="wz-eyebrow"></div><div class="wz-q" id="wz-q"></div><div class="wz-sub" id="wz-qsub"></div><div class="wz-field" id="wz-field"></div></div>';
 var WZ_NAV_HTML='<button class="wz-btn wz-back" id="wz-back" onclick="wizPrev()">‹ Πίσω</button><button class="wz-btn wz-next" id="wz-next" onclick="wizNext()">Συνέχεια ›</button>';
 
@@ -326,12 +326,17 @@ function wizRenderResult(){
   var hl=hlCompute(WZ.data); WZ._hl=hl;
   var pp=pickPump(hl.safe,WZ.data.phase||'mono'); WZ._pp=pp;
   var basicR=Math.round((pp.retail+MAT_LABOR)/10)*10;
+  var vat=Math.round(basicR*0.24), total=basicR+vat;
   g('wz-eyebrow').textContent='Αποτέλεσμα';
   g('wz-q').textContent=(WZ.data.calcName||'Ο υπολογισμός σου');
   g('wz-qsub').textContent='Με βάση τα στοιχεία που έδωσες, το ενδεικτικό κόστος:';
   g('wz-field').innerHTML='<div class="wz-res">'
     +'<div class="wz-res-kw">~'+fmtEur(basicR)+' €</div>'
-    +'<div class="wz-res-lbl">ενδεικτικό βασικό κόστος «με το κλειδί στο χέρι»<br>αντλία θερμότητας, υλικά &amp; εργασία</div>'
+    +'<div class="wz-res-lbl">ενδεικτικό βασικό κόστος «με το κλειδί στο χέρι» <span style="white-space:nowrap">(αξία χωρίς ΦΠΑ)</span><br>αντλία θερμότητας, υλικά &amp; εργασία</div>'
+    +'<div style="margin-top:10px;padding-top:8px;border-top:1px dashed #e2e8f0;font-size:13px;color:#64748b;line-height:1.7">'
+      +'ΦΠΑ 24%: <b style="color:#475569">'+fmtEur(vat)+' €</b><br>'
+      +'<span style="font-size:14px;color:#334155">Σύνολο με ΦΠΑ: <b>~'+fmtEur(total)+' €</b></span>'
+    +'</div>'
     +(pp.capped?'<div style="margin-top:12px;font-size:12.5px;font-weight:700;color:#c2410c">🔺 Μεγάλες ανάγκες — επικοινώνησε μαζί μας για ακριβή διαστασιολόγηση</div>':'')
     +'<div style="font-size:11px;color:#94a3b8;margin-top:14px;line-height:1.4">* Ενδεικτική τιμή βασικής εγκατάστασης. Η τελική προσφορά γίνεται από τον μηχανικό μας κατόπιν αυτοψίας.</div>'
     +'<button class="wz-mini" onclick="wizStart()">↻ Νέος υπολογισμός</button>'
@@ -344,6 +349,7 @@ function wizRenderResult(){
 function doPrint(){
   var d=WZ.data, hl=WZ._hl||hlCompute(d);
   var pp=WZ._pp||pickPump(hl.safe,d.phase||'mono'); var basicR=Math.round((pp.retail+MAT_LABOR)/10)*10;
+  var vat=Math.round(basicR*0.24), total=basicR+vat;
   var upg=[]; if(d.upWin)upg.push('Διπλά τζάμια'); if(d.upWall)upg.push('Θερμοπρόσοψη'); if(d.upCeil)upg.push('Μόνωση οροφής'); if(d.upFloor)upg.push('Μόνωση δαπέδου');
   var now=new Date().toLocaleDateString('el-GR');
   var row=function(k,v){return '<tr><td>'+k+'</td><td>'+v+'</td></tr>';};
@@ -364,8 +370,9 @@ function doPrint(){
     +row('Παροχή ρεύματος', (d.phase==='tri'?'Τριφασικό (400V)':'Μονοφασικό (230V)'))
     +'</table>'
     +'<div class="pr-res"><div class="k">~'+fmtEur(basicR)+' €</div>'
-    +'<div style="font-size:11px;color:#64748b;margin-top:2px">ενδεικτικό βασικό κόστος «με το κλειδί στο χέρι»</div>'
-    +'<div class="p">αντλία θερμότητας, υλικά &amp; εργασία</div></div>'
+    +'<div style="font-size:11px;color:#64748b;margin-top:2px">ενδεικτικό βασικό κόστος «με το κλειδί στο χέρι» (αξία χωρίς ΦΠΑ)</div>'
+    +'<div class="p">αντλία θερμότητας, υλικά &amp; εργασία</div>'
+    +'<div style="font-size:11px;color:#475569;margin-top:6px;line-height:1.6">ΦΠΑ 24%: <b>'+fmtEur(vat)+' €</b> &nbsp;·&nbsp; <b style="color:#334155">Σύνολο με ΦΠΑ: ~'+fmtEur(total)+' €</b></div></div>'
     +'<div class="pr-note">* Ενδεικτικός υπολογισμός βάσει των στοιχείων που δηλώθηκαν. Η τελική διαστασιολόγηση και επιλογή μοντέλου γίνεται από τον μηχανικό μας κατόπιν αυτοψίας.</div>';
   window.print();
 }
