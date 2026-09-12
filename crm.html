@@ -639,6 +639,26 @@ a{color:#2563eb}
             </div>
           </div>
         </div>
+        <!-- Κουφώματα (ανοίγματα) -->
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:8px 10px;margin-bottom:8px">
+          <div style="font-size:10px;font-weight:700;color:#1e40af;text-transform:uppercase;margin-bottom:6px">🪟 Κουφώματα — ποσότητα × πλάτος × ύψος (m)</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;margin-bottom:5px">
+            <span style="flex:1">🚪 Μπαλκονόπορτες</span>
+            <input id="hl-ndoor" type="number" min="0" step="1" value="3" style="width:44px;border:1px solid #cbd5e1;border-radius:5px;padding:3px 4px;font-size:11px;text-align:center">
+            <span style="color:#94a3b8">×</span>
+            <input id="hl-dw" type="number" min="0" step="0.1" value="1.2" style="width:50px;border:1px solid #cbd5e1;border-radius:5px;padding:3px 4px;font-size:11px;text-align:center">
+            <span style="color:#94a3b8">×</span>
+            <input id="hl-dh" type="number" min="0" step="0.1" value="2.2" style="width:50px;border:1px solid #cbd5e1;border-radius:5px;padding:3px 4px;font-size:11px;text-align:center">
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px">
+            <span style="flex:1">🪟 Παράθυρα</span>
+            <input id="hl-nwin" type="number" min="0" step="1" value="1" style="width:44px;border:1px solid #cbd5e1;border-radius:5px;padding:3px 4px;font-size:11px;text-align:center">
+            <span style="color:#94a3b8">×</span>
+            <input id="hl-ww" type="number" min="0" step="0.1" value="1.2" style="width:50px;border:1px solid #cbd5e1;border-radius:5px;padding:3px 4px;font-size:11px;text-align:center">
+            <span style="color:#94a3b8">×</span>
+            <input id="hl-wh" type="number" min="0" step="0.1" value="1.4" style="width:50px;border:1px solid #cbd5e1;border-radius:5px;padding:3px 4px;font-size:11px;text-align:center">
+          </div>
+        </div>
         <button type="button" onclick="calcHL()" style="width:100%;background:#1e3a5f;color:#fff;border:none;border-radius:7px;padding:8px;font-size:12px;font-weight:700;cursor:pointer">🔢 Υπολογισμός Απωλειών</button>
         <div id="hl-result" style="display:none;margin-top:8px;background:#fff;border-radius:8px;border:1px solid #bfdbfe;overflow:hidden">
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;text-align:center">
@@ -3120,9 +3140,20 @@ function calcHL() {
   if ((document.getElementById('hl-floor')||{}).checked) U.fl  = 0.25;
   var dT  = HL_DT[zone] || 30;
   var V   = area * h;
-  var Aw  = Math.sqrt(area) * h;
-  var Uw  = 0.80*U.wall + 0.20*U.win;
-  var Qw  = HL_STATE.sides * Aw * Uw * dT;
+  var Awall = HL_STATE.sides * Math.sqrt(area) * h;
+  var nDoor = Math.max(0,parseInt((document.getElementById('hl-ndoor')||{}).value)||0);
+  var nWin  = Math.max(0,parseInt((document.getElementById('hl-nwin') ||{}).value)||0);
+  var dW = parseFloat((document.getElementById('hl-dw')||{}).value)||0, dH = parseFloat((document.getElementById('hl-dh')||{}).value)||0;
+  var wW = parseFloat((document.getElementById('hl-ww')||{}).value)||0, wH = parseFloat((document.getElementById('hl-wh')||{}).value)||0;
+  var Aopen = nDoor*(dW*dH) + nWin*(wW*wH);
+  var Qw;
+  if (Aopen>0) {
+    Aopen = Math.min(Aopen, Awall*0.7);
+    var Aop = Math.max(Awall-Aopen,0);
+    Qw = (Aop*U.wall + Aopen*U.win) * dT;
+  } else {
+    Qw = Awall * (0.80*U.wall + 0.20*U.win) * dT;
+  }
   var Qf  = area * U.fl * dT * (HL_FF[HL_STATE.floor] != null ? HL_FF[HL_STATE.floor] : 0.45);
   var Qc  = area * U.ce * dT * (HL_FC[HL_STATE.ceil]  != null ? HL_FC[HL_STATE.ceil]  : 1.0);
   var Qv  = 0.5 * V * 0.34 * dT;
@@ -3146,7 +3177,8 @@ function calcHL() {
       upWall:!!(document.getElementById('hl-wall')||{}).checked,
       upCeil:!!(document.getElementById('hl-ceil')||{}).checked,
       upFloor:!!(document.getElementById('hl-floor')||{}).checked,
-      floorType:HL_STATE.floor,ceilType:HL_STATE.ceil,sides:HL_STATE.sides};
+      floorType:HL_STATE.floor,ceilType:HL_STATE.ceil,sides:HL_STATE.sides,
+      nDoors:nDoor,doorW:dW,doorH:dH,nWindows:nWin,winW:wW,winH:wH};
     if (typeof EDIT_PID!=='undefined'&&EDIT_PID) {
       try{localStorage.setItem('hl_'+EDIT_PID,JSON.stringify(APP.propHL));}catch(e){}  }
   }
@@ -3183,6 +3215,9 @@ function hlResetInputs(){
   var zn=g('hl-zone'); if(zn) zn.value='C';
   var ins=g('hl-ins'); if(ins) ins.value='y1990';
   ['hl-win','hl-wall','hl-ceil','hl-floor'].forEach(function(id){var e=g(id); if(e) e.checked=false;});
+  var setv=function(id,v){var e=g(id); if(e) e.value=v;};
+  setv('hl-ndoor','3'); setv('hl-dw','1.2'); setv('hl-dh','2.2');
+  setv('hl-nwin','1');  setv('hl-ww','1.2'); setv('hl-wh','1.4');
   HL_STATE={floor:'pilotis',ceil:'roof',sides:2};
   if(typeof hlPaint==='function') hlPaint();
   var r=g('hl-result'); if(r) r.style.display='none';
@@ -3195,6 +3230,8 @@ function hlRestoreInputs(s){
   var zn=g('hl-zone'); if(zn&&s.zone) zn.value=s.zone;
   var ck=function(id,v){var el=g(id); if(el) el.checked=!!v;};
   ck('hl-win',s.upWin); ck('hl-wall',s.upWall); ck('hl-ceil',s.upCeil); ck('hl-floor',s.upFloor);
+  sv('hl-ndoor',s.nDoors); sv('hl-dw',s.doorW); sv('hl-dh',s.doorH);
+  sv('hl-nwin',s.nWindows); sv('hl-ww',s.winW); sv('hl-wh',s.winH);
   if(s.floorType) HL_STATE.floor=s.floorType;
   if(s.ceilType) HL_STATE.ceil=s.ceilType;
   if(s.sides!=null) HL_STATE.sides=parseInt(s.sides,10)||2;
