@@ -2,7 +2,7 @@
 <html lang="el"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cachebust" content="202609121047">
+<meta name="cachebust" content="202609121223">
 <title>Υπολογιστής Αντλίας Θερμότητας</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -11,6 +11,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 .brand{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 14px 4px;text-align:center;flex-direction:column}
 .brand .co{font-size:20px;font-weight:800;letter-spacing:.4px;color:#0f172a}
 .brand .sub{font-size:12.5px;color:#64748b}
+.brand .privacy{font-size:12px;color:#059669;font-weight:600;margin-top:4px}
+.appver{text-align:center;font-size:11px;color:#94a3b8;padding:4px 0 16px;letter-spacing:.3px}
 .wrap{flex:1;display:flex;justify-content:center;padding:12px}
 .wz-shell{max-width:880px;width:100%;align-self:flex-start;display:flex;flex-direction:column;background:#fff;border:1px solid #e2e8f0;border-radius:18px;box-shadow:0 12px 44px rgba(15,23,42,.09);overflow:hidden}
 .wz-top{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #f1f5f9;background:#fafcff}
@@ -98,6 +100,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
   <div class="brand">
     <div class="co">ΑΦΟΙ ΧΟΥΡΣΟΥΛΙΔΗ</div>
     <div class="sub">Αντλίες Θερμότητας · Δωρεάν υπολογισμός ισχύος</div>
+    <div class="privacy">🔒 Δεν αποθηκεύεται τίποτα · δεν ζητάμε προσωπικά στοιχεία</div>
   </div>
   <div class="wrap">
     <div class="wz-shell">
@@ -110,11 +113,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
       <div class="wz-nav" id="wz-nav"></div>
     </div>
   </div>
+  <div class="appver" id="appver"></div>
 </div>
 
 <div id="printout"></div>
 
 <script>
+var APP_VER='1.0';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 function g(id){return document.getElementById(id);}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
@@ -312,7 +317,7 @@ function wizRender(){
   } else if(step==='phase'){
     house='';
     eb.textContent='Παροχή ρεύματος'; q.textContent='Τι παροχή ρεύματος έχεις;';
-    sub.textContent='Μονοφασικό (230V) ή τριφασικό (400V) — καθορίζει τον τύπο της αντλίας και το κόστος.';
+    sub.textContent='Μονοφασικό (230V) ή τριφασικό (400V) — καθορίζει τον τύπο της αντλίας και την αξία.';
     fld.innerHTML='<div class="wz-chips">'
       +wzChip('phase','mono','🔌','Μονοφασικό (230V)')
       +wzChip('phase','tri','⚡','Τριφασικό (400V)')+'</div>';
@@ -329,16 +334,16 @@ function wizRenderResult(){
   var vat=Math.round(basicR*0.24), total=basicR+vat;
   g('wz-eyebrow').textContent='Αποτέλεσμα';
   g('wz-q').textContent=(WZ.data.calcName||'Ο υπολογισμός σου');
-  g('wz-qsub').textContent='Με βάση τα στοιχεία που έδωσες, το ενδεικτικό κόστος:';
+  g('wz-qsub').textContent='Με βάση τα στοιχεία που έδωσες, η ενδεικτική αξία:';
   g('wz-field').innerHTML='<div class="wz-res">'
     +'<div class="wz-res-kw">~'+fmtEur(basicR)+' €</div>'
-    +'<div class="wz-res-lbl">ενδεικτικό βασικό κόστος «με το κλειδί στο χέρι» <span style="white-space:nowrap">(αξία χωρίς ΦΠΑ)</span><br>αντλία θερμότητας, υλικά &amp; εργασία</div>'
+    +'<div class="wz-res-lbl">ενδεικτική βασική αξία «με το κλειδί στο χέρι»<br><span style="font-size:12px;color:#94a3b8">(δεν περιλαμβάνει την εργασία του ηλεκτρολόγου και τον ΦΠΑ)</span><br>αντλία θερμότητας, υλικά &amp; εργασία τοποθέτησης</div>'
     +'<div style="margin-top:10px;padding-top:8px;border-top:1px dashed #e2e8f0;font-size:13px;color:#64748b;line-height:1.7">'
       +'ΦΠΑ 24%: <b style="color:#475569">'+fmtEur(vat)+' €</b><br>'
       +'<span style="font-size:14px;color:#334155">Σύνολο με ΦΠΑ: <b>~'+fmtEur(total)+' €</b></span>'
     +'</div>'
     +(pp.capped?'<div style="margin-top:12px;font-size:12.5px;font-weight:700;color:#c2410c">🔺 Μεγάλες ανάγκες — επικοινώνησε μαζί μας για ακριβή διαστασιολόγηση</div>':'')
-    +'<div style="font-size:11px;color:#94a3b8;margin-top:14px;line-height:1.4">* Ενδεικτική τιμή βασικής εγκατάστασης. Η τελική προσφορά γίνεται από τον μηχανικό μας κατόπιν αυτοψίας.</div>'
+    +'<div style="font-size:11px;color:#94a3b8;margin-top:14px;line-height:1.45">* Ο υπολογισμός είναι <b>ενδεικτικός</b> και βασίζεται αποκλειστικά στα στοιχεία που δηλώσατε· πραγματικοί παράγοντες (προσανατολισμός, αεροστεγανότητα, πραγματικές μονώσεις, ανάγκες ζεστού νερού κ.ά.) μπορεί να διαφοροποιήσουν τόσο την ισχύ όσο και την αξία. Η τελική προσφορά και η ακριβής διαστασιολόγηση γίνονται από τον μηχανικό μας κατόπιν αυτοψίας.</div>'
     +'<button class="wz-mini" onclick="wizStart()">↻ Νέος υπολογισμός</button>'
     +'</div>';
   wizHouse('hl-done');
@@ -370,12 +375,14 @@ function doPrint(){
     +row('Παροχή ρεύματος', (d.phase==='tri'?'Τριφασικό (400V)':'Μονοφασικό (230V)'))
     +'</table>'
     +'<div class="pr-res"><div class="k">~'+fmtEur(basicR)+' €</div>'
-    +'<div style="font-size:11px;color:#64748b;margin-top:2px">ενδεικτικό βασικό κόστος «με το κλειδί στο χέρι» (αξία χωρίς ΦΠΑ)</div>'
-    +'<div class="p">αντλία θερμότητας, υλικά &amp; εργασία</div>'
+    +'<div style="font-size:11px;color:#64748b;margin-top:2px">ενδεικτική βασική αξία «με το κλειδί στο χέρι» (δεν περιλαμβάνει την εργασία του ηλεκτρολόγου και τον ΦΠΑ)</div>'
+    +'<div class="p">αντλία θερμότητας, υλικά &amp; εργασία τοποθέτησης</div>'
     +'<div style="font-size:11px;color:#475569;margin-top:6px;line-height:1.6">ΦΠΑ 24%: <b>'+fmtEur(vat)+' €</b> &nbsp;·&nbsp; <b style="color:#334155">Σύνολο με ΦΠΑ: ~'+fmtEur(total)+' €</b></div></div>'
-    +'<div class="pr-note">* Ενδεικτικός υπολογισμός βάσει των στοιχείων που δηλώθηκαν. Η τελική διαστασιολόγηση και επιλογή μοντέλου γίνεται από τον μηχανικό μας κατόπιν αυτοψίας.</div>';
+    +'<div class="pr-note">* Ο υπολογισμός είναι ενδεικτικός και βασίζεται αποκλειστικά στα στοιχεία που δηλώθηκαν· πραγματικοί παράγοντες (προσανατολισμός, αεροστεγανότητα, πραγματικές μονώσεις, ανάγκες ζεστού νερού κ.ά.) μπορεί να διαφοροποιήσουν την ισχύ και την αξία. Η αξία δεν περιλαμβάνει την εργασία του ηλεκτρολόγου και τον ΦΠΑ. Η τελική προσφορά και η ακριβής διαστασιολόγηση γίνονται από τον μηχανικό μας κατόπιν αυτοψίας.</div>'
+    +'<div style="font-size:9px;color:#cbd5e1;margin-top:10px;text-align:right">Υπολογιστής Αντλίας Θερμότητας — έκδοση v'+APP_VER+'</div>';
   window.print();
 }
+(function(){var av=g('appver'); if(av)av.textContent='έκδοση v'+APP_VER;})();
 wizStart();
 </script>
 </body></html>
