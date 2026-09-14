@@ -2,7 +2,7 @@
 <html lang="el"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cachebust" content="202609141402">
+<meta name="cachebust" content="202609141412">
 <title>Υπολογιστής Αντλίας Θερμότητας</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -127,7 +127,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
   <div class="brand">
     <div class="co">ΑΦΟΙ ΧΟΥΡΣΟΥΛΙΔΗ</div>
     <div class="sub">Αντλίες Θερμότητας · Δωρεάν υπολογισμός ισχύος</div>
-    <div class="privacy">🔒 Δεν αποθηκεύεται τίποτα · δεν ζητάμε προσωπικά στοιχεία</div>
+    <div class="privacy">🔒 Δωρεάν &amp; ανώνυμος υπολογισμός — στοιχεία ζητάμε μόνο αν θέλεις εξατομικευμένη προσφορά</div>
   </div>
   <div class="wrap">
     <div class="wz-shell">
@@ -212,7 +212,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 </div>
 
 <script>
-var APP_VER='2.4';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var APP_VER='2.5';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 var OFFICE_EMAIL='charalambos@xoursoulidis.com';   // παραλήπτης αιτημάτων εξατομικευμένης προσφοράς
 var OFFICE_PHONE='2331028063';
 var STUDY_FEE=50, SKETCH_FEE=20;   // € τέλος μελέτης / επιπλέον σκαρίφημα (DXF+PDF)
@@ -351,7 +351,7 @@ function wizRender(){
   if(step==='name'){
     house='';
     eb.textContent='Ξεκίνα'; q.textContent='Ονόμασε τον υπολογισμό σου';
-    sub.textContent='Δώσε ένα όνομα για να τον ξεχωρίζεις — π.χ. το σπίτι σου. (Δεν αποθηκεύεται τίποτα, δεν ζητάμε στοιχεία.)';
+    sub.textContent='Δώσε ένα όνομα για να τον ξεχωρίζεις — π.χ. το σπίτι σου. (Δεν αποθηκεύεται τίποτα — ο υπολογισμός είναι ανώνυμος.)';
     fld.innerHTML='<div class="wz-lbl">Όνομα υπολογισμού</div><input class="wz-inp" value="'+esc(d.calcName)+'" oninput="wizSetData(\'calcName\',this.value);wizUpdateNav()">';
   } else if(step==='dims'){
     house='hl-floor';
