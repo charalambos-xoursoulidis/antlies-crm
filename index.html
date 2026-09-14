@@ -2,7 +2,7 @@
 <html lang="el"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cachebust" content="202609121223">
+<meta name="cachebust" content="202609141211">
 <title>Υπολογιστής Αντλίας Θερμότητας</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -93,6 +93,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 .pr-res .k{font-size:30px;font-weight:800;color:#c2410c}
 .pr-res .p{margin-top:6px;font-size:16px;font-weight:800;color:#166534}
 .pr-note{font-size:10.5px;color:#94a3b8;margin-top:14px;line-height:1.4}
+/* ---- lead / detailed-offer modal ---- */
+.lead-ovl{position:fixed;inset:0;background:rgba(15,23,42,.55);display:flex;align-items:flex-start;justify-content:center;padding:20px 12px;z-index:50;overflow-y:auto}
+.lead-card{background:#fff;border-radius:18px;max-width:560px;width:100%;padding:22px 22px 18px;position:relative;box-shadow:0 20px 60px rgba(15,23,42,.3);margin:auto}
+.lead-x{position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;color:#94a3b8;cursor:pointer;line-height:1}
+.lead-h{font-size:18px;font-weight:800;color:#0f172a;margin-bottom:12px;padding-right:24px}
+.lead-info{font-size:12px;color:#475569;line-height:1.55;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;max-height:240px;overflow-y:auto}
+.lead-info b{color:#0f172a}
+.lead-info h4{font-size:12px;font-weight:800;color:#0f172a;margin:10px 0 3px}
+.lead-consent{display:flex;gap:9px;align-items:flex-start;margin-top:12px;font-size:12.5px;color:#334155;cursor:pointer;line-height:1.45}
+.lead-consent input{margin-top:2px;width:18px;height:18px;flex-shrink:0;cursor:pointer;accent-color:#f97316}
+.lead-row{display:flex;gap:10px}
+.lead-row>div{flex:1}
+.lead-fg{margin-top:10px}
+.lead-fg label{display:block;font-size:11.5px;font-weight:700;color:#475569;margin-bottom:4px}
+.lead-inp,.lead-sel,.lead-ta{width:100%;border:1.5px solid #cbd5e1;border-radius:9px;padding:10px 12px;font-size:14px;outline:none;font-family:inherit;background:#fff}
+.lead-inp:focus,.lead-sel:focus,.lead-ta:focus{border-color:#f97316}
+.lead-ta{resize:vertical;min-height:56px}
+.lead-fee{margin-top:12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:11px 13px;font-size:12.5px;color:#9a3412;line-height:1.5}
+.lead-note{margin-top:8px;font-size:11.5px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;line-height:1.45}
+.lead-err{margin-top:10px;font-size:12px;color:#dc2626;font-weight:600}
+.lead-nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.lead-btn{background:linear-gradient(90deg,#fb923c,#f97316);color:#fff;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:800;cursor:pointer}
+.lead-btn:disabled{opacity:.45;cursor:not-allowed}
+.lead-btn2{background:#fff;border:1.5px solid #cbd5e1;color:#475569;border-radius:10px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer}
+.lead-ok{text-align:center;padding:6px 0}
+.lead-ok .big{font-size:40px;line-height:1}
 </style></head>
 <body>
 
@@ -118,8 +144,77 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 
 <div id="printout"></div>
 
+<div id="lead-ovl" class="lead-ovl" hidden>
+  <div class="lead-card">
+    <button class="lead-x" onclick="closeLead()" aria-label="Κλείσιμο">✕</button>
+
+    <!-- STEP 1: ενημέρωση & συναίνεση -->
+    <div id="lead-s1">
+      <div class="lead-h">🔧 Λεπτομερής μελέτη &amp; εξατομικευμένη προσφορά</div>
+      <div class="lead-info">
+        <b>Τι περιλαμβάνει:</b> επιτόπια αυτοψία στη διεύθυνση του ακινήτου (νομοί <b>Ημαθίας &amp; Δράμας</b>), ακριβής υπολογισμός θερμικών απωλειών και <b>δεσμευτική, εξατομικευμένη προσφορά</b>.
+        <h4>Κόστος</h4>
+        Τέλος μελέτης <b>€50</b>, το οποίο <b>πιστώνεται</b> στην τελική προσφορά αν αναλάβουμε τη δουλειά. Αν δεν υπάρχει σχέδιο κτιρίου, φτιάχνουμε <b>σκαρίφημα</b> των εξωτερικών επιφανειών (+<b>€20</b>) και σας το παραδίδουμε σε <b>DXF &amp; PDF</b>.
+        <h4>Διαδικασία &amp; πληρωμή</h4>
+        Μετά την υποβολή, επικοινωνεί μαζί σας το συνεργαζόμενο <b>λογιστήριο</b>: σας δίνει <b>IBAN</b>, ζητά τα <b>φορολογικά σας στοιχεία</b> και εκδίδει <b>παραστατικό</b>. Μόλις εξοφληθεί το τέλος, κανονίζουμε την <b>αυτοψία</b>.
+        <h4>Προσωπικά δεδομένα (GDPR)</h4>
+        <b>Υπεύθυνος επεξεργασίας:</b> ΑΦΟΙ ΧΟΥΡΣΟΥΛΙΔΗ, Βέροια — τηλ. 2331028063, charalambos@xoursoulidis.com. <b>Σκοπός:</b> η σύνταξη της μελέτης/προσφοράς που ζητάτε. <b>Νομική βάση:</b> λήψη μέτρων κατ' αίτησή σας πριν από τη σύναψη σύμβασης (άρθρο 6§1β GDPR). <b>Αποδέκτες:</b> η εταιρεία μας και το συνεργαζόμενο <b>λογιστήριο</b> για την έκδοση παραστατικού (ζητά χωριστά &amp; διατηρεί τα φορολογικά στοιχεία όσο ορίζει η νομοθεσία, ~5 έτη). <b>Διατήρηση:</b> αν δεν προχωρήσει η συνεργασία, διαγράφουμε τα στοιχεία επικοινωνίας σας (τηλέφωνο/email)· διατηρούμε μόνο <b>όνομα &amp; διεύθυνση ακινήτου</b> για αρχείο, έως 24 μήνες. <b>Δικαιώματα:</b> πρόσβαση / διόρθωση / διαγραφή / εναντίωση στο charalambos@xoursoulidis.com· καταγγελία στην Αρχή Προστασίας Δεδομένων Προσωπικού Χαρακτήρα (dpa.gr). <b>Υπαναχώρηση:</b> με την υποβολή ζητάτε τη <b>άμεση έναρξη</b> της υπηρεσίας και αναγνωρίζετε ότι, μόλις αυτή ολοκληρωθεί, χάνετε το 14ήμερο δικαίωμα υπαναχώρησης για το ποσό που αντιστοιχεί στην παρασχεθείσα υπηρεσία.
+      </div>
+      <label class="lead-consent"><input type="checkbox" id="lead-consent" onchange="leadConsentChanged()"><span>Έχω διαβάσει και <b>αποδέχομαι</b> τα παραπάνω — τη χρήση των στοιχείων μου για τη σύνταξη της προσφοράς, το τέλος μελέτης €50 (+€20 για σκαρίφημα) και τους όρους.</span></label>
+      <div class="lead-nav">
+        <button class="lead-btn2" onclick="closeLead()">Άκυρο</button>
+        <button class="lead-btn" id="lead-toS2" onclick="leadStep(2)" disabled>Συνέχεια →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: στοιχεία -->
+    <div id="lead-s2" hidden>
+      <div class="lead-h">Τα στοιχεία σου</div>
+      <div class="lead-row">
+        <div class="lead-fg"><label>Όνομα *</label><input class="lead-inp" id="lead-fname"></div>
+        <div class="lead-fg"><label>Επίθετο *</label><input class="lead-inp" id="lead-lname"></div>
+      </div>
+      <div class="lead-row">
+        <div class="lead-fg"><label>Τηλέφωνο *</label><input class="lead-inp" id="lead-phone" type="tel" inputmode="tel"></div>
+        <div class="lead-fg"><label>Email</label><input class="lead-inp" id="lead-email" type="email" inputmode="email"></div>
+      </div>
+      <div class="lead-fg"><label>Διεύθυνση ακινήτου *</label><input class="lead-inp" id="lead-addr" placeholder="Οδός, αριθμός, πόλη"></div>
+      <div class="lead-row">
+        <div class="lead-fg"><label>Νομός ακινήτου</label><select class="lead-sel" id="lead-region" onchange="leadRegionChanged()"><option value="imathia">Ημαθία</option><option value="drama">Δράμα</option><option value="other">Άλλος</option></select></div>
+        <div class="lead-fg"><label>Υπάρχει σχέδιο κτιρίου;</label><select class="lead-sel" id="lead-plan" onchange="leadPlanChanged()"><option value="yes">Ναι, υπάρχει</option><option value="no">Όχι</option></select></div>
+      </div>
+      <div class="lead-note" id="lead-region-note" hidden>Η επιτόπια υπηρεσία καλύπτει προς το παρόν <b>Ημαθία &amp; Δράμα</b>. Μπορείς να υποβάλεις το αίτημα και θα επικοινωνήσουμε για τις δυνατότητες.</div>
+      <div class="lead-note" id="lead-plan-note" hidden>Χωρίς σχέδιο, θα φτιάξουμε <b>σκαρίφημα</b> των εξωτερικών επιφανειών (+€20) και θα σας το δώσουμε σε <b>DXF &amp; PDF</b>.</div>
+      <div class="lead-fg"><label>Σημειώσεις (προαιρετικά)</label><textarea class="lead-ta" id="lead-notes" placeholder="π.χ. όροφος, ιδιαιτερότητες, ώρες επικοινωνίας"></textarea></div>
+      <div class="lead-fee">Τέλος μελέτης: <b id="lead-fee-total">€50</b><span id="lead-fee-extra" hidden> (μελέτη €50 + σκαρίφημα €20)</span> — πιστώνεται στην προσφορά αν κλείσει η δουλειά.</div>
+      <div class="lead-err" id="lead-err"></div>
+      <div class="lead-nav">
+        <button class="lead-btn2" onclick="leadStep(1)">← Πίσω</button>
+        <button class="lead-btn" onclick="leadSubmit()">✉️ Αποστολή αιτήματος</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: επιβεβαίωση -->
+    <div id="lead-s3" hidden>
+      <div class="lead-ok"><div class="big">✅</div>
+        <div class="lead-h" style="padding-right:0;margin-top:6px">Το αίτημα ετοιμάστηκε!</div>
+        <div style="font-size:13px;color:#475569;line-height:1.5">Άνοιξε το πρόγραμμα email σου με το αίτημα συμπληρωμένο — πάτησε <b>Αποστολή</b>. Θα επικοινωνήσει μαζί σου το <b>λογιστήριο</b> για την πληρωμή (IBAN) και τα φορολογικά στοιχεία· μετά την εξόφληση κανονίζουμε την <b>αυτοψία</b>.</div>
+      </div>
+      <div style="font-size:12px;color:#64748b;margin-top:14px;line-height:1.5">Αν δεν άνοιξε το email, αντίγραψε το κείμενο και στείλ' το στο <b id="lead-oemail"></b> ή κάλεσέ μας στο <b id="lead-ophone"></b>:</div>
+      <textarea id="lead-preview" class="lead-ta" style="min-height:120px;margin-top:6px;font-size:12px;color:#475569" readonly></textarea>
+      <div class="lead-nav">
+        <button class="lead-btn2" id="lead-copybtn" onclick="leadCopy()">📋 Αντιγραφή κειμένου</button>
+        <button class="lead-btn" onclick="closeLead()">Κλείσιμο</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-var APP_VER='1.0';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var APP_VER='2.0';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var OFFICE_EMAIL='charalambos@xoursoulidis.com';   // παραλήπτης αιτημάτων εξατομικευμένης προσφοράς
+var OFFICE_PHONE='2331028063';
+var STUDY_FEE=50, SKETCH_FEE=20;   // € τέλος μελέτης / επιπλέον σκαρίφημα (DXF+PDF)
 function g(id){return document.getElementById(id);}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
@@ -343,6 +438,11 @@ function wizRenderResult(){
       +'<span style="font-size:14px;color:#334155">Σύνολο με ΦΠΑ: <b>~'+fmtEur(total)+' €</b></span>'
     +'</div>'
     +(pp.capped?'<div style="margin-top:12px;font-size:12.5px;font-weight:700;color:#c2410c">🔺 Μεγάλες ανάγκες — επικοινώνησε μαζί μας για ακριβή διαστασιολόγηση</div>':'')
+    +'<div style="margin-top:16px;padding-top:14px;border-top:1px solid #f1f5f9">'
+      +'<div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:8px">Θέλεις ακριβή μελέτη &amp; δεσμευτική προσφορά;</div>'
+      +'<button onclick="openLead()" style="width:100%;background:linear-gradient(90deg,#fb923c,#f97316);color:#fff;border:none;border-radius:12px;padding:13px 16px;font-size:14.5px;font-weight:800;cursor:pointer">🔧 Λεπτομερής μελέτη &amp; εξατομικευμένη προσφορά</button>'
+      +'<div style="font-size:11px;color:#94a3b8;margin-top:6px">Επιτόπια αυτοψία (νομοί Ημαθίας &amp; Δράμας) · τέλος μελέτης €50 που πιστώνεται στην προσφορά</div>'
+    +'</div>'
     +'<div style="font-size:11px;color:#94a3b8;margin-top:14px;line-height:1.45">* Ο υπολογισμός είναι <b>ενδεικτικός</b> και βασίζεται αποκλειστικά στα στοιχεία που δηλώσατε· πραγματικοί παράγοντες (προσανατολισμός, αεροστεγανότητα, πραγματικές μονώσεις, ανάγκες ζεστού νερού κ.ά.) μπορεί να διαφοροποιήσουν τόσο την ισχύ όσο και την αξία. Η τελική προσφορά και η ακριβής διαστασιολόγηση γίνονται από τον μηχανικό μας κατόπιν αυτοψίας.</div>'
     +'<button class="wz-mini" onclick="wizStart()">↻ Νέος υπολογισμός</button>'
     +'</div>';
@@ -382,6 +482,74 @@ function doPrint(){
     +'<div style="font-size:9px;color:#cbd5e1;margin-top:10px;text-align:right">Υπολογιστής Αντλίας Θερμότητας — έκδοση v'+APP_VER+'</div>';
   window.print();
 }
+
+// ---- Λεπτομερής μελέτη & εξατομικευμένη προσφορά (lead → email) ----
+function openLead(){
+  var c=g('lead-consent'); if(c)c.checked=false;
+  var b=g('lead-toS2'); if(b)b.disabled=true;
+  var e=g('lead-err'); if(e)e.textContent='';
+  var oe=g('lead-oemail'); if(oe)oe.textContent=OFFICE_EMAIL;
+  var op=g('lead-ophone'); if(op)op.textContent=OFFICE_PHONE;
+  leadPlanChanged(); leadRegionChanged();
+  leadStep(1);
+  g('lead-ovl').hidden=false;
+}
+function closeLead(){ var o=g('lead-ovl'); if(o)o.hidden=true; }
+function leadStep(n){ ['lead-s1','lead-s2','lead-s3'].forEach(function(id,i){var el=g(id); if(el)el.hidden=(i+1!==n);}); }
+function leadConsentChanged(){ var b=g('lead-toS2'); if(b)b.disabled=!(g('lead-consent')||{}).checked; }
+function leadPlanChanged(){
+  var plan=(g('lead-plan')||{}).value;
+  var note=g('lead-plan-note'); if(note)note.hidden=(plan!=='no');
+  var fee=STUDY_FEE+(plan==='no'?SKETCH_FEE:0);
+  var ft=g('lead-fee-total'); if(ft)ft.textContent='€'+fee;
+  var fx=g('lead-fee-extra'); if(fx)fx.hidden=(plan!=='no');
+}
+function leadRegionChanged(){ var r=(g('lead-region')||{}).value; var n=g('lead-region-note'); if(n)n.hidden=(r!=='other'); }
+function leadCopy(){
+  var pv=g('lead-preview'); if(!pv)return;
+  pv.focus(); pv.select();
+  try{ document.execCommand('copy'); }catch(e){}
+  try{ if(navigator.clipboard) navigator.clipboard.writeText(pv.value); }catch(e){}
+  var b=g('lead-copybtn'); if(b){var t=b.textContent;b.textContent='✓ Αντιγράφηκε';setTimeout(function(){b.textContent=t;},1500);}
+}
+function leadSubmit(){
+  var vv=function(id){return ((g(id)||{}).value||'').trim();};
+  var fn=vv('lead-fname'), ln=vv('lead-lname'), ph=vv('lead-phone'), addr=vv('lead-addr');
+  var err=g('lead-err');
+  if(!fn||!ln||!ph||!addr){ if(err)err.textContent='Συμπλήρωσε όνομα, επίθετο, τηλέφωνο και διεύθυνση ακινήτου.'; return; }
+  if(err)err.textContent='';
+  var email=vv('lead-email'), region=(g('lead-region')||{}).value, plan=(g('lead-plan')||{}).value, notes=vv('lead-notes');
+  var regL={imathia:'Ημαθία',drama:'Δράμα',other:'Άλλος (εκτός τρέχουσας κάλυψης)'}[region]||region;
+  var planL=(plan==='no')?('ΟΧΙ — να γίνει σκαρίφημα (+€'+SKETCH_FEE+', DXF+PDF)'):'ΝΑΙ, υπάρχει σχέδιο';
+  var fee=STUDY_FEE+(plan==='no'?SKETCH_FEE:0);
+  var d=(WZ&&WZ.data)?WZ.data:{}, hl=(WZ&&WZ._hl)?WZ._hl:null, pp=(WZ&&WZ._pp)?WZ._pp:null;
+  var basicR=pp?Math.round((pp.retail+MAT_LABOR)/10)*10:null;
+  var NL='\r\n';
+  var body='ΑΙΤΗΜΑ ΕΞΑΤΟΜΙΚΕΥΜΕΝΗΣ ΠΡΟΣΦΟΡΑΣ'+NL+'==============================='+NL+NL
+    +'ΣΤΟΙΧΕΙΑ ΕΝΔΙΑΦΕΡΟΜΕΝΟΥ'+NL
+    +'Όνομα: '+fn+' '+ln+NL
+    +'Τηλέφωνο: '+ph+NL
+    +'Email: '+(email||'—')+NL
+    +'Διεύθυνση ακινήτου: '+addr+NL
+    +'Νομός: '+regL+NL
+    +'Σχέδιο κτιρίου: '+planL+NL
+    +'Σημειώσεις: '+(notes||'—')+NL+NL
+    +'ΤΕΛΟΣ ΜΕΛΕΤΗΣ: €'+fee+' (μελέτη €'+STUDY_FEE+(plan==='no'?(' + σκαρίφημα €'+SKETCH_FEE):'')+') — πιστώνεται στην προσφορά αν κλείσει η δουλειά'+NL+NL
+    +'ΕΝΔΕΙΚΤΙΚΟΣ ΥΠΟΛΟΓΙΣΜΟΣ (δωρεάν υπολογιστής)'+NL
+    +'Ονομασία: '+(d.calcName||'—')+NL
+    +'Εμβαδόν: '+(d.area||'—')+' m² · Ύψος: '+(d.h||'—')+' m'+NL
+    +'Ζώνη: '+((LBL.zone&&LBL.zone[d.zone])||d.zone||'—')+' · Μόνωση: '+((LBL.ins&&LBL.ins[d.ins])||d.ins||'—')+NL
+    +'Μπαλκονόπορτες/Παράθυρα: '+(d.nDoors||0)+' / '+(d.nWindows||0)+NL
+    +'Παροχή: '+(d.phase==='tri'?'Τριφασικό':'Μονοφασικό')+NL
+    +(hl?('Απώλειες: ~'+(+hl.kw).toFixed(1)+' kW · +20%: ~'+(+hl.safe).toFixed(1)+' kW · Αντλία: '+(pp?pp.kw:'—')+' kW'+NL):'')
+    +(basicR!=null?('Ενδεικτική βασική αξία: ~€'+fmtEur(basicR)+' (χωρίς εργασία ηλεκτρολόγου & ΦΠΑ)'+NL):'')
+    +NL+'— Στάλθηκε από τον δωρεάν υπολογιστή αντλίας θερμότητας (v'+APP_VER+')';
+  var subject='Αίτημα εξατομικευμένης προσφοράς — '+fn+' '+ln+' ('+regL+')';
+  var pv=g('lead-preview'); if(pv)pv.value='Προς: '+OFFICE_EMAIL+'\nΘέμα: '+subject+'\n\n'+body;
+  leadStep(3);
+  window.location.href='mailto:'+OFFICE_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+}
+
 (function(){var av=g('appver'); if(av)av.textContent='έκδοση v'+APP_VER;})();
 wizStart();
 </script>
