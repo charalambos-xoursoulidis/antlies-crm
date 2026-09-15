@@ -2,7 +2,7 @@
 <html lang="el"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cachebust" content="202609141412">
+<meta name="cachebust" content="202609150740">
 <title>Υπολογιστής Αντλίας Θερμότητας</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -186,6 +186,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
       </div>
       <div class="lead-note" id="lead-region-note" hidden>Η επιτόπια υπηρεσία καλύπτει προς το παρόν <b>Ημαθία &amp; Δράμα</b>. Μπορείς να υποβάλεις το αίτημα και θα επικοινωνήσουμε για τις δυνατότητες.</div>
       <div class="lead-note" id="lead-plan-note" hidden>Χωρίς σχέδιο, <b>μετά την αποδοχή του αρχικού κόστους</b> φτιάχνουμε <b>σκαρίφημα</b> των εξωτερικών επιφανειών (+€20) που σας δίνουμε σε <b>DXF &amp; PDF</b>.</div>
+      <div class="lead-fg"><label>Συμμετοχή σε πρόγραμμα επιδότησης;</label><select class="lead-sel" id="lead-prog" onchange="leadProgChanged()"><option value="no">Όχι</option><option value="eksoikonomo">Εξοικονομώ</option><option value="anakainizo">Ανακαινίζω</option><option value="other">Άλλο πρόγραμμα</option></select></div>
+      <div class="lead-fg" id="lead-prog-other-fg" hidden><label>Ποιο πρόγραμμα;</label><input class="lead-inp" id="lead-prog-other" placeholder="Όνομα προγράμματος"></div>
       <div class="lead-fg"><label>Σημειώσεις (προαιρετικά)</label><textarea class="lead-ta" id="lead-notes" placeholder="π.χ. όροφος, ιδιαιτερότητες, ώρες επικοινωνίας"></textarea></div>
       <div class="lead-fee">Αρχικό κόστος: <b id="lead-fee-total">€50</b><span id="lead-fee-extra" hidden> (μελέτη €50 + σκαρίφημα €20 σε DXF &amp; PDF)</span> — <b>θα αφαιρεθεί εξ ολοκλήρου από την αξία της εγκατάστασης</b>.</div>
       <div class="lead-err" id="lead-err"></div>
@@ -212,7 +214,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 </div>
 
 <script>
-var APP_VER='2.5';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var APP_VER='2.6';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 var OFFICE_EMAIL='charalambos@xoursoulidis.com';   // παραλήπτης αιτημάτων εξατομικευμένης προσφοράς
 var OFFICE_PHONE='2331028063';
 var STUDY_FEE=50, SKETCH_FEE=20;   // € τέλος μελέτης / επιπλέον σκαρίφημα (DXF+PDF)
@@ -491,7 +493,7 @@ function openLead(){
   var e=g('lead-err'); if(e)e.textContent='';
   var oe=g('lead-oemail'); if(oe)oe.textContent=OFFICE_EMAIL;
   var op=g('lead-ophone'); if(op)op.textContent=OFFICE_PHONE;
-  leadPlanChanged(); leadRegionChanged();
+  leadPlanChanged(); leadRegionChanged(); leadProgChanged();
   leadStep(1);
   g('lead-ovl').hidden=false;
 }
@@ -506,6 +508,7 @@ function leadPlanChanged(){
   var fx=g('lead-fee-extra'); if(fx)fx.hidden=(plan!=='no');
 }
 function leadRegionChanged(){ var r=(g('lead-region')||{}).value; var n=g('lead-region-note'); if(n)n.hidden=(r!=='other'); }
+function leadProgChanged(){ var v=(g('lead-prog')||{}).value; var f=g('lead-prog-other-fg'); if(f)f.hidden=(v!=='other'); }
 function leadCopy(){
   var pv=g('lead-preview'); if(!pv)return;
   pv.focus(); pv.select();
@@ -522,6 +525,9 @@ function leadSubmit(){
   var email=vv('lead-email'), region=(g('lead-region')||{}).value, plan=(g('lead-plan')||{}).value, notes=vv('lead-notes');
   var regL={imathia:'Ημαθία',drama:'Δράμα',other:'Άλλος (εκτός τρέχουσας κάλυψης)'}[region]||region;
   var planL=(plan==='no')?('ΟΧΙ — να γίνει σκαρίφημα (+€'+SKETCH_FEE+', DXF+PDF)'):'ΝΑΙ, υπάρχει σχέδιο';
+  var prog=(g('lead-prog')||{}).value;
+  var progL={no:'Όχι',eksoikonomo:'Εξοικονομώ',anakainizo:'Ανακαινίζω',other:'Άλλο'}[prog]||prog;
+  if(prog==='other'){var po=vv('lead-prog-other'); progL='Άλλο'+(po?(' — '+po):' (δεν διευκρινίστηκε)');}
   var fee=STUDY_FEE+(plan==='no'?SKETCH_FEE:0);
   var d=(WZ&&WZ.data)?WZ.data:{}, hl=(WZ&&WZ._hl)?WZ._hl:null, pp=(WZ&&WZ._pp)?WZ._pp:null;
   var basicR=pp?Math.round((pp.retail+MAT_LABOR)/10)*10:null;
@@ -534,6 +540,7 @@ function leadSubmit(){
     +'Διεύθυνση ακινήτου: '+addr+NL
     +'Νομός: '+regL+NL
     +'Σχέδιο κτιρίου: '+planL+NL
+    +'Πρόγραμμα επιδότησης: '+progL+NL
     +'Σημειώσεις: '+(notes||'—')+NL+NL
     +'ΑΡΧΙΚΟ ΚΟΣΤΟΣ: €'+fee+' (μελέτη €'+STUDY_FEE+(plan==='no'?(' + σκαρίφημα €'+SKETCH_FEE+' σε DXF+PDF'):'')+') — θα αφαιρεθεί εξ ολοκλήρου από την αξία της εγκατάστασης'+NL+NL
     +'ΕΝΔΕΙΚΤΙΚΟΣ ΥΠΟΛΟΓΙΣΜΟΣ (δωρεάν υπολογιστής)'+NL
