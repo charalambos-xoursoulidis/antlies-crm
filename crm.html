@@ -285,6 +285,16 @@ a{color:#2563eb}
     <button onclick="crmLogin()" style="width:100%;margin-top:6px;background:linear-gradient(90deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer">Είσοδος</button>
   </div>
 </div>
+<div id="stats-mod" style="position:fixed;inset:0;z-index:99998;background:rgba(15,23,42,.5);display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto">
+  <div style="background:#fff;border-radius:16px;padding:22px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35);margin:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-size:16px;font-weight:800;color:#0f172a">📊 Στατιστικά Υπολογιστή</div>
+      <button onclick="document.getElementById('stats-mod').style.display='none'" style="background:none;border:none;font-size:20px;color:#94a3b8;cursor:pointer">✕</button>
+    </div>
+    <div style="font-size:12px;color:#64748b;margin-bottom:14px">Χωνί (funnel) του δημόσιου υπολογιστή — πόσοι ξεκίνησαν, πού σταμάτησαν, πόσοι ζήτησαν προσφορά.</div>
+    <div id="stats-body" style="font-size:13px;color:#334155">—</div>
+  </div>
+</div>
 <div id="crm-pass-mod" style="position:fixed;inset:0;z-index:99998;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;padding:20px">
   <div style="background:#fff;border-radius:16px;padding:24px 22px;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35)">
     <div style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:4px">🔑 Αλλαγή κωδικού</div>
@@ -302,6 +312,7 @@ a{color:#2563eb}
   <div class="hdr-sub">Bosch · Hitachi · Inventor · Toyotomi · Atlantic · MDV</div></div>
   <div class="hdr-gap"></div>
   <button class="hdr-btn" onclick="openPricing()">💶 Τιμές</button>
+  <button class="hdr-btn" onclick="openStats()">📊 Στατιστικά</button>
   <button class="hdr-btn" onclick="openChangePass()">🔑 Κωδικός</button>
   <button class="conn-badge" id="conn-badge" onclick="openSetup()">⚙ Ρυθμίσεις</button>
   <button class="hdr-btn" onclick="call(goCustomers)">👥 Πελάτες</button>
@@ -1512,7 +1523,7 @@ async function crmLogin(){
   if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
   else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
 }
-var CRM_VER='1.1';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='1.2';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   loadCrmPass();
@@ -1531,6 +1542,44 @@ async function crmChangePass(){
   catch(e){ alert('Σφάλμα αποθήκευσης κωδικού: '+(e&&e.message?e.message:e)); return; }
   CRM_PASS=np; closeChangePass();
   alert('Ο κωδικός άλλαξε. Θα ισχύει στην επόμενη είσοδο, σε όλες τις συσκευές.');
+}
+async function openStats(){
+  var m=document.getElementById('stats-mod'); if(m)m.style.display='flex';
+  var body=document.getElementById('stats-body'); if(!body)return;
+  body.innerHTML='Φόρτωση…';
+  try{
+    var rows = await supaRest('calc_events','GET',null,'select=sid,ev,idx&order=created_at.desc&limit=8000');
+    var bySid={};
+    (rows||[]).forEach(function(r){
+      var s=bySid[r.sid]||(bySid[r.sid]={max:-1,offer:false});
+      if(r.ev==='offer') s.offer=true;
+      else if(typeof r.idx==='number' && r.idx>s.max) s.max=r.idx;
+    });
+    var sids=Object.keys(bySid);
+    var STEP=[{i:1,l:'Διαστάσεις'},{i:2,l:'Ζώνη'},{i:3,l:'Μόνωση'},{i:4,l:'Αναβαθμ.'},{i:5,l:'Δάπεδο'},{i:6,l:'Οροφή'},{i:7,l:'Πλευρές'},{i:8,l:'Ανοίγματα'},{i:9,l:'Παροχή'},{i:10,l:'Αποτέλεσμα'}];
+    function reached(i){ return sids.filter(function(s){return bySid[s].max>=i;}).length; }
+    var started=reached(1), finished=reached(10);
+    var offers=sids.filter(function(s){return bySid[s].offer;}).length;
+    var maxN=started||1;
+    var html='<div style="display:flex;gap:8px;margin-bottom:16px">'
+      +'<div style="flex:1;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px;text-align:center"><div style="font-size:22px;font-weight:800;color:#1e3a5f">'+started+'</div><div style="font-size:11px;color:#64748b">Ξεκίνησαν</div></div>'
+      +'<div style="flex:1;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:10px;text-align:center"><div style="font-size:22px;font-weight:800;color:#166534">'+finished+'</div><div style="font-size:11px;color:#64748b">Ολοκλήρωσαν</div></div>'
+      +'<div style="flex:1;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:10px;text-align:center"><div style="font-size:22px;font-weight:800;color:#c2410c">'+offers+'</div><div style="font-size:11px;color:#64748b">Ζήτησαν προσφορά</div></div>'
+      +'</div>'
+      +'<div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:6px">Πού έφτασαν (funnel)</div>';
+    STEP.forEach(function(st){
+      var n=reached(st.i), pct=Math.round(n/maxN*100);
+      html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px">'
+        +'<div style="width:78px;color:#64748b;flex-shrink:0">'+st.l+'</div>'
+        +'<div style="flex:1;background:#f1f5f9;border-radius:6px;overflow:hidden;height:18px"><div style="width:'+pct+'%;height:100%;background:linear-gradient(90deg,#fb923c,#f97316)"></div></div>'
+        +'<div style="width:70px;text-align:right;font-weight:700;color:#0f172a;flex-shrink:0">'+n+' ('+pct+'%)</div>'
+        +'</div>';
+    });
+    html+='<div style="font-size:11px;color:#94a3b8;margin-top:12px">Συνεδρίες με δραστηριότητα: '+started+'. «Ξεκίνησαν» = προχώρησαν πέρα από το όνομα του υπολογισμού.</div>';
+    body.innerHTML=html;
+  }catch(e){
+    body.innerHTML='<div style="color:#dc2626;font-size:12.5px">Δεν βρέθηκαν στατιστικά. Αν είναι η πρώτη φορά, τρέξε στο Supabase το SQL δημιουργίας του πίνακα <b>calc_events</b> (στο SQL editor).<br><br><span style="color:#94a3b8">('+(e&&e.message?e.message:e)+')</span></div>';
+  }
 }
 window.addEventListener('load', async ()=>{
   storageMode = 'supa';
