@@ -2,7 +2,7 @@
 <html lang="el"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cachebust" content="202609180912">
+<meta name="cachebust" content="202609181319">
 <title>Υπολογιστής Αντλίας Θερμότητας</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -214,7 +214,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 </div>
 
 <script>
-var APP_VER='4.0';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var APP_VER='4.1';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 var OFFICE_EMAIL='charalambos@xoursoulidis.com';   // παραλήπτης αιτημάτων εξατομικευμένης προσφοράς
 var OFFICE_PHONE='2331028063';
 var STUDY_FEE=50, SKETCH_FEE=20;   // € αξία μελέτης / επιπλέον σκαρίφημα (DXF+PDF)
@@ -275,6 +275,7 @@ function pickPump(safe,phase){
   return {id:pick.id,name:pick.name,kwl:pick.kwl,retail:pick.r,r:pick.r,kw:pick.kw,capped:capped,phase:phase};
 }
 function fmtEur(n){return Math.round(n).toLocaleString('el-GR');}
+function phaseLbl(ph){ return ph==='tri'?'Τριφασικό':(ph==='unknown'?'Άγνωστη (προς επιβεβαίωση)':'Μονοφασικό'); }
 
 // ---- Auto-δημιουργία στο CRM (Supabase) — μόνο μετά από ρητή συναίνεση, best-effort ----
 var SUPA_URL='https://wdbgdrbkhkdtfmpdgzmy.supabase.co';
@@ -298,7 +299,7 @@ async function pushToCrm(info){
   var kw1=Math.round(hl.kw*10)/10, safe1=Math.round(hl.safe*10)/10;
   var prop={id:pid, customer_id:cid, name:'Κατοικία',
     heat_kw:String(kw1), heat_safe:String(safe1), heat_pump:String(hl.pump),
-    address:(info.addr||'').trim(), area:String(d.area||''), phase:(d.phase==='tri'?'Τριφασικό':'Μονοφασικό'),
+    address:(info.addr||'').trim(), area:String(d.area||''), phase:phaseLbl(d.phase),
     notes:(info.planNo?'Χωρίς σχέδιο — να γίνει σκαρίφημα':''), status:'pending', priority:'medium', created_at:now};
   var hlVal={kw:String(kw1), safe:String(safe1), pump:String(hl.pump),
     area:parseFloat(d.area)||0, h:parseFloat(d.h)||2.8, zone:d.zone, ins:d.ins,
@@ -474,7 +475,14 @@ function wizRender(){
     sub.textContent='Μονοφασικό (230V) ή τριφασικό (400V) — καθορίζει τον τύπο της αντλίας και την αξία.';
     fld.innerHTML='<div class="wz-chips">'
       +wzChip('phase','mono','🔌','Μονοφασικό (230V)')
-      +wzChip('phase','tri','⚡','Τριφασικό (400V)')+'</div>';
+      +wzChip('phase','tri','⚡','Τριφασικό (400V)')
+      +wzChip('phase','unknown','❓','Δεν είμαι σίγουρος/η')+'</div>'
+      +'<div style="margin-top:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 12px;font-size:11.5px;color:#334155;line-height:1.55">'
+        +'<b>💡 Πώς θα το βρεις εύκολα:</b><br>'
+        +'📄 <b>Λογαριασμός ρεύματος</b> → ψάξε τη «Συμφωνημένη Ισχύ»: συνήθως έως ~8 kVA = <b>μονοφασικό</b>, από ~12 kVA και πάνω = <b>τριφασικό</b>.<br>'
+        +'⚡ <b>Πίνακας (ρελέ)</b> → κοίτα τον γενικό διακόπτη (τον μεγάλο, πάνω-πάνω): <b>2 καλώδια</b> (φάση + ουδέτερο) = μονοφασικό · <b>4 καλώδια / φαρδύς διακόπτης</b> (3 φάσεις + ουδέτερο) = τριφασικό.<br>'
+        +'<span style="color:#64748b">Τα περισσότερα σπίτια &amp; διαμερίσματα είναι μονοφασικά. Αν δεν είσαι σίγουρος/η, διάλεξε «Δεν είμαι σίγουρος/η» — θα το επιβεβαιώσουμε εμείς.</span>'
+      +'</div>';
   } else if(step==='result'){
     return wizRenderResult();
   }
@@ -493,6 +501,7 @@ function wizRenderResult(){
     +'<div class="wz-res-kw">~'+fmtEur(basicR)+' €</div>'
     +'<div class="wz-res-lbl">ενδεικτική βασική αξία «με το κλειδί στο χέρι»<br><span style="font-size:12px;color:#94a3b8">(δεν περιλαμβάνει την εργασία του ηλεκτρολόγου και τον ΦΠΑ)</span><br>αντλία θερμότητας, υλικά &amp; εργασία τοποθέτησης</div>'
     +'<div class="wz-res-pump" style="margin-top:14px">💧 Προτεινόμενη αντλία: ~'+pp.kw+' kW</div>'
+    +((WZ.data.phase==='unknown')?'<div style="margin-top:8px;font-size:11.5px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;line-height:1.45">ℹ️ Δεν ήξερες την παροχή ρεύματος — υπολογίστηκε ως <b>μονοφασική</b> (η ασφαλής επιλογή). Θα την επιβεβαιώσουμε εμείς από τον λογαριασμό ΔΕΗ ή στην αυτοψία.</div>':'')
     +'<div style="margin-top:10px;padding-top:8px;border-top:1px dashed #e2e8f0;font-size:13px;color:#64748b;line-height:1.7">'
       +'ΦΠΑ 24%: <b style="color:#475569">'+fmtEur(vat)+' €</b><br>'
       +'<span style="font-size:14px;color:#334155">Σύνολο με ΦΠΑ: <b>~'+fmtEur(total)+' €</b></span>'
@@ -532,7 +541,7 @@ function doPrint(){
     +row('Οροφή', (LBL.ceilType[d.ceilType]||d.ceilType))
     +row('Εκτεθειμένες πλευρές', d.sides)
     +row('Μπαλκονόπορτες / Παράθυρα', (d.nDoors||0)+' / '+(d.nWindows||0))
-    +row('Παροχή ρεύματος', (d.phase==='tri'?'Τριφασικό (400V)':'Μονοφασικό (230V)'))
+    +row('Παροχή ρεύματος', (d.phase==='unknown'?'Άγνωστη (προς επιβεβαίωση — υπολ. ως μονοφασική)':(d.phase==='tri'?'Τριφασικό (400V)':'Μονοφασικό (230V)')))
     +row('Προτεινόμενη αντλία', '~'+pp.kw+' kW')
     +'</table>'
     +'<div class="pr-res"><div class="k">~'+fmtEur(basicR)+' €</div>'
@@ -606,7 +615,7 @@ function leadSubmit(){
     +'Εμβαδόν: '+(d.area||'—')+' m² · Ύψος: '+(d.h||'—')+' m'+NL
     +'Ζώνη: '+((LBL.zone&&LBL.zone[d.zone])||d.zone||'—')+' · Μόνωση: '+((LBL.ins&&LBL.ins[d.ins])||d.ins||'—')+NL
     +'Μπαλκονόπορτες/Παράθυρα: '+(d.nDoors||0)+' / '+(d.nWindows||0)+NL
-    +'Παροχή: '+(d.phase==='tri'?'Τριφασικό':'Μονοφασικό')+NL
+    +'Παροχή: '+phaseLbl(d.phase)+NL
     +(hl?('Απώλειες: ~'+(+hl.kw).toFixed(1)+' kW · +20%: ~'+(+hl.safe).toFixed(1)+' kW · Αντλία: '+(pp?pp.kw:'—')+' kW'+NL):'')
     +(basicR!=null?('Ενδεικτική βασική αξία: ~€'+fmtEur(basicR)+' (χωρίς εργασία ηλεκτρολόγου & ΦΠΑ)'+NL):'')
     +NL+'— Στάλθηκε από τον δωρεάν υπολογιστή αντλίας θερμότητας (v'+APP_VER+')';
