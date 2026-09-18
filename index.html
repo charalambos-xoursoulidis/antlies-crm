@@ -2,7 +2,7 @@
 <html lang="el"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cachebust" content="202609150804">
+<meta name="cachebust" content="202609180852">
 <title>Υπολογιστής Αντλίας Θερμότητας</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -214,7 +214,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 </div>
 
 <script>
-var APP_VER='2.7';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var APP_VER='3.0';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 var OFFICE_EMAIL='charalambos@xoursoulidis.com';   // παραλήπτης αιτημάτων εξατομικευμένης προσφοράς
 var OFFICE_PHONE='2331028063';
 var STUDY_FEE=50, SKETCH_FEE=20;   // € αξία μελέτης / επιπλέον σκαρίφημα (DXF+PDF)
@@ -262,18 +262,63 @@ var LBL={
 };
 
 // ---- τιμοκατάλογος για το «βασικό κόστος» — ΜΟΝΟ λιανικές (συγχρονισμένο χειροκίνητα με το CRM: Bosch) ----
+// id/name/kwl συγχρονισμένα με τον κατάλογο Bosch του CRM (BRANDS) — ΜΟΝΟ λιανική, ποτέ cost
 var BOSCH={
-  mono:[{kw:4.4,r:2089.90},{kw:6,r:3618.38},{kw:8,r:3495.24},{kw:10,r:3620.80},{kw:12,r:4946.48},{kw:14.5,r:5180.08},{kw:15.9,r:5353.82}],
-  tri:[{kw:12,r:5031.16},{kw:14.5,r:5323.16},{kw:15.9,r:5566.98},{kw:18,r:7137.94},{kw:22,r:7872.32},{kw:26,r:7975.98},{kw:30,r:8285.50}]
+  mono:[{id:'bs4',kw:4.4,kwl:'4,4kW',name:'AWF 4 R-S',r:2089.90},{id:'bs6',kw:6,kwl:'6kW',name:'AWF 6 R-S',r:3618.38},{id:'bs8',kw:8,kwl:'8kW',name:'AWF 8 R-S',r:3495.24},{id:'bs10',kw:10,kwl:'10kW',name:'AWF 10 R-S',r:3620.80},{id:'bs12',kw:12,kwl:'12kW',name:'AWF 12 R-S',r:4946.48},{id:'bs14',kw:14.5,kwl:'14,5kW',name:'AWF 14 R-S',r:5180.08},{id:'bs16',kw:15.9,kwl:'15,9kW',name:'AWF 16 R-S',r:5353.82}],
+  tri:[{id:'bt12',kw:12,kwl:'12kW',name:'AWF 12 R-T',r:5031.16},{id:'bt14',kw:14.5,kwl:'14,5kW',name:'AWF 14 R-T',r:5323.16},{id:'bt16',kw:15.9,kwl:'15,9kW',name:'AWF 16 R-T',r:5566.98},{id:'bt18',kw:18,kwl:'18kW',name:'AWF 18 R-T',r:7137.94},{id:'bt22',kw:22,kwl:'22kW',name:'AWF 22 R-T',r:7872.32},{id:'bt26',kw:26,kwl:'26kW',name:'AWF 26 R-T',r:7975.98},{id:'bt30',kw:30,kwl:'30kW',name:'AWF 30 R-T',r:8285.50}]
 };
 var MAT_LABOR=1952.52;   // προεπιλεγμένα υλικά αντλίας (λιαν. 572,52) + εργασία (6 ημ × 230)
 function pickPump(safe,phase){
   var list=BOSCH[phase]||BOSCH.mono, pick=null;
   for(var i=0;i<list.length;i++){ if(list[i].kw>=safe){pick=list[i];break;} }
   var capped=false; if(!pick){pick=list[list.length-1];capped=true;}
-  return {retail:pick.r,kw:pick.kw,capped:capped,phase:phase};
+  return {id:pick.id,name:pick.name,kwl:pick.kwl,retail:pick.r,r:pick.r,kw:pick.kw,capped:capped,phase:phase};
 }
 function fmtEur(n){return Math.round(n).toLocaleString('el-GR');}
+
+// ---- Auto-δημιουργία στο CRM (Supabase) — μόνο μετά από ρητή συναίνεση, best-effort ----
+var SUPA_URL='https://wdbgdrbkhkdtfmpdgzmy.supabase.co';
+var SUPA_KEY='sb_publishable_xjrKqW_cm1sQBdjoY7mg7g_-E1bsUnQ';
+function supaWrite(table,body){
+  return fetch(SUPA_URL+'/rest/v1/'+table,{method:'POST',
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body:JSON.stringify(body)})
+   .then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error(table+' '+r.status+': '+t); }); return true; });
+}
+function _rid(p){ return p+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+// info: {fn,ln,phone,email,addr,regionLabel,planNo,progLabel,d,hl,pp}
+async function pushToCrm(info){
+  var now=new Date().toISOString();
+  var cid=_rid('c'), pid=_rid('p'), qid=_rid('q');
+  var d=info.d, hl=info.hl, pp=info.pp;
+  var progNote=(info.progLabel && info.progLabel!=='Όχι') ? (' · Πρόγραμμα: '+info.progLabel) : '';
+  var cust={id:cid, lastname:(info.ln||'').trim(), firstname:(info.fn||'').trim(),
+    phone:(info.phone||'').trim(), email:(info.email||'').trim(), address:(info.addr||'').trim(),
+    zip:'', city:(info.regionLabel||''), notes:'Από αίτημα μελέτης (δωρεάν υπολογιστής)'+progNote, created_at:now};
+  var kw1=Math.round(hl.kw*10)/10, safe1=Math.round(hl.safe*10)/10;
+  var prop={id:pid, customer_id:cid, name:'Κατοικία',
+    heat_kw:String(kw1), heat_safe:String(safe1), heat_pump:String(hl.pump),
+    address:(info.addr||'').trim(), area:String(d.area||''), phase:(d.phase==='tri'?'Τριφασικό':'Μονοφασικό'),
+    notes:(info.planNo?'Χωρίς σχέδιο — να γίνει σκαρίφημα':''), status:'pending', priority:'medium', created_at:now};
+  var hlVal={kw:String(kw1), safe:String(safe1), pump:String(hl.pump),
+    area:parseFloat(d.area)||0, h:parseFloat(d.h)||2.8, zone:d.zone, ins:d.ins,
+    upWin:!!d.upWin, upWall:!!d.upWall, upCeil:!!d.upCeil, upFloor:!!d.upFloor,
+    floorType:d.floorType, ceilType:d.ceilType, sides:d.sides,
+    nDoors:parseInt(d.nDoors)||0, doorW:1.2, doorH:2.2, nWindows:parseInt(d.nWindows)||0, winW:1.2, winH:1.4};
+  var totalR=Math.round((pp.r+MAT_LABOR)*100)/100;
+  var quote={id:qid, customer_id:cid, property_id:pid, created_at:now,
+    quote_number:'PRF-'+new Date().getFullYear()+'-A'+qid.slice(-4), date:now.split('T')[0], status:'draft',
+    notes:'Αυτόματη προσφορά από αίτημα μελέτης — άνοιξέ την για συμπλήρωση κόστους αντλίας από κατάλογο.',
+    equip_type:'pump', brand:'bosch', brand_label:'Bosch', type_idx:(d.phase==='tri'?1:0),
+    pump_id:pp.id, pump_name:pp.name, pump_kw:pp.kwl, pump_cost:0, pump_retail:pp.r, agreed_amount:null,
+    totals:{pump_c:0, pump_r:pp.r, total_c:0, total_r:totalR, profit:totalR, profit_pct:0, agreed_amount:null}};
+  // σειριακά λόγω foreign keys: customer → property → απώλειες → προσφορά (χωρίς sections: το CRM βάζει τα MAT_TPL με cost)
+  await supaWrite('customers',cust);
+  await supaWrite('properties',prop);
+  await supaWrite('hm_settings',{id:'hl_'+pid, value:hlVal});
+  await supaWrite('quotes',quote);
+  return {cid:cid,pid:pid,qid:qid};
+}
 
 var HOUSE_SVG='<svg class="house" viewBox="0 0 300 250" xmlns="http://www.w3.org/2000/svg">'
 +'<g class="weather"><circle cx="42" cy="40" r="15" fill="#fbbf24"/>'
@@ -554,6 +599,11 @@ function leadSubmit(){
     +NL+'— Στάλθηκε από τον δωρεάν υπολογιστή αντλίας θερμότητας (v'+APP_VER+')';
   var subject='Αίτημα εξατομικευμένης προσφοράς — '+fn+' '+ln+' ('+regL+')';
   var pv=g('lead-preview'); if(pv)pv.value='Προς: '+OFFICE_EMAIL+'\nΘέμα: '+subject+'\n\n'+body;
+  // Auto-δημιουργία πελάτη/ακινήτου/απωλειών/προσφοράς Bosch στο CRM (best-effort — το email φεύγει ό,τι κι αν γίνει)
+  try{
+    if(hl&&pp){ pushToCrm({fn:fn,ln:ln,phone:ph,email:email,addr:addr,regionLabel:regL,planNo:(plan==='no'),progLabel:progL,d:d,hl:hl,pp:pp})
+      .catch(function(e){ if(window.console)console.warn('CRM auto-create failed:',e&&e.message?e.message:e); }); }
+  }catch(e){}
   leadStep(3);
   window.location.href='mailto:'+OFFICE_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
 }

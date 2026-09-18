@@ -1512,7 +1512,7 @@ async function crmLogin(){
   if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
   else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
 }
-var CRM_VER='1.0';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='1.1';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   loadCrmPass();
@@ -2240,6 +2240,15 @@ async function openEditor(qid){
     if(q2.pump_id){
       ES.pumpCostOvr=q2.pump_cost||0;
       ES.pumpRetailOvr=q2.pump_retail||0;
+      // v1.1: αυτόματη συμπλήρωση κόστους αντλίας για προσφορές από τον δημόσιο Υπολογιστή
+      // (η δημόσια σελίδα κρατά ΜΟΝΟ λιανική· το cost μπαίνει εδώ από τον κατάλογο ώστε να βγαίνει κέρδος)
+      if(!ES.pumpCostOvr){
+        var _cb=(ES.equipType==='gas'?GAS_BRANDS:BRANDS).find(function(b){return b.id===ES.brand;});
+        var _cpm=null;
+        if(_cb){ if(ES.equipType==='gas'){ _cpm=(_cb.models||[]).find(function(x){return x.id===q2.pump_id;}); }
+          else { (_cb.types||[]).forEach(function(t){ (t.pumps||[]).forEach(function(p){ if(p.id===q2.pump_id) _cpm=p; }); }); } }
+        if(_cpm && _cpm.cost) ES.pumpCostOvr=_cpm.cost;
+      }
       var ci=g('pump-cost-inp');if(ci)ci.value=ES.pumpCostOvr;
       var ri=g('pump-retail-inp');if(ri)ri.value=ES.pumpRetailOvr;
       if(ppc)ppc.style.display='';
