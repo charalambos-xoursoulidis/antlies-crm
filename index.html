@@ -2,7 +2,7 @@
 <html lang="el"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cachebust" content="202609181319">
+<meta name="cachebust" content="202609181338">
 <title>Υπολογιστής Αντλίας Θερμότητας</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -214,7 +214,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 </div>
 
 <script>
-var APP_VER='4.1';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var APP_VER='4.2';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 var OFFICE_EMAIL='charalambos@xoursoulidis.com';   // παραλήπτης αιτημάτων εξατομικευμένης προσφοράς
 var OFFICE_PHONE='2331028063';
 var STUDY_FEE=50, SKETCH_FEE=20;   // € αξία μελέτης / επιπλέον σκαρίφημα (DXF+PDF)
@@ -276,6 +276,24 @@ function pickPump(safe,phase){
 }
 function fmtEur(n){return Math.round(n).toLocaleString('el-GR');}
 function phaseLbl(ph){ return ph==='tri'?'Τριφασικό':(ph==='unknown'?'Άγνωστη (προς επιβεβαίωση)':'Μονοφασικό'); }
+// Εκτίμηση παροχής όταν ο πελάτης δεν ξέρει, βάσει έτους κατασκευής (ins) + εμβαδού
+function inferPhase(area,ins){
+  area=parseFloat(area)||0;
+  if(ins==='pre1979'||ins==='y1979') return 'mono';            // έως 1989 → σίγουρα μονοφασικό
+  if(area>0 && area<80) return 'mono';                          // μικρά σπίτια → μονοφασικό
+  if((ins==='kenak'||ins==='nzeb') && area>=100) return 'tri';  // 2010+ & ≥100 m²
+  if(ins==='y2000' && area>=120) return 'tri';                  // 2000–2009 & μεγάλα
+  if(ins==='y1990' && area>=150) return 'tri';                  // 1990–1999 & πολύ μεγάλα
+  return 'mono';                                                // αλλιώς → ασφαλές μονοφασικό
+}
+function phaseInfo(d){
+  if(d && d.phase==='unknown'){
+    var eff=inferPhase(d.area,d.ins);
+    return {eff:eff, guess:true, label:'Άγνωστη — εκτίμηση: '+(eff==='tri'?'Τριφασική':'Μονοφασική')+' (προς επιβεβαίωση)'};
+  }
+  var p=(d&&d.phase)||'mono';
+  return {eff:p, guess:false, label:phaseLbl(p)};
+}
 
 // ---- Auto-δημιουργία στο CRM (Supabase) — μόνο μετά από ρητή συναίνεση, best-effort ----
 var SUPA_URL='https://wdbgdrbkhkdtfmpdgzmy.supabase.co';
@@ -299,7 +317,7 @@ async function pushToCrm(info){
   var kw1=Math.round(hl.kw*10)/10, safe1=Math.round(hl.safe*10)/10;
   var prop={id:pid, customer_id:cid, name:'Κατοικία',
     heat_kw:String(kw1), heat_safe:String(safe1), heat_pump:String(hl.pump),
-    address:(info.addr||'').trim(), area:String(d.area||''), phase:phaseLbl(d.phase),
+    address:(info.addr||'').trim(), area:String(d.area||''), phase:phaseInfo(d).label,
     notes:(info.planNo?'Χωρίς σχέδιο — να γίνει σκαρίφημα':''), status:'pending', priority:'medium', created_at:now};
   var hlVal={kw:String(kw1), safe:String(safe1), pump:String(hl.pump),
     area:parseFloat(d.area)||0, h:parseFloat(d.h)||2.8, zone:d.zone, ins:d.ins,
@@ -310,7 +328,7 @@ async function pushToCrm(info){
   var quote={id:qid, customer_id:cid, property_id:pid, created_at:now,
     quote_number:'PRF-'+new Date().getFullYear()+'-A'+qid.slice(-4), date:now.split('T')[0], status:'draft',
     notes:'Αυτόματη προσφορά από αίτημα μελέτης — άνοιξέ την για συμπλήρωση κόστους αντλίας από κατάλογο.',
-    equip_type:'pump', brand:'bosch', brand_label:'Bosch', type_idx:(d.phase==='tri'?1:0),
+    equip_type:'pump', brand:'bosch', brand_label:'Bosch', type_idx:((pp&&pp.phase==='tri')?1:0),
     pump_id:pp.id, pump_name:pp.name, pump_kw:pp.kwl, pump_cost:0, pump_retail:pp.r, agreed_amount:null,
     totals:{pump_c:0, pump_r:pp.r, total_c:0, total_r:totalR, profit:totalR, profit_pct:0, agreed_amount:null}};
   // σειριακά λόγω foreign keys: customer → property → απώλειες → προσφορά (χωρίς sections: το CRM βάζει τα MAT_TPL με cost)
@@ -491,7 +509,8 @@ function wizRender(){
 }
 function wizRenderResult(){
   var hl=hlCompute(WZ.data); WZ._hl=hl;
-  var pp=pickPump(hl.safe,WZ.data.phase||'mono'); WZ._pp=pp;
+  var pi=phaseInfo(WZ.data);
+  var pp=pickPump(hl.safe,pi.eff); WZ._pp=pp;
   var basicR=Math.round((pp.retail+MAT_LABOR)/10)*10;
   var vat=Math.round(basicR*0.24), total=basicR+vat;
   g('wz-eyebrow').textContent='Αποτέλεσμα';
@@ -501,7 +520,7 @@ function wizRenderResult(){
     +'<div class="wz-res-kw">~'+fmtEur(basicR)+' €</div>'
     +'<div class="wz-res-lbl">ενδεικτική βασική αξία «με το κλειδί στο χέρι»<br><span style="font-size:12px;color:#94a3b8">(δεν περιλαμβάνει την εργασία του ηλεκτρολόγου και τον ΦΠΑ)</span><br>αντλία θερμότητας, υλικά &amp; εργασία τοποθέτησης</div>'
     +'<div class="wz-res-pump" style="margin-top:14px">💧 Προτεινόμενη αντλία: ~'+pp.kw+' kW</div>'
-    +((WZ.data.phase==='unknown')?'<div style="margin-top:8px;font-size:11.5px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;line-height:1.45">ℹ️ Δεν ήξερες την παροχή ρεύματος — υπολογίστηκε ως <b>μονοφασική</b> (η ασφαλής επιλογή). Θα την επιβεβαιώσουμε εμείς από τον λογαριασμό ΔΕΗ ή στην αυτοψία.</div>':'')
+    +((WZ.data.phase==='unknown')?'<div style="margin-top:8px;font-size:11.5px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;line-height:1.45">ℹ️ Δεν ήξερες την παροχή ρεύματος — την <b>εκτιμήσαμε '+(pi.eff==='tri'?'τριφασική':'μονοφασική')+'</b> βάσει έτους &amp; εμβαδού. Θα την επιβεβαιώσουμε εμείς από τον λογαριασμό ΔΕΗ ή στην αυτοψία.</div>':'')
     +'<div style="margin-top:10px;padding-top:8px;border-top:1px dashed #e2e8f0;font-size:13px;color:#64748b;line-height:1.7">'
       +'ΦΠΑ 24%: <b style="color:#475569">'+fmtEur(vat)+' €</b><br>'
       +'<span style="font-size:14px;color:#334155">Σύνολο με ΦΠΑ: <b>~'+fmtEur(total)+' €</b></span>'
@@ -541,7 +560,7 @@ function doPrint(){
     +row('Οροφή', (LBL.ceilType[d.ceilType]||d.ceilType))
     +row('Εκτεθειμένες πλευρές', d.sides)
     +row('Μπαλκονόπορτες / Παράθυρα', (d.nDoors||0)+' / '+(d.nWindows||0))
-    +row('Παροχή ρεύματος', (d.phase==='unknown'?'Άγνωστη (προς επιβεβαίωση — υπολ. ως μονοφασική)':(d.phase==='tri'?'Τριφασικό (400V)':'Μονοφασικό (230V)')))
+    +row('Παροχή ρεύματος', (function(){var _p=phaseInfo(d); return _p.guess?('Άγνωστη — εκτίμηση: '+(_p.eff==='tri'?'Τριφασική (400V)':'Μονοφασική (230V)')+' (προς επιβεβαίωση)'):(d.phase==='tri'?'Τριφασικό (400V)':'Μονοφασικό (230V)');})())
     +row('Προτεινόμενη αντλία', '~'+pp.kw+' kW')
     +'</table>'
     +'<div class="pr-res"><div class="k">~'+fmtEur(basicR)+' €</div>'
@@ -615,7 +634,7 @@ function leadSubmit(){
     +'Εμβαδόν: '+(d.area||'—')+' m² · Ύψος: '+(d.h||'—')+' m'+NL
     +'Ζώνη: '+((LBL.zone&&LBL.zone[d.zone])||d.zone||'—')+' · Μόνωση: '+((LBL.ins&&LBL.ins[d.ins])||d.ins||'—')+NL
     +'Μπαλκονόπορτες/Παράθυρα: '+(d.nDoors||0)+' / '+(d.nWindows||0)+NL
-    +'Παροχή: '+phaseLbl(d.phase)+NL
+    +'Παροχή: '+phaseInfo(d).label+NL
     +(hl?('Απώλειες: ~'+(+hl.kw).toFixed(1)+' kW · +20%: ~'+(+hl.safe).toFixed(1)+' kW · Αντλία: '+(pp?pp.kw:'—')+' kW'+NL):'')
     +(basicR!=null?('Ενδεικτική βασική αξία: ~€'+fmtEur(basicR)+' (χωρίς εργασία ηλεκτρολόγου & ΦΠΑ)'+NL):'')
     +NL+'— Στάλθηκε από τον δωρεάν υπολογιστή αντλίας θερμότητας (v'+APP_VER+')';
