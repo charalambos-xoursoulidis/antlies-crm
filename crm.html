@@ -1526,7 +1526,7 @@ async function crmLogin(){
   if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
   else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
 }
-var CRM_VER='1.3';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='1.4';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   loadCrmPass();
