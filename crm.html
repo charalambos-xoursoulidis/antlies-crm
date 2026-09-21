@@ -768,7 +768,7 @@ a{color:#2563eb}
       </div>
       <div class="hdr-gap"></div>
       <button class="btn btn-green" onclick="call(saveQuote)">💾 Αποθήκευση</button>
-      <button class="btn" onclick="call(generateOfferDescription)" style="background:#7c3aed;color:#fff;border-color:#7c3aed">📝 Περιγραφή (Word)</button>
+      <button id="btn-word" class="btn" onclick="call(generateOfferDescription)" style="background:#7c3aed;color:#fff;border-color:#7c3aed">📝 Περιγραφή (Word)</button>
       <button class="btn" onclick="call(printCostAnalysis)" style="background:#0369a1;color:#fff;border-color:#0369a1">🖨️ Εκτύπωση κόστους</button>
       <button class="btn btn-ghost" onclick="call(goCustomer)">✕ Ακύρωση</button>
     </div>
@@ -1536,7 +1536,7 @@ async function crmLogin(){
   if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
   else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
 }
-var CRM_VER='2.1';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='2.2';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   loadCrmPass();
@@ -1738,6 +1738,8 @@ function enterDemo(){
   DEMO=true; storageMode='supa'; DEMO_DB={};   // καθαρή, εικονική βάση στη μνήμη
   demoScrub();
   try{ ES.equipType='hp'; ES.brand='bosch'; ES.typeIdx=0; ES.pump=null; }catch(e){}
+  // demo: κρύψε το κουμπί «Περιγραφή (Word)» — δεν παράγουμε Word στο demo
+  try{ var wb=g('btn-word'); if(wb) wb.style.display='none'; }catch(e){}
   // οπτική ένδειξη demo
   try{ var vv=g('crm-ver'); if(vv) vv.textContent='v'+CRM_VER+' · DEMO'; }catch(e){}
   try{ var b=g('conn-badge'); if(b){ b.className='conn-badge'; b.style.background='#7c3aed'; b.style.color='#fff'; b.textContent='🟣 DEMO — δεν αποθηκεύεται τίποτα'; } }catch(e){}
@@ -2369,6 +2371,7 @@ async function saveQuote(){
 
 // ── OFFER DESCRIPTION (WORD) ─────────────────────────────────────
 async function generateOfferDescription(){
+  if(DEMO){ alert('🟣 DEMO: η παραγωγή προσφοράς σε Word είναι απενεργοποιημένη στη λειτουργία demo.'); return; }
   if(!window.PERIGRAFES){alert('Δεν φορτώθηκε το αρχείο περιγραφών (perigrafes.js). Βεβαιωθείτε ότι βρίσκεται στον ίδιο φάκελο με το πρόγραμμα.');return;}
   var bArr=(ES.equipType==='gas')?GAS_BRANDS:BRANDS;
   var brand=bArr.find(function(b){return b.id===ES.brand;})||null;
