@@ -1536,7 +1536,7 @@ async function crmLogin(){
   if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
   else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
 }
-var CRM_VER='2.0';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='2.1';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   loadCrmPass();
@@ -2897,6 +2897,9 @@ var PROPS_KEY = 'crm_properties_v1';
 
 // ── localStorage helpers ──────────────────────────────────────────
 function propsLoadLocal() {
+  // demo: η τοπική «κρυφή μνήμη» ακινήτων ζει στο DEMO_DB (το localStorage μένει άδειο),
+  // αλλιώς openProperty/openEditProperty δεν θα έβρισκαν το ακίνητο που μόλις φτιάχτηκε.
+  if(DEMO) return (typeof DEMO_DB!=='undefined' && DEMO_DB.properties) ? DEMO_DB.properties.slice() : [];
   try { return JSON.parse(localStorage.getItem(PROPS_KEY)||'[]'); } catch(e){return [];}
 }
 function propsSaveLocal(d) {
