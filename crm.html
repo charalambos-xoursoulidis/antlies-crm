@@ -1151,6 +1151,12 @@ const CFG_KEY = 'crm_storage_v1'; // {mode:'server'|'supa'|'local', supaUrl, sup
 
 let sb = null;
 let storageMode = 'supa'; // default: Supabase
+// ── DEMO MODE (εικονικό demo — ΚΑΜΙΑ αποθήκευση, εικονική μάρκα/τιμές) ──
+// Ενεργοποιείται με δευτερεύοντα κωδικό στην πύλη. Οτιδήποτε γράφεται μένει
+// ΜΟΝΟ στη μνήμη (DEMO_DB) — τίποτα δεν πάει σε Supabase ή localStorage.
+var DEMO = false;         // true όσο τρέχει το demo
+var DEMO_DB = {};         // in-memory PostgREST-mimic (καθαρίζει σε κάθε login/refresh)
+var DEMO_PASS = 'demo';   // ο δευτερεύων κωδικός
 
 // ── PHP API ────────────────────────────────────────────────────
 async function apiFetch(action, method='GET', body=null, params={}) {
@@ -1168,7 +1174,7 @@ async function apiFetch(action, method='GET', body=null, params={}) {
 // ── localStorage ───────────────────────────────────────────────
 const LOC = {
   get(k){return JSON.parse(localStorage.getItem(k)||'[]')},
-  set(k,v){localStorage.setItem(k,JSON.stringify(v))},
+  set(k,v){ if(DEMO)return; localStorage.setItem(k,JSON.stringify(v))},
   custs(){return this.get('hp_c')},
   quotes(){return this.get('hp_q')},
   upsert(arr, item, key='id'){const i=arr.findIndex(x=>x[key]===item[key]);if(i>=0)arr[i]=item;else arr.unshift(item);return arr},
@@ -1182,6 +1188,7 @@ const LOC = {
 // ── UNIFIED DB ─────────────────────────────────────────────────
 // ── Supabase REST API helper (πιο αξιόπιστο από το SDK) ──────────
 async function supaRest(table, method, body, query) {
+  if (DEMO) return demoSupaRest(table, method, body, query); // demo → μνήμη, ποτέ δίκτυο
   var _scfg = JSON.parse(localStorage.getItem(CFG_KEY)||'null');
   var _sUrl = (_scfg&&_scfg.supaUrl) ? _scfg.supaUrl : SUPA_URL_DEFAULT;
   var _sKey = (_scfg&&_scfg.supaKey) ? _scfg.supaKey : SUPA_KEY_DEFAULT;
@@ -1522,11 +1529,14 @@ async function loadCrmPass(){
 }
 async function crmLogin(){
   var v=(g('crm-pass')||{}).value||'';
+  // ── DEMO: δευτερεύων κωδικός → ίδιο πρόγραμμα, εικονικά δεδομένα, καμία αποθήκευση ──
+  // ΔΕΝ ορίζουμε crm_ok: ένα refresh επιστρέφει στην πύλη (το demo δεν διαρρέει στο κανονικό).
+  if(v===DEMO_PASS){ enterDemo(); var gtd=g('crm-gate'); if(gtd)gtd.style.display='none'; call(goCustomers); return; }
   var pass=CRM_PASS; if(pass==null){ pass=await loadCrmPass(); }
   if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
   else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
 }
-var CRM_VER='1.4';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='2.0';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   loadCrmPass();
@@ -1540,7 +1550,7 @@ function closeChangePass(){ var m=g('crm-pass-mod'); if(m)m.style.display='none'
 async function crmChangePass(){
   var np=((g('crm-newpass')||{}).value||'').trim();
   if(np.length<1){ alert('Δώσε νέο κωδικό.'); return; }
-  try{ localStorage.setItem('crm_pass',JSON.stringify({pass:np})); }catch(e){}
+  try{ if(!DEMO) localStorage.setItem('crm_pass',JSON.stringify({pass:np})); }catch(e){}
   try{ if(storageMode==='supa'){ await supaRest('hm_settings','POST',{id:'crm_pass',value:{pass:np}},'on_conflict=id'); } }
   catch(e){ alert('Σφάλμα αποθήκευσης κωδικού: '+(e&&e.message?e.message:e)); return; }
   CRM_PASS=np; closeChangePass();
@@ -1685,6 +1695,96 @@ const GAS_MAT_TPL = [
 ];
 
 const LAB_RET_GAS = 1.35;
+
+// ══════════════════════════════════════════════════════════════════
+// DEMO MODE  —  εικονική μάρκα «Χουρσουλίδης HP» + εικονικές τιμές
+// Στόχος: να δείχνουμε ΟΛΟ το πρόγραμμα (πελάτες/ακίνητα/απώλειες/προσφορές)
+// χωρίς να αποκαλύπτουμε πραγματικές τιμές και ΧΩΡΙΣ να αποθηκεύεται τίποτα.
+// ══════════════════════════════════════════════════════════════════
+// Η εικονική μάρκα παίρνει σκόπιμα id:'bosch' ώστε να «πέφτει» σε κάθε
+// προεπιλογή/αναζήτηση του κώδικα (ES.brand='bosch', q.brand||'bosch', κ.λπ.)
+// χωρίς άλλες αλλαγές. Οι τιμές cost=retail (εικονικές, στρογγυλές).
+var DEMO_BRAND = { id:'bosch', label:'Χουρσουλίδης HP', icon:'🟣', color:'#7c3aed', sub:'DEMO — εικονικές τιμές', types:[
+  { key:'mono', label:'⚡ Μονοφασικό', pumps:[
+    {id:'xhp_m6',  kw:'6kW',  name:'XHP 6 Mono',  cost:1006, retail:1006},
+    {id:'xhp_m8',  kw:'8kW',  name:'XHP 8 Mono',  cost:1008, retail:1008},
+    {id:'xhp_m10', kw:'10kW', name:'XHP 10 Mono', cost:1010, retail:1010},
+  ]},
+  { key:'tri', label:'⚡⚡ Τριφασικό', pumps:[
+    {id:'xhp_t12', kw:'12kW', name:'XHP 12 Tri', cost:3012, retail:3012},
+    {id:'xhp_t14', kw:'14kW', name:'XHP 14 Tri', cost:3014, retail:3014},
+    {id:'xhp_t16', kw:'16kW', name:'XHP 16 Tri', cost:3016, retail:3016},
+  ]}
+]};
+// εικονική τιμή υλικού: όλα 10€, μπόιλερ 200€, μπάφερ (δοχεία αδράνειας) 100€
+function demoMatPrice(sid,iid){
+  if(sid==='boiler' && iid==='bo') return 200;
+  if(sid==='buffer' && (iid==='bf1'||iid==='bf2'||iid==='bf3')) return 100;
+  return 10;
+}
+// αντικαθιστά ΟΛΕΣ τις πραγματικές τιμές (αντλίες/υλικά/αέριο) με εικονικές — στη μνήμη
+function demoScrub(){
+  BRANDS.length=0; BRANDS.push(DEMO_BRAND);
+  MAT_TPL.forEach(function(s){
+    s.items.forEach(function(it){ var p=demoMatPrice(s.id,it.id); it.cost=p; it.retail=p; });
+    if(s.labor){ s.labor.costPerDay=100; s.labor.retailPerDay=100; }
+  });
+  try{ // μηδενίζουμε και τις τιμές αερίου ώστε το demo να μη διαρρέει κανέναν πραγματικό αριθμό
+    GAS_BRANDS.forEach(function(b){ (b.models||[]).forEach(function(m){ m.cost=200; m.retail=200; }); });
+    GAS_MAT_TPL.forEach(function(s){ s.items.forEach(function(it){ it.cost=10; it.retail=10; }); if(s.labor){ s.labor.costPerDay=100; s.labor.retailPerDay=100; } });
+  }catch(e){}
+}
+function enterDemo(){
+  DEMO=true; storageMode='supa'; DEMO_DB={};   // καθαρή, εικονική βάση στη μνήμη
+  demoScrub();
+  try{ ES.equipType='hp'; ES.brand='bosch'; ES.typeIdx=0; ES.pump=null; }catch(e){}
+  // οπτική ένδειξη demo
+  try{ var vv=g('crm-ver'); if(vv) vv.textContent='v'+CRM_VER+' · DEMO'; }catch(e){}
+  try{ var b=g('conn-badge'); if(b){ b.className='conn-badge'; b.style.background='#7c3aed'; b.style.color='#fff'; b.textContent='🟣 DEMO — δεν αποθηκεύεται τίποτα'; } }catch(e){}
+}
+// ── In-memory PostgREST-mimic: μιμείται όσο χρειάζεται το Supabase REST ──
+function demoParseEq(query,field){
+  if(!query) return null;
+  // (?:^|&) ώστε το 'id' να ΜΗΝ ταιριάζει μέσα στο 'customer_id'
+  var m=query.match(new RegExp('(?:^|&)'+field.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'=eq\\.([^&]+)'));
+  return m ? decodeURIComponent(m[1]) : null;
+}
+function demoSupaRest(table,method,body,query){
+  var t=DEMO_DB[table]||(DEMO_DB[table]=[]);
+  method=(method||'GET').toUpperCase();
+  if(method==='GET'){
+    var idF=demoParseEq(query,'id'), cust=demoParseEq(query,'customer_id');
+    var out=t.filter(function(r){
+      if(idF!=null && String(r.id)!==String(idF)) return false;
+      if(cust!=null && String(r.customer_id)!==String(cust)) return false;
+      return true;
+    });
+    if(query && /order=created_at\.desc/.test(query))
+      out=out.slice().sort(function(a,b){ return String(b.created_at||'').localeCompare(String(a.created_at||'')); });
+    return JSON.parse(JSON.stringify(out));
+  }
+  if(method==='POST'){
+    var rows=Array.isArray(body)?body:[body];
+    rows.forEach(function(row){
+      if(row==null) return;
+      row=JSON.parse(JSON.stringify(row));
+      if(row.created_at==null) row.created_at=new Date().toISOString();
+      var i=(row.id!=null)? t.findIndex(function(r){ return String(r.id)===String(row.id); }) : -1;
+      if(i>=0) t[i]=Object.assign({},t[i],row); else t.push(row);
+    });
+    return [];
+  }
+  if(method==='DELETE'){
+    var idD=demoParseEq(query,'id'), cD=demoParseEq(query,'customer_id');
+    for(var i=t.length-1;i>=0;i--){
+      if(idD!=null && String(t[i].id)!==String(idD)) continue;
+      if(cD!=null && String(t[i].customer_id)!==String(cD)) continue;
+      if(idD!=null||cD!=null) t.splice(i,1);
+    }
+    return [];
+  }
+  return [];
+}
 
 // ── EQUIPMENT TYPE ─────────────────────────────────────────────────
 function setEquip(type) {
@@ -2800,7 +2900,7 @@ function propsLoadLocal() {
   try { return JSON.parse(localStorage.getItem(PROPS_KEY)||'[]'); } catch(e){return [];}
 }
 function propsSaveLocal(d) {
-  try { localStorage.setItem(PROPS_KEY, JSON.stringify(d)); } catch(e){}
+  try { if(!DEMO) localStorage.setItem(PROPS_KEY, JSON.stringify(d)); } catch(e){}
 }
 
 // ── API helpers ───────────────────────────────────────────────────
@@ -3186,7 +3286,7 @@ async function assignQuoteToProp(qid) {
     try {
       var qs=JSON.parse(localStorage.getItem('crm_quotes_v1')||'[]');
       var idx=qs.findIndex(function(x){return x.id===qid;});
-      if(idx>=0){qs[idx]=q;localStorage.setItem('crm_quotes_v1',JSON.stringify(qs));}
+      if(idx>=0){qs[idx]=q; if(!DEMO) localStorage.setItem('crm_quotes_v1',JSON.stringify(qs));}
     } catch(e2){}
   }
   await renderQuotes();
@@ -3277,7 +3377,7 @@ function calcHL() {
       floorType:HL_STATE.floor,ceilType:HL_STATE.ceil,sides:HL_STATE.sides,
       nDoors:nDoor,doorW:dW,doorH:dH,nWindows:nWin,winW:wW,winH:wH};
     if (typeof EDIT_PID!=='undefined'&&EDIT_PID) {
-      try{localStorage.setItem('hl_'+EDIT_PID,JSON.stringify(APP.propHL));}catch(e){}  }
+      try{if(!DEMO)localStorage.setItem('hl_'+EDIT_PID,JSON.stringify(APP.propHL));}catch(e){}  }
   }
 }
 
@@ -3291,7 +3391,7 @@ function loadHLLocal(pid){
 }
 async function saveHLData(pid, hl){
   if(!pid||!hl) return;
-  try{ localStorage.setItem('hl_'+pid,JSON.stringify(hl)); }catch(e){}
+  try{ if(!DEMO) localStorage.setItem('hl_'+pid,JSON.stringify(hl)); }catch(e){}
   try{ if(storageMode==='supa'){ await supaRest('hm_settings','POST',{id:'hl_'+pid,value:hl},'on_conflict=id'); } }
   catch(e){ console.warn('saveHLData:',e); }
 }
@@ -3302,7 +3402,7 @@ async function loadHLData(pid){
     var rows=await supaRest('hm_settings','GET',null,'id=eq.hl_'+pid+'&select=value');
     if(rows&&rows[0]&&rows[0].value) got=rows[0].value;
   } }catch(e){ console.warn('loadHLData:',e); }
-  if(got){ try{ localStorage.setItem('hl_'+pid,JSON.stringify(got)); }catch(e){} }
+  if(got){ try{ if(!DEMO) localStorage.setItem('hl_'+pid,JSON.stringify(got)); }catch(e){} }
   else got=loadHLLocal(pid);
   return got;
 }
@@ -3366,6 +3466,7 @@ function psSnapshotBase(){
   MAT_TPL.forEach(function(s){s.items.forEach(function(it){PRICING_BASE.mats[s.id+'.'+it.id]={c:it.cost,r:it.retail};});});
 }
 function applyPricing(){
+  if(DEMO) return; // demo: κρατάμε τις εικονικές τιμές, καμία επαναφορά
   psSnapshotBase();
   BRANDS.forEach(function(b){(b.types||[]).forEach(function(t){(t.pumps||[]).forEach(function(p){
     var base=PRICING_BASE.pumps[p.id]||{c:p.cost,r:p.retail};
@@ -3384,6 +3485,7 @@ function applyPricing(){
   try{var ve=g('v-editor');if(ve&&!ve.classList.contains('hidden')){rPumps();rSum();}}catch(e){}
 }
 async function loadPricing(){
+  if(DEMO) return; // demo: δεν φορτώνουμε πραγματικές τιμές
   psSnapshotBase();
   var got=null;
   try{
@@ -3403,6 +3505,7 @@ async function loadPricing(){
   applyPricing();
 }
 async function savePricing(){
+  if(DEMO) return {supa:false,err:'demo'}; // demo: καμία αποθήκευση τιμών
   try{localStorage.setItem('pset',JSON.stringify(PSET));}catch(e){}
   var okSupa=false, errMsg='';
   try{
