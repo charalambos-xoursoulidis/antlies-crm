@@ -1536,7 +1536,7 @@ async function crmLogin(){
   if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
   else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
 }
-var CRM_VER='2.2';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='2.3';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   loadCrmPass();
@@ -1716,6 +1716,11 @@ var DEMO_BRAND = { id:'bosch', label:'Χουρσουλίδης HP', icon:'🟣',
     {id:'xhp_t16', kw:'16kW', name:'XHP 16 Tri', cost:3016, retail:3016},
   ]}
 ]};
+// εικονική μάρκα λέβητα αερίου — ΜΙΑ μόνο επιλογή. Κρατά id:'buderus' (η προεπιλογή
+// του αερίου στο setEquip) ώστε να «πέφτει» σωστά χωρίς άλλες αλλαγές.
+var DEMO_GAS_BRAND = { id:'buderus', label:'Χουρσουλίδης Gas', icon:'🟣', color:'#7c3aed', sub:'DEMO — εικονικές τιμές', models:[
+  {id:'xhp_g24', kw:'24 kW', name:'XHP Gas 24', cost:200, retail:200},
+]};
 // εικονική τιμή υλικού: όλα 10€, μπόιλερ 200€, μπάφερ (δοχεία αδράνειας) 100€
 function demoMatPrice(sid,iid){
   if(sid==='boiler' && iid==='bo') return 200;
@@ -1729,8 +1734,8 @@ function demoScrub(){
     s.items.forEach(function(it){ var p=demoMatPrice(s.id,it.id); it.cost=p; it.retail=p; });
     if(s.labor){ s.labor.costPerDay=100; s.labor.retailPerDay=100; }
   });
-  try{ // μηδενίζουμε και τις τιμές αερίου ώστε το demo να μη διαρρέει κανέναν πραγματικό αριθμό
-    GAS_BRANDS.forEach(function(b){ (b.models||[]).forEach(function(m){ m.cost=200; m.retail=200; }); });
+  try{ // αέριο: ΜΙΑ εικονική μάρκα «Χουρσουλίδης Gas» + εικονικές τιμές υλικών (κανένας πραγματικός αριθμός)
+    GAS_BRANDS.length=0; GAS_BRANDS.push(DEMO_GAS_BRAND);
     GAS_MAT_TPL.forEach(function(s){ s.items.forEach(function(it){ it.cost=10; it.retail=10; }); if(s.labor){ s.labor.costPerDay=100; s.labor.retailPerDay=100; } });
   }catch(e){}
 }
