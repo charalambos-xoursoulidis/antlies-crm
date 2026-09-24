@@ -2,7 +2,7 @@
 <html lang="el"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cachebust" content="202609181338">
+<meta name="cachebust" content="202609241859">
 <title>Υπολογιστής Αντλίας Θερμότητας</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -214,7 +214,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 </div>
 
 <script>
-var APP_VER='4.2';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var APP_VER='4.3';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 var OFFICE_EMAIL='charalambos@xoursoulidis.com';   // παραλήπτης αιτημάτων εξατομικευμένης προσφοράς
 var OFFICE_PHONE='2331028063';
 var STUDY_FEE=50, SKETCH_FEE=20;   // € αξία μελέτης / επιπλέον σκαρίφημα (DXF+PDF)
@@ -275,6 +275,15 @@ function pickPump(safe,phase){
   return {id:pick.id,name:pick.name,kwl:pick.kwl,retail:pick.r,r:pick.r,kw:pick.kw,capped:capped,phase:phase};
 }
 function fmtEur(n){return Math.round(n).toLocaleString('el-GR');}
+function kwNum(n){ return (Math.round((parseFloat(n)||0)*10)/10).toString().replace('.',','); }
+// Δημόσια παρουσίαση ισχύος ως ΕΥΡΟΣ: (επιλεγμένο μοντέλο −1kW) έως το ΕΠΟΜΕΝΟ μοντέλο (π.χ. 10kW → «9–12 kW»)
+function pumpRange(pp){
+  var list=BOSCH[(pp&&pp.phase)||'mono']||BOSCH.mono, idx=-1;
+  for(var i=0;i<list.length;i++){ if(list[i].id===(pp&&pp.id)){ idx=i; break; } }
+  var low=Math.max(1, ((pp&&pp.kw)||0)-1);
+  var high=(idx>=0 && idx<list.length-1) ? list[idx+1].kw : null;
+  return { low:low, high:high, lbl:(high==null) ? (kwNum(low)+'+ kW') : (kwNum(low)+'–'+kwNum(high)+' kW') };
+}
 function phaseLbl(ph){ return ph==='tri'?'Τριφασικό':(ph==='unknown'?'Άγνωστη (προς επιβεβαίωση)':'Μονοφασικό'); }
 // Εκτίμηση παροχής όταν ο πελάτης δεν ξέρει, βάσει έτους κατασκευής (ins) + εμβαδού
 function inferPhase(area,ins){
@@ -511,27 +520,21 @@ function wizRenderResult(){
   var hl=hlCompute(WZ.data); WZ._hl=hl;
   var pi=phaseInfo(WZ.data);
   var pp=pickPump(hl.safe,pi.eff); WZ._pp=pp;
-  var basicR=Math.round((pp.retail+MAT_LABOR)/10)*10;
-  var vat=Math.round(basicR*0.24), total=basicR+vat;
+  var rng=pumpRange(pp);
   g('wz-eyebrow').textContent='Αποτέλεσμα';
   g('wz-q').textContent=(WZ.data.calcName||'Ο υπολογισμός σου');
-  g('wz-qsub').textContent='Με βάση τα στοιχεία που έδωσες, η ενδεικτική αξία:';
+  g('wz-qsub').textContent='Με βάση τα στοιχεία που έδωσες, η προτεινόμενη ισχύς αντλίας θερμότητας:';
   g('wz-field').innerHTML='<div class="wz-res">'
-    +'<div class="wz-res-kw">~'+fmtEur(basicR)+' €</div>'
-    +'<div class="wz-res-lbl">ενδεικτική βασική αξία «με το κλειδί στο χέρι»<br><span style="font-size:12px;color:#94a3b8">(δεν περιλαμβάνει την εργασία του ηλεκτρολόγου και τον ΦΠΑ)</span><br>αντλία θερμότητας, υλικά &amp; εργασία τοποθέτησης</div>'
-    +'<div class="wz-res-pump" style="margin-top:14px">💧 Προτεινόμενη αντλία: ~'+pp.kw+' kW</div>'
+    +'<div class="wz-res-kw">'+rng.lbl+'</div>'
+    +'<div class="wz-res-lbl">ενδεικτικό εύρος ισχύος αντλίας θερμότητας<br><span style="font-size:12px;color:#94a3b8">η ακριβής επιλογή μοντέλου γίνεται από τον μηχανικό μας μετά από αυτοψία</span></div>'
     +((WZ.data.phase==='unknown')?'<div style="margin-top:8px;font-size:11.5px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;line-height:1.45">ℹ️ Δεν ήξερες την παροχή ρεύματος — την <b>εκτιμήσαμε '+(pi.eff==='tri'?'τριφασική':'μονοφασική')+'</b> βάσει έτους &amp; εμβαδού. Θα την επιβεβαιώσουμε εμείς από τον λογαριασμό ΔΕΗ ή στην αυτοψία.</div>':'')
-    +'<div style="margin-top:10px;padding-top:8px;border-top:1px dashed #e2e8f0;font-size:13px;color:#64748b;line-height:1.7">'
-      +'ΦΠΑ 24%: <b style="color:#475569">'+fmtEur(vat)+' €</b><br>'
-      +'<span style="font-size:14px;color:#334155">Σύνολο με ΦΠΑ: <b>~'+fmtEur(total)+' €</b></span>'
-    +'</div>'
     +(pp.capped?'<div style="margin-top:12px;font-size:12.5px;font-weight:700;color:#c2410c">🔺 Μεγάλες ανάγκες — επικοινώνησε μαζί μας για ακριβή διαστασιολόγηση</div>':'')
     +'<div style="margin-top:16px;padding-top:14px;border-top:1px solid #f1f5f9">'
       +'<div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:8px">Θέλεις ακριβή μελέτη &amp; δεσμευτική προσφορά;</div>'
       +'<button onclick="openLead()" style="width:100%;background:linear-gradient(90deg,#fb923c,#f97316);color:#fff;border:none;border-radius:12px;padding:13px 16px;font-size:14.5px;font-weight:800;cursor:pointer">🔧 Λεπτομερής μελέτη &amp; εξατομικευμένη προσφορά</button>'
       +'<div style="font-size:11px;color:#94a3b8;margin-top:6px">Επιτόπια αυτοψία (νομοί Ημαθίας &amp; Δράμας) · αξία μελέτης €50 που αφαιρείται από την αξία της εγκατάστασης</div>'
     +'</div>'
-    +'<div style="font-size:11px;color:#94a3b8;margin-top:14px;line-height:1.45">* Ο υπολογισμός είναι <b>ενδεικτικός</b> και βασίζεται αποκλειστικά στα στοιχεία που δηλώσατε· πραγματικοί παράγοντες (προσανατολισμός, αεροστεγανότητα, πραγματικές μονώσεις, ανάγκες ζεστού νερού κ.ά.) μπορεί να διαφοροποιήσουν τόσο την ισχύ όσο και την αξία. Η τελική προσφορά και η ακριβής διαστασιολόγηση γίνονται από τον μηχανικό μας κατόπιν αυτοψίας.</div>'
+    +'<div style="font-size:11px;color:#94a3b8;margin-top:14px;line-height:1.45">* Ο υπολογισμός είναι <b>ενδεικτικός</b> και βασίζεται αποκλειστικά στα στοιχεία που δηλώσατε· πραγματικοί παράγοντες (προσανατολισμός, αεροστεγανότητα, πραγματικές μονώσεις, ανάγκες ζεστού νερού κ.ά.) μπορεί να διαφοροποιήσουν την προτεινόμενη ισχύ. Η τελική προσφορά και η ακριβής διαστασιολόγηση γίνονται από τον μηχανικό μας κατόπιν αυτοψίας.</div>'
     +'<button class="wz-mini" onclick="wizStart()">↻ Νέος υπολογισμός</button>'
     +'</div>';
   wizHouse('hl-done');
@@ -541,8 +544,7 @@ function wizRenderResult(){
 }
 function doPrint(){
   var d=WZ.data, hl=WZ._hl||hlCompute(d);
-  var pp=WZ._pp||pickPump(hl.safe,d.phase||'mono'); var basicR=Math.round((pp.retail+MAT_LABOR)/10)*10;
-  var vat=Math.round(basicR*0.24), total=basicR+vat;
+  var pp=WZ._pp||pickPump(hl.safe,phaseInfo(d).eff); var rng=pumpRange(pp);
   var upg=[]; if(d.upWin)upg.push('Διπλά τζάμια'); if(d.upWall)upg.push('Θερμοπρόσοψη'); if(d.upCeil)upg.push('Μόνωση οροφής'); if(d.upFloor)upg.push('Μόνωση δαπέδου');
   var now=new Date().toLocaleDateString('el-GR');
   var row=function(k,v){return '<tr><td>'+k+'</td><td>'+v+'</td></tr>';};
@@ -561,13 +563,11 @@ function doPrint(){
     +row('Εκτεθειμένες πλευρές', d.sides)
     +row('Μπαλκονόπορτες / Παράθυρα', (d.nDoors||0)+' / '+(d.nWindows||0))
     +row('Παροχή ρεύματος', (function(){var _p=phaseInfo(d); return _p.guess?('Άγνωστη — εκτίμηση: '+(_p.eff==='tri'?'Τριφασική (400V)':'Μονοφασική (230V)')+' (προς επιβεβαίωση)'):(d.phase==='tri'?'Τριφασικό (400V)':'Μονοφασικό (230V)');})())
-    +row('Προτεινόμενη αντλία', '~'+pp.kw+' kW')
+    +row('Προτεινόμενη ισχύς', rng.lbl)
     +'</table>'
-    +'<div class="pr-res"><div class="k">~'+fmtEur(basicR)+' €</div>'
-    +'<div style="font-size:11px;color:#64748b;margin-top:2px">ενδεικτική βασική αξία «με το κλειδί στο χέρι» (δεν περιλαμβάνει την εργασία του ηλεκτρολόγου και τον ΦΠΑ)</div>'
-    +'<div class="p">αντλία θερμότητας, υλικά &amp; εργασία τοποθέτησης</div>'
-    +'<div style="font-size:11px;color:#475569;margin-top:6px;line-height:1.6">ΦΠΑ 24%: <b>'+fmtEur(vat)+' €</b> &nbsp;·&nbsp; <b style="color:#334155">Σύνολο με ΦΠΑ: ~'+fmtEur(total)+' €</b></div></div>'
-    +'<div class="pr-note">* Ο υπολογισμός είναι ενδεικτικός και βασίζεται αποκλειστικά στα στοιχεία που δηλώθηκαν· πραγματικοί παράγοντες (προσανατολισμός, αεροστεγανότητα, πραγματικές μονώσεις, ανάγκες ζεστού νερού κ.ά.) μπορεί να διαφοροποιήσουν την ισχύ και την αξία. Η αξία δεν περιλαμβάνει την εργασία του ηλεκτρολόγου και τον ΦΠΑ. Η τελική προσφορά και η ακριβής διαστασιολόγηση γίνονται από τον μηχανικό μας κατόπιν αυτοψίας.</div>'
+    +'<div class="pr-res"><div class="k">'+rng.lbl+'</div>'
+    +'<div style="font-size:11px;color:#64748b;margin-top:2px">ενδεικτικό εύρος ισχύος αντλίας θερμότητας — η ακριβής επιλογή μοντέλου γίνεται από τον μηχανικό μας κατόπιν αυτοψίας</div></div>'
+    +'<div class="pr-note">* Ο υπολογισμός είναι ενδεικτικός και βασίζεται αποκλειστικά στα στοιχεία που δηλώθηκαν· πραγματικοί παράγοντες (προσανατολισμός, αεροστεγανότητα, πραγματικές μονώσεις, ανάγκες ζεστού νερού κ.ά.) μπορεί να διαφοροποιήσουν την προτεινόμενη ισχύ. Η τελική προσφορά και η ακριβής διαστασιολόγηση γίνονται από τον μηχανικό μας κατόπιν αυτοψίας.</div>'
     +'<div style="font-size:9px;color:#cbd5e1;margin-top:10px;text-align:right">Υπολογιστής Αντλίας Θερμότητας — έκδοση v'+APP_VER+'</div>';
   window.print();
 }
@@ -616,7 +616,6 @@ function leadSubmit(){
   if(prog==='other'){var po=vv('lead-prog-other'); progL='Άλλο'+(po?(' — '+po):' (δεν διευκρινίστηκε)');}
   var fee=STUDY_FEE+(plan==='no'?SKETCH_FEE:0);
   var d=(WZ&&WZ.data)?WZ.data:{}, hl=(WZ&&WZ._hl)?WZ._hl:null, pp=(WZ&&WZ._pp)?WZ._pp:null;
-  var basicR=pp?Math.round((pp.retail+MAT_LABOR)/10)*10:null;
   var NL='\r\n';
   var body='ΑΙΤΗΜΑ ΕΞΑΤΟΜΙΚΕΥΜΕΝΗΣ ΠΡΟΣΦΟΡΑΣ'+NL+'==============================='+NL+NL
     +'ΣΤΟΙΧΕΙΑ ΕΝΔΙΑΦΕΡΟΜΕΝΟΥ'+NL
@@ -635,8 +634,7 @@ function leadSubmit(){
     +'Ζώνη: '+((LBL.zone&&LBL.zone[d.zone])||d.zone||'—')+' · Μόνωση: '+((LBL.ins&&LBL.ins[d.ins])||d.ins||'—')+NL
     +'Μπαλκονόπορτες/Παράθυρα: '+(d.nDoors||0)+' / '+(d.nWindows||0)+NL
     +'Παροχή: '+phaseInfo(d).label+NL
-    +(hl?('Απώλειες: ~'+(+hl.kw).toFixed(1)+' kW · +20%: ~'+(+hl.safe).toFixed(1)+' kW · Αντλία: '+(pp?pp.kw:'—')+' kW'+NL):'')
-    +(basicR!=null?('Ενδεικτική βασική αξία: ~€'+fmtEur(basicR)+' (χωρίς εργασία ηλεκτρολόγου & ΦΠΑ)'+NL):'')
+    +(hl?('Απώλειες: ~'+(+hl.kw).toFixed(1)+' kW · +20%: ~'+(+hl.safe).toFixed(1)+' kW · Προτεινόμενη ισχύς: '+(pp?pumpRange(pp).lbl:'—')+NL):'')
     +NL+'— Στάλθηκε από τον δωρεάν υπολογιστή αντλίας θερμότητας (v'+APP_VER+')';
   var subject='Αίτημα εξατομικευμένης προσφοράς — '+fn+' '+ln+' ('+regL+')';
   var pv=g('lead-preview'); if(pv)pv.value='Προς: '+OFFICE_EMAIL+'\nΘέμα: '+subject+'\n\n'+body;
