@@ -767,7 +767,7 @@ a{color:#2563eb}
         <input class="em-inp" type="number" id="e-agreed" style="width:130px;border-color:#86efac;color:#15803d;font-weight:600" placeholder="0.00" step="0.01" min="0" oninput="rSum()">
       </div>
       <div class="hdr-gap"></div>
-      <button class="btn btn-green" onclick="call(saveQuote)">💾 Αποθήκευση</button>
+      <button id="q-save-btn" class="btn btn-green" onclick="call(saveQuote)">💾 Αποθήκευση</button>
       <button id="btn-word" class="btn" onclick="call(generateOfferDescription)" style="background:#7c3aed;color:#fff;border-color:#7c3aed">📝 Περιγραφή (Word)</button>
       <button class="btn" onclick="call(printCostAnalysis)" style="background:#0369a1;color:#fff;border-color:#0369a1">🖨️ Εκτύπωση κόστους</button>
       <button class="btn btn-ghost" onclick="call(goCustomer)">✕ Ακύρωση</button>
@@ -1536,7 +1536,7 @@ async function crmLogin(){
   if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
   else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
 }
-var CRM_VER='2.3';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='2.4';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   loadCrmPass();
@@ -2370,8 +2370,18 @@ async function saveQuote(){
     totals:{pump_c:pC,pump_r:pR,total_c:tC,total_r:tR,profit:prof,profit_pct:profPct,agreed_amount:finalAgreed}};
   await DB.saveQuote(q);EDIT_QID=q.id;
   var bc=g('bc-equote');if(bc)bc.textContent=q.quote_number;
-  alert('OK - Prosfora ' + q.quote_number + ' apotheikeyth.');
-  if(APP.propId){await goProperty();}else{await goCustomer();}
+  // ΔΕΝ κλείνουμε τη φόρμα — ο χρήστης συνεχίζει στην ίδια προσφορά.
+  // Ένδειξη αποθήκευσης χωρίς μπλοκάρισμα (flash στο κουμπί).
+  var sb=g('q-save-btn');
+  if(sb){
+    if(sb._t)clearTimeout(sb._t);
+    var _orig=sb.getAttribute('data-orig')||'💾 Αποθήκευση';
+    sb.setAttribute('data-orig',_orig);
+    sb.textContent='✓ Αποθηκεύτηκε';
+    sb._t=setTimeout(function(){ sb.textContent=_orig; sb._t=null; },1800);
+  } else {
+    alert('✓ Η προσφορά '+q.quote_number+' αποθηκεύτηκε.');
+  }
 }
 
 // ── OFFER DESCRIPTION (WORD) ─────────────────────────────────────
