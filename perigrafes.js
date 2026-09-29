@@ -420,6 +420,31 @@ window.PERIGRAFES=(function(){
       throw new Error('Έμεινε ασυμπλήρωτη σημαδούρα: '+xml.substring(at,at+30));
     }
 
+    // 5β) Εναλλακτική πρόταση (ο πίνακας «Εναλλακτικά με αντλία θερμότητας» στο τέλος).
+    // Γεμίζει ΜΟΝΟ αν ο χρήστης επέλεξε 2η προσφορά· αλλιώς ο πίνακας μένει με τα κενά (χειρόγραφα).
+    // Δεν πειράζουμε το καλούπι — αντικαθιστούμε τα κενά (υπογραμμίσεις/€) στο ίδιο το document.xml.
+    if(ctx.alt && ctx.alt.label){
+      var _aNet=+ctx.alt.net||0, _aVat=Math.round(_aNet*24)/100, _aSum=_aNet+_aVat;
+      var _aName=escXml(String(ctx.alt.label));
+      var _aKw=escXml(String(ctx.alt.kw==null?'':ctx.alt.kw).replace(/\s*kw\b.*/i,'').trim());
+      // Επικεφαλίδα «Εναλλακτικά με αντλία θερμότητας ____» (9 υπογραμμίσεις, μοναδικό)
+      xml=xml.replace('<w:t>_________</w:t>','<w:t xml:space="preserve">'+_aName+'</w:t>');
+      // Απομόνωση της γραμμής δεδομένων και αντικατάσταση ΣΕ ΣΕΙΡΑ (τα κελιά € είναι όμοια)
+      var _ai=xml.indexOf('Προμήθεια &amp; τοποθέτηση αντλίας θερμότητας');
+      if(_ai>=0){
+        var _rs=xml.lastIndexOf('<w:tr ',_ai), _re=xml.indexOf('</w:tr>',_ai)+7;
+        if(_rs>=0 && _re>7){
+          var _row=xml.substring(_rs,_re);
+          _row=_row.replace('<w:t>_________________________</w:t>','<w:t xml:space="preserve">'+_aName+'</w:t>');
+          _row=_row.replace('<w:t>___</w:t>','<w:t xml:space="preserve">'+_aKw+'</w:t>');
+          _row=_row.replace('<w:t>€</w:t>','<w:t>'+escXml(fmtE(_aNet))+'</w:t>');   // Αξία
+          _row=_row.replace('<w:t>€</w:t>','<w:t>'+escXml(fmtE(_aVat))+'</w:t>');   // ΦΠΑ
+          _row=_row.replace('<w:t xml:space="preserve"> €</w:t>','<w:t xml:space="preserve"> '+escXml(fmtE(_aSum))+'</w:t>'); // Σύνολο
+          xml=xml.substring(0,_rs)+_row+xml.substring(_re);
+        }
+      }
+    }
+
     // 6) Ξαναπακετάρισμα και λήψη
     var out=rebuildZip(tpl,zinfo,xml);
     var blob=new Blob([out],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
@@ -458,20 +483,43 @@ window.PERIGRAFES=(function(){
       +'<option>fan coils</option>'
       +'</select>'
       +'<label style="display:flex;gap:8px;align-items:center;font-size:13.5px;margin:2px 0"><input type="checkbox" id="pg-rmboiler"> Αποσύνδεση υφιστάμενου λέβητα</label>'
-      +'<label style="display:flex;gap:8px;align-items:center;font-size:13.5px;margin:6px 0 18px"><input type="checkbox" id="pg-rmtank"> Αποσύνδεση δεξαμενής πετρελαίου</label>'
+      +'<label style="display:flex;gap:8px;align-items:center;font-size:13.5px;margin:6px 0 12px"><input type="checkbox" id="pg-rmtank"> Αποσύνδεση δεξαμενής πετρελαίου</label>'
+      +((ctx.altCandidates&&ctx.altCandidates.length)?(
+         '<label style="font-weight:700;font-size:13px">Εναλλακτική πρόταση (2ος πίνακας στο τέλος)</label>'
+         +'<select id="pg-alt" style="'+selStyle+'">'
+         +'<option value="">— καμία —</option>'
+         +ctx.altCandidates.map(function(a){return '<option value="'+escXml(String(a.id))+'">'+escXml(String(a.text||a.label))+'</option>';}).join('')
+         +'</select>'):'')
       +'<div style="display:flex;gap:10px;justify-content:flex-end">'
       +'<button id="pg-cancel" style="border-radius:7px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #d1d5db;background:#fff;color:#374151">Άκυρο</button>'
       +'<button id="pg-go" style="border-radius:7px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #7c3aed;background:#7c3aed;color:#fff">Δημιουργία Word</button>'
       +'</div></div>';
     document.body.appendChild(ovl);
+    // Προ-συμπλήρωση από αποθηκευμένες επιλογές (μνήμη ανά έργο)
+    if(ctx.savedOpts){
+      var _so=ctx.savedOpts, _sv=function(id,v){var el=document.getElementById(id);if(el&&v!=null&&v!=='')el.value=v;};
+      _sv('pg-place',_so.place); _sv('pg-dist',_so.dist); _sv('pg-alt',_so.altId);
+      var _rb=document.getElementById('pg-rmboiler'); if(_rb)_rb.checked=!!_so.rmBoiler;
+      var _rt=document.getElementById('pg-rmtank'); if(_rt)_rt.checked=!!_so.rmTank;
+    }
     document.getElementById('pg-cancel').onclick=function(){ovl.remove();};
     document.getElementById('pg-go').onclick=function(){
+      var _altEl=document.getElementById('pg-alt'), _altId=_altEl?_altEl.value:'';
       var opts={
         place:document.getElementById('pg-place').value,
         dist:document.getElementById('pg-dist').value,
         rmBoiler:document.getElementById('pg-rmboiler').checked,
-        rmTank:document.getElementById('pg-rmtank').checked
+        rmTank:document.getElementById('pg-rmtank').checked,
+        altId:_altId
       };
+      // Μνήμη επιλογών ανά έργο (το CRM τις αποθηκεύει στο Supabase)
+      if(typeof ctx.onSaveOpts==='function'){ try{ctx.onSaveOpts(opts);}catch(e){} }
+      // Σύνδεση της επιλεγμένης εναλλακτικής προσφοράς → γεμίζει το πινακάκι στο τέλος
+      ctx.alt=null;
+      if(_altId&&ctx.altCandidates){
+        var _c=ctx.altCandidates.filter(function(a){return String(a.id)===String(_altId);})[0];
+        if(_c)ctx.alt={label:_c.label,kw:_c.kw,net:_c.net};
+      }
       ovl.remove();
       buildDoc(ctx,model,opts).catch(function(e){alert('Σφάλμα δημιουργίας εγγράφου: '+(e&&e.message?e.message:e));});
     };

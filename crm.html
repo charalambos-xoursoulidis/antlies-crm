@@ -1536,7 +1536,7 @@ async function crmLogin(){
   if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
   else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
 }
-var CRM_VER='2.4';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='2.5';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   loadCrmPass();
@@ -2408,7 +2408,21 @@ async function generateOfferDescription(){
   var vat=Math.round(tR*24)/100;
   var c=APP._custCache||{};
   var pr=APP._propCache||{};
+  // Εναλλακτικές προτάσεις = οι ΑΛΛΕΣ προσφορές του πελάτη· + μνήμη επιλογών εκτύπωσης ανά έργο
+  var altCandidates=[], savedOpts=null;
+  try{
+    var _allQ=await DB.custQuotes(APP.custId);
+    altCandidates=(_allQ||[]).filter(function(qq){return qq.id!==EDIT_QID;}).map(function(qq){
+      var _net=(qq.totals&&qq.totals.total_r)||0;
+      var _lbl=((qq.brand_label?qq.brand_label+' ':'')+(qq.pump_name||'')).trim()||'Προσφορά';
+      return {id:qq.id,label:_lbl,kw:qq.pump_kw||'',net:_net,
+        text:(qq.quote_number||'—')+' · '+_lbl+(qq.pump_kw?' ('+qq.pump_kw+')':'')+' — '+Math.round(_net).toLocaleString('el-GR')+' €'};
+    });
+    if(EDIT_QID) savedOpts=await loadPrnOpts(EDIT_QID);
+  }catch(_e){ if(window.console)console.warn('altCandidates/savedOpts:',_e); }
   PERIGRAFES.start({
+    altCandidates:altCandidates, savedOpts:savedOpts,
+    onSaveOpts:function(opts){ if(EDIT_QID) savePrnOpts(EDIT_QID,opts); },
     equipType:ES.equipType||'pump',
     brandId:ES.brand,
     brandLabel:brand?brand.label:'',
@@ -2422,6 +2436,10 @@ async function generateOfferDescription(){
     todayStr:new Date().toLocaleDateString('el-GR')
   });
 }
+
+// Μνήμη επιλογών εκτύπωσης/περιγραφής ανά προσφορά (hm_settings id='prnopts_<qid>')
+async function savePrnOpts(qid,opts){ if(!qid) return; try{ await supaRest('hm_settings','POST',{id:'prnopts_'+qid,value:opts},'on_conflict=id'); }catch(e){ if(window.console)console.warn('savePrnOpts:',e); } }
+async function loadPrnOpts(qid){ if(!qid) return null; try{ var rows=await supaRest('hm_settings','GET',null,'id=eq.prnopts_'+qid+'&select=value'); return (rows&&rows[0]&&rows[0].value)?rows[0].value:null; }catch(e){ return null; } }
 
 // Override openEditor to restore pump price overrides
 async function openEditor(qid){
