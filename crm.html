@@ -10,7 +10,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
-<script src="perigrafes.js" defer></script>
+<script>/* Φόρτωση perigrafes.js με cache-busting σε http(s) ώστε να ΜΗΝ «κολλάει» παλιά έκδοση (π.χ. παλιά φωτο θερμοστάτη).
+   Σε τοπικό άνοιγμα (file://) φορτώνεται κανονικά χωρίς query. ΒUMP το ?v όταν αλλάζει το perigrafes.js. */
+(function(){var s=document.createElement('script');s.defer=true;s.src='perigrafes.js'+(/^https?:$/.test(location.protocol)?'?v=2.6':'');(document.head||document.documentElement).appendChild(s);})();</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:14px;background:#f0f2f5;color:#1e293b;min-height:100vh}
@@ -1536,7 +1538,7 @@ async function crmLogin(){
   if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
   else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
 }
-var CRM_VER='2.5';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='2.6';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   loadCrmPass();
