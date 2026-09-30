@@ -598,13 +598,53 @@ a{color:#2563eb}
           </div>
           <div class="fld">
             <label>Κλιματική Ζώνη</label>
-            <select id="hl-zone" style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:12px">
+            <select id="hl-zone" onchange="var _c=document.getElementById('hl-city');if(_c)_c.value='';" style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:12px">
               <option value="A">Α — Αθήνα, Νησιά (ΔΤ 25°C)</option>
               <option value="B">Β — Κ. Ελλάδα (ΔΤ 30°C)</option>
               <option value="C" selected>Γ — Β. Ελλάδα, Μακεδονία (ΔΤ 35°C)</option>
               <option value="D">Δ — Ορεινά (ΔΤ 42°C)</option>
             </select>
           </div>
+        </div>
+        <div class="fld" style="margin-bottom:8px">
+          <label>Πόλη / Περιοχή <span style="font-weight:400;color:#94a3b8;font-size:10px">(ακριβέστερες βαθμοημέρες — ρυθμίζει και τη ζώνη)</span></label>
+          <select id="hl-city" onchange="hlCityPick()" style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:12px">
+            <option value="">— γενικά, βάσει ζώνης —</option>
+            <optgroup label="Ημαθία (ζώνη Γ)">
+              <option value="alexandreia" data-zone="C" data-hdd="1800">Αλεξάνδρεια Ημαθίας ≈ 1800</option>
+              <option value="veria" data-zone="C" data-hdd="1950">Βέροια ≈ 1950</option>
+              <option value="naoussa" data-zone="C" data-hdd="2150">Νάουσα ≈ 2150</option>
+            </optgroup>
+            <optgroup label="Πέλλα (ζώνη Γ)">
+              <option value="giannitsa" data-zone="C" data-hdd="1800">Γιαννιτσά ≈ 1800</option>
+              <option value="skydra" data-zone="C" data-hdd="1900">Σκύδρα ≈ 1900</option>
+              <option value="aridaia" data-zone="C" data-hdd="2050">Αριδαία ≈ 2050</option>
+              <option value="edessa" data-zone="C" data-hdd="2100">Έδεσσα ≈ 2100</option>
+            </optgroup>
+            <optgroup label="Κοζάνη (ζώνη Δ)">
+              <option value="ptolemaida" data-zone="D" data-hdd="2600">Πτολεμαΐδα ≈ 2600</option>
+              <option value="kozani" data-zone="D" data-hdd="2700">Κοζάνη ≈ 2700</option>
+              <option value="siatista" data-zone="D" data-hdd="3050">Σιάτιστα ≈ 3050</option>
+            </optgroup>
+            <optgroup label="Λοιπή Β. Ελλάδα">
+              <option value="thessaloniki" data-zone="C" data-hdd="1600">Θεσσαλονίκη ≈ 1600</option>
+              <option value="larisa" data-zone="C" data-hdd="1900">Λάρισα ≈ 1900</option>
+              <option value="serres" data-zone="C" data-hdd="2000">Σέρρες ≈ 2000</option>
+              <option value="drama" data-zone="C" data-hdd="2150">Δράμα ≈ 2150</option>
+              <option value="ioannina" data-zone="C" data-hdd="2250">Ιωάννινα ≈ 2250</option>
+              <option value="grevena" data-zone="D" data-hdd="2600">Γρεβενά ≈ 2600</option>
+              <option value="kastoria" data-zone="D" data-hdd="2850">Καστοριά ≈ 2850</option>
+              <option value="florina" data-zone="D" data-hdd="3050">Φλώρινα ≈ 3050</option>
+            </optgroup>
+            <optgroup label="Υπόλοιπη Ελλάδα">
+              <option value="volos" data-zone="B" data-hdd="1400">Βόλος ≈ 1400</option>
+              <option value="lamia" data-zone="B" data-hdd="1450">Λαμία ≈ 1450</option>
+              <option value="athina" data-zone="B" data-hdd="1100">Αθήνα ≈ 1100</option>
+              <option value="patra" data-zone="B" data-hdd="1200">Πάτρα ≈ 1200</option>
+              <option value="kalamata" data-zone="A" data-hdd="950">Καλαμάτα ≈ 950</option>
+              <option value="irakleio" data-zone="A" data-hdd="750">Ηράκλειο ≈ 750</option>
+            </optgroup>
+          </select>
         </div>
         <div class="fld" style="margin-bottom:8px">
           <label>Τύπος κτηρίου / Μόνωση</label>
@@ -1556,7 +1596,7 @@ async function crmLogin(){
   if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
   else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
 }
-var CRM_VER='2.7';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='2.8';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   loadCrmPass();
@@ -3386,12 +3426,26 @@ function hlPaint(){
   });
 }
 
+function hlCityPick(){
+  var cs=document.getElementById('hl-city');
+  var op=(cs&&cs.value)?cs.options[cs.selectedIndex]:null;
+  if(op){ var z=op.getAttribute('data-zone'); var zn=document.getElementById('hl-zone'); if(zn&&z) zn.value=z; }
+  var r=document.getElementById('hl-result');
+  if(r && r.style.display!=='none' && parseFloat((document.getElementById('hl-area')||{}).value)>0){ calcHL(); }
+}
 function calcHL() {
   var area = parseFloat((document.getElementById('hl-area')||{}).value) || 0;
   if (!area) { alert('Συμπληρώστε εμβαδόν (m²)'); return; }
   var h    = parseFloat((document.getElementById('hl-h')||{}).value) || 2.80;
   var insK = (document.getElementById('hl-ins')||{}).value || 'y1990';
   var zone = (document.getElementById('hl-zone')||{}).value || 'C';
+  // Επιλογή πόλης: ρυθμίζει τη ζώνη (για το ΔΤ) + τις δικές της βαθμοημέρες (για την ενέργεια)
+  var _cSel=document.getElementById('hl-city'), _cOpt=(_cSel&&_cSel.value)?_cSel.options[_cSel.selectedIndex]:null, _cHdd=null, _cLbl=null;
+  if(_cOpt){
+    var _cz=_cOpt.getAttribute('data-zone'); if(_cz){ zone=_cz; var _zn=document.getElementById('hl-zone'); if(_zn&&_zn.value!==_cz)_zn.value=_cz; }
+    _cHdd=parseFloat(_cOpt.getAttribute('data-hdd'))||null;
+    _cLbl=(_cOpt.textContent||'').split('≈')[0].trim();
+  }
   var U    = JSON.parse(JSON.stringify(HL_UV[insK] || HL_UV['y1990']));
   if ((document.getElementById('hl-win') ||{}).checked) U.win  = 1.80;
   if ((document.getElementById('hl-wall')||{}).checked) U.wall = 0.35;
@@ -3429,7 +3483,7 @@ function calcHL() {
   document.getElementById('hl-r-ceil').textContent  = f1(Qc);
   document.getElementById('hl-r-vent').textContent  = f1(Qv);
   // ── Ετήσια ενέργεια θέρμανσης (μέθοδος βαθμοημερών) + εκτίμηση κατανάλωσης/κόστους αντλίας ──
-  var hdd  = HL_HDD[zone] || 2100;
+  var hdd  = _cHdd || HL_HDD[zone] || 2100;  // βαθμοημέρες: πόλης (αν επιλέχθηκε) αλλιώς ζώνης
   var UA   = Qt / dT;                        // W/K — συνολικός συντ. απωλειών (περιλ. αερισμό)
   var Edem = UA * hdd * 24 / 1000;           // kWh/έτος — ΖΗΤΗΣΗ ενέργειας θέρμανσης
   var scop = parseFloat((document.getElementById('hl-scop')||{}).value) || 3.5;
@@ -3441,7 +3495,7 @@ function calcHL() {
   setT('hl-energy', f0(Edem)+' kWh');
   setT('hl-eel',    f0(Eel)+' kWh');
   setT('hl-cost',   f0(cost)+' €');
-  setT('hl-zn2',    zone+' ≈ '+hdd+' βαθμοημ.');
+  setT('hl-zn2',    (_cLbl?_cLbl:('ζώνη '+zone))+' ≈ '+hdd+' βαθμοημ.');
   document.getElementById('hl-result').style.display = 'block';
   if (typeof APP !== 'undefined') {
     APP.propHL = {kw:qKw.toFixed(1),safe:safe.toFixed(1),pump:pump,
@@ -3452,7 +3506,7 @@ function calcHL() {
       upFloor:!!(document.getElementById('hl-floor')||{}).checked,
       floorType:HL_STATE.floor,ceilType:HL_STATE.ceil,sides:HL_STATE.sides,
       nDoors:nDoor,doorW:dW,doorH:dH,nWindows:nWin,winW:wW,winH:wH,
-      edem:Math.round(Edem),eel:Math.round(Eel),cost:Math.round(cost),scop:scop,price:price,hdd:hdd};
+      edem:Math.round(Edem),eel:Math.round(Eel),cost:Math.round(cost),scop:scop,price:price,hdd:hdd,city:(_cSel?_cSel.value:'')};
     if (typeof EDIT_PID!=='undefined'&&EDIT_PID) {
       try{if(!DEMO)localStorage.setItem('hl_'+EDIT_PID,JSON.stringify(APP.propHL));}catch(e){}  }
   }
@@ -3487,6 +3541,7 @@ function hlResetInputs(){
   var a=g('hl-area'); if(a) a.value='';
   var h=g('hl-h'); if(h) h.value='2.80';
   var zn=g('hl-zone'); if(zn) zn.value='C';
+  var ct=g('hl-city'); if(ct) ct.value='';
   var ins=g('hl-ins'); if(ins) ins.value='y1990';
   ['hl-win','hl-wall','hl-ceil','hl-floor'].forEach(function(id){var e=g(id); if(e) e.checked=false;});
   var setv=function(id,v){var e=g(id); if(e) e.value=v;};
@@ -3506,7 +3561,7 @@ function hlRestoreInputs(s){
   ck('hl-win',s.upWin); ck('hl-wall',s.upWall); ck('hl-ceil',s.upCeil); ck('hl-floor',s.upFloor);
   sv('hl-ndoor',s.nDoors); sv('hl-dw',s.doorW); sv('hl-dh',s.doorH);
   sv('hl-nwin',s.nWindows); sv('hl-ww',s.winW); sv('hl-wh',s.winH);
-  sv('hl-scop',s.scop); sv('hl-price',s.price);
+  sv('hl-scop',s.scop); sv('hl-price',s.price); sv('hl-city',s.city);
   if(s.floorType) HL_STATE.floor=s.floorType;
   if(s.ceilType) HL_STATE.ceil=s.ceilType;
   if(s.sides!=null) HL_STATE.sides=parseInt(s.sides,10)||2;
