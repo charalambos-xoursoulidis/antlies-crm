@@ -1596,7 +1596,7 @@ async function crmLogin(){
   if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
   else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
 }
-var CRM_VER='2.8';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='2.9';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   loadCrmPass();
@@ -1788,23 +1788,28 @@ function demoMatPrice(sid,iid){
   return 10;
 }
 // αντικαθιστά ΟΛΕΣ τις πραγματικές τιμές (αντλίες/υλικά/αέριο) με εικονικές — στη μνήμη
+var DEMO_MK=1.42;  // markup demo: λιανική = κόστος × 1,42 (σε ΟΛΑ)
+function demoR(c){ return Math.round((+c||0)*DEMO_MK*100)/100; }
 function demoScrub(){
   BRANDS.length=0; BRANDS.push(DEMO_BRAND);
+  // αντλίες: λιανική = κόστος × markup
+  BRANDS.forEach(function(b){(b.types||[]).forEach(function(t){(t.pumps||[]).forEach(function(p){ p.retail=demoR(p.cost); });});});
   MAT_TPL.forEach(function(s){
-    s.items.forEach(function(it){ var p=demoMatPrice(s.id,it.id); it.cost=p; it.retail=p; });
-    if(s.labor){ s.labor.costPerDay=100; s.labor.retailPerDay=100; }
+    s.items.forEach(function(it){ var p=demoMatPrice(s.id,it.id); it.cost=p; it.retail=demoR(p); });
+    if(s.labor){ s.labor.costPerDay=100; s.labor.retailPerDay=demoR(100); }
   });
   try{ // αέριο: ΜΙΑ εικονική μάρκα «Χουρσουλίδης Gas» + εικονικές τιμές υλικών (κανένας πραγματικός αριθμός)
     GAS_BRANDS.length=0; GAS_BRANDS.push(DEMO_GAS_BRAND);
-    GAS_MAT_TPL.forEach(function(s){ s.items.forEach(function(it){ it.cost=10; it.retail=10; }); if(s.labor){ s.labor.costPerDay=100; s.labor.retailPerDay=100; } });
+    GAS_BRANDS.forEach(function(b){(b.models||[]).forEach(function(m){ m.retail=demoR(m.cost); });});
+    GAS_MAT_TPL.forEach(function(s){ s.items.forEach(function(it){ it.cost=10; it.retail=demoR(10); }); if(s.labor){ s.labor.costPerDay=100; s.labor.retailPerDay=demoR(100); } });
   }catch(e){}
 }
 function enterDemo(){
   DEMO=true; storageMode='supa'; DEMO_DB={};   // καθαρή, εικονική βάση στη μνήμη
   demoScrub();
   try{ ES.equipType='hp'; ES.brand='bosch'; ES.typeIdx=0; ES.pump=null; }catch(e){}
-  // demo: κρύψε το κουμπί «Περιγραφή (Word)» — δεν παράγουμε Word στο demo
-  try{ var wb=g('btn-word'); if(wb) wb.style.display='none'; }catch(e){}
+  // demo: το κουμπί «Περιγραφή (Word)» είναι ΔΙΑΘΕΣΙΜΟ (δείχνει την περιγραφή Atlantic)
+  try{ var wb=g('btn-word'); if(wb) wb.style.display=''; }catch(e){}
   // οπτική ένδειξη demo
   try{ var vv=g('crm-ver'); if(vv) vv.textContent='v'+CRM_VER+' · DEMO'; }catch(e){}
   try{ var b=g('conn-badge'); if(b){ b.className='conn-badge'; b.style.background='#7c3aed'; b.style.color='#fff'; b.textContent='🟣 DEMO — δεν αποθηκεύεται τίποτα'; } }catch(e){}
@@ -2446,7 +2451,6 @@ async function saveQuote(){
 
 // ── OFFER DESCRIPTION (WORD) ─────────────────────────────────────
 async function generateOfferDescription(){
-  if(DEMO){ alert('🟣 DEMO: η παραγωγή προσφοράς σε Word είναι απενεργοποιημένη στη λειτουργία demo.'); return; }
   if(!window.PERIGRAFES){alert('Δεν φορτώθηκε το αρχείο περιγραφών (perigrafes.js). Βεβαιωθείτε ότι βρίσκεται στον ίδιο φάκελο με το πρόγραμμα.');return;}
   var bArr=(ES.equipType==='gas')?GAS_BRANDS:BRANDS;
   var brand=bArr.find(function(b){return b.id===ES.brand;})||null;
@@ -2459,6 +2463,11 @@ async function generateOfferDescription(){
   var pumpKw=ES.customPumpKw||(pump?pump.kw:'');
   if(!pumpName){alert('Επιλέξτε πρώτα ένα μοντέλο αντλίας.');return;}
   var pR=(ES.pumpRetailOvr!=null)?ES.pumpRetailOvr:(pump?pump.retail:0);
+  // DEMO (αντλία): χρησιμοποίησε την περιγραφή της Atlantic — η εικονική μάρκα δεν έχει δική της
+  var _dPump=(DEMO && ES.equipType!=='gas');
+  var _dBrandId    = _dPump ? 'atlantic' : ES.brand;
+  var _dBrandLabel = _dPump ? 'Atlantic' : (brand?brand.label:'');
+  var _dPumpName   = _dPump ? ('Alfea Extensa M '+(parseInt(pumpKw,10)||'')+' Compact R32') : pumpName;
   var secs=MSEC.filter(function(s){return !s.hasToggle||s.on;}).map(function(s){
     return {id:s.id,label:s.label,retail:sTotals(s.id).r,
       laborDays:(s.labor&&s.labor.on)?(s.labor.days||0):0,
@@ -2484,9 +2493,9 @@ async function generateOfferDescription(){
     altCandidates:altCandidates, savedOpts:savedOpts,
     onSaveOpts:function(opts){ if(EDIT_QID) savePrnOpts(EDIT_QID,opts); },
     equipType:ES.equipType||'pump',
-    brandId:ES.brand,
-    brandLabel:brand?brand.label:'',
-    pumpName:pumpName,pumpKw:pumpKw,pumpRetail:pR,
+    brandId:_dBrandId,
+    brandLabel:_dBrandLabel,
+    pumpName:_dPumpName,pumpKw:pumpKw,pumpRetail:pR,
     secs:secs,totalNet:tR,vat:vat,totalWithVat:tR+vat,
     custName:(c.lastname?c.lastname+(c.firstname?' '+c.firstname:''):''),
     custAddress:pr.address||[c.address,c.city].filter(Boolean).join(', '),
