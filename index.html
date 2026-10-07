@@ -2,7 +2,7 @@
 <html lang="el"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cachebust" content="202610070726">
+<meta name="cachebust" content="202610070754">
 <title>Υπολογιστής Αντλίας Θερμότητας</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -17,6 +17,7 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 .brand-txt{text-align:left}
 .brand .co{font-size:19px;font-weight:800;letter-spacing:.4px;color:#fff;line-height:1.05}
 .brand .tagline{font-size:9.5px;font-weight:700;letter-spacing:2.5px;color:#e73233;text-transform:uppercase;margin-top:3px}
+.brand-years{display:block;height:30px;width:auto;margin:9px auto 1px}
 .brand .sub{font-size:12.5px;color:#cbd5e1;margin-top:9px}
 .brand .privacy{font-size:12px;color:#4ade80;font-weight:600;margin-top:4px}
 .appver{text-align:center;font-size:11px;color:#94a3b8;padding:4px 0 16px;letter-spacing:.3px}
@@ -147,7 +148,8 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
         <div class="tagline">Καινοτόμα Συστήματα Ενέργειας</div>
       </div>
     </div>
-    <div class="sub">Αντλίες Θερμότητας · Δωρεάν υπολογισμός</div>
+    <img class="brand-years" src="years.png" alt="55 χρόνια κοντά σας">
+    <div class="sub">Αντλίες Θερμότητας</div>
     <div class="privacy">🔒 Δωρεάν &amp; ανώνυμος υπολογισμός — στοιχεία ζητάμε μόνο αν θέλεις εξατομικευμένη προσφορά</div>
   </div>
   <div class="wrap">
@@ -214,9 +216,10 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
         <div class="lead-rate-h">Τι μετράει περισσότερο για εσάς; <span>(1 = λίγο → 4 = πάρα πολύ)</span></div>
         <div class="lead-rate-row"><span class="lbl">💶 Τιμή</span><div class="lead-rate-opts" id="rate-price"></div></div>
         <div class="lead-rate-row"><span class="lbl">🏆 Ποιότητα</span><div class="lead-rate-opts" id="rate-quality"></div></div>
+        <div class="lead-rate-row"><span class="lbl">🤝 Αξιόπιστος συνεργάτης</span><div class="lead-rate-opts" id="rate-partner"></div></div>
         <div class="lead-rate-row"><span class="lbl">📉 Εξοικονόμηση</span><div class="lead-rate-opts" id="rate-savings"></div></div>
         <div class="lead-rate-row"><span class="lbl">🛠️ Τεχνική υποστήριξη</span><div class="lead-rate-opts" id="rate-support"></div></div>
-        <div class="lead-rate-row"><span class="lbl">🌱 Οικολογία / Περιβάλλον</span><div class="lead-rate-opts" id="rate-eco"></div></div>
+        <div class="lead-rate-row"><span class="lbl">🌱 Αειφορία και προστασία περιβάλλοντος</span><div class="lead-rate-opts" id="rate-eco"></div></div>
       </div>
       <div class="lead-fee">Αρχικό κόστος: <b id="lead-fee-total">€50</b><span id="lead-fee-extra" hidden> (μελέτη €50 + σκαρίφημα €20 σε DXF &amp; PDF)</span> — <b>θα αφαιρεθεί εξ ολοκλήρου από την αξία της εγκατάστασης</b>.</div>
       <div class="lead-err" id="lead-err"></div>
@@ -243,7 +246,7 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 </div>
 
 <script>
-var APP_VER='4.4';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var APP_VER='4.5';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 var OFFICE_EMAIL='charalambos@xoursoulidis.com';   // παραλήπτης αιτημάτων εξατομικευμένης προσφοράς
 var OFFICE_PHONE='2331028063';
 var STUDY_FEE=50, SKETCH_FEE=20;   // € αξία μελέτης / επιπλέον σκαρίφημα (DXF+PDF)
@@ -603,8 +606,8 @@ function doPrint(){
 
 // ---- Σημαντικότητα κριτηρίων (1-4) ----
 var LEAD_RATE={};
-var LEAD_RATE_KEYS=['price','quality','savings','support','eco'];
-var LEAD_RATE_LBL={price:'Τιμή',quality:'Ποιότητα',savings:'Εξοικονόμηση',support:'Τεχνική υποστήριξη',eco:'Οικολογία/Περιβάλλον'};
+var LEAD_RATE_KEYS=['price','quality','partner','savings','support','eco'];
+var LEAD_RATE_LBL={price:'Τιμή',quality:'Ποιότητα',partner:'Αξιόπιστος συνεργάτης',savings:'Εξοικονόμηση',support:'Τεχνική υποστήριξη',eco:'Αειφορία και προστασία περιβάλλοντος'};
 function leadRateBuild(){
   LEAD_RATE={};
   LEAD_RATE_KEYS.forEach(function(k){
