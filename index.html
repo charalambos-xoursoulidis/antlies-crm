@@ -2,17 +2,23 @@
 <html lang="el"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cachebust" content="202609241859">
+<meta name="cachebust" content="202610070726">
 <title>Υπολογιστής Αντλίας Θερμότητας</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#eef2f7;color:#0f172a;-webkit-font-smoothing:antialiased}
+body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#eef2f7;color:#0f172a;-webkit-font-smoothing:antialiased}
 .app{min-height:100vh;display:flex;flex-direction:column}
-.brand{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 14px 4px;text-align:center;flex-direction:column}
-.brand .co{font-size:20px;font-weight:800;letter-spacing:.4px;color:#0f172a}
-.brand .sub{font-size:12.5px;color:#64748b}
-.brand .privacy{font-size:12px;color:#059669;font-weight:600;margin-top:4px}
+.brand{background:#1a1a1a;padding:14px 16px 13px;text-align:center}
+.brand-row{display:flex;align-items:center;justify-content:center;gap:12px}
+.brand-logo{width:44px;height:44px;flex-shrink:0}
+.brand-txt{text-align:left}
+.brand .co{font-size:19px;font-weight:800;letter-spacing:.4px;color:#fff;line-height:1.05}
+.brand .tagline{font-size:9.5px;font-weight:700;letter-spacing:2.5px;color:#e73233;text-transform:uppercase;margin-top:3px}
+.brand .sub{font-size:12.5px;color:#cbd5e1;margin-top:9px}
+.brand .privacy{font-size:12px;color:#4ade80;font-weight:600;margin-top:4px}
 .appver{text-align:center;font-size:11px;color:#94a3b8;padding:4px 0 16px;letter-spacing:.3px}
 .wrap{flex:1;display:flex;justify-content:center;padding:12px}
 .wz-shell{max-width:880px;width:100%;align-self:flex-start;display:flex;flex-direction:column;background:#fff;border:1px solid #e2e8f0;border-radius:18px;box-shadow:0 12px 44px rgba(15,23,42,.09);overflow:hidden}
@@ -20,13 +26,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 .wz-home{background:none;border:none;color:#64748b;font-size:13px;font-weight:600;cursor:pointer;padding:5px 8px;border-radius:6px}
 .wz-home:hover{background:#f1f5f9;color:#0f172a}
 .wz-progress{flex:1;height:8px;background:#eef2f7;border-radius:99px;overflow:hidden}
-.wz-bar-fill{height:100%;width:0;background:linear-gradient(90deg,#fb923c,#f97316);border-radius:99px;transition:width .35s ease}
+.wz-bar-fill{height:100%;width:0;background:linear-gradient(90deg,#f0555a,#e73233);border-radius:99px;transition:width .35s ease}
 .wz-step-num{font-size:12px;font-weight:700;color:#94a3b8;min-width:64px;text-align:right}
 .wz-body{display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:center;padding:14px 10px;min-height:320px}
 @media(max-width:680px){.wz-body{grid-template-columns:1fr;min-height:0}.wz-visual{max-height:210px}}
 .wz-visual{display:flex;align-items:center;justify-content:center;padding:8px}
 .wz-panel{padding:10px 24px}
-.wz-eyebrow{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#f97316;margin-bottom:6px}
+.wz-eyebrow{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#e73233;margin-bottom:6px}
 .wz-q{font-size:22px;font-weight:800;color:#0f172a;line-height:1.2}
 .wz-sub{font-size:13px;color:#64748b;margin-top:6px;line-height:1.45}
 .wz-field{margin-top:16px}
@@ -34,21 +40,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 .wz-btn{border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:700;cursor:pointer}
 .wz-back{background:#fff;border:1.5px solid #cbd5e1;color:#475569}
 .wz-back:hover{background:#f1f5f9}
-.wz-next{background:linear-gradient(90deg,#fb923c,#f97316);color:#fff;min-width:150px}
+.wz-next{background:linear-gradient(90deg,#f0555a,#e73233);color:#fff;min-width:150px}
 .wz-next:hover{filter:brightness(1.05)}
 .wz-next:disabled{opacity:.45;cursor:not-allowed;filter:none}
 .wz-inp{width:100%;border:1.5px solid #cbd5e1;border-radius:10px;padding:12px 14px;font-size:16px;outline:none;transition:border-color .15s}
-.wz-inp:focus{border-color:#f97316}
+.wz-inp:focus{border-color:#e73233}
 .wz-lbl{font-size:12px;font-weight:700;color:#475569;margin:12px 0 4px}
 .wz-chips{display:flex;flex-direction:column;gap:8px}
 .wz-chip{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid #e2e8f0;background:#fff;border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600;color:#334155;cursor:pointer;transition:.12s}
-.wz-chip:hover{border-color:#fdba74;background:#fff7ed}
-.wz-chip.on{border-color:#f97316;background:#fff7ed;color:#c2410c;box-shadow:0 0 0 3px rgba(249,115,22,.12)}
+.wz-chip:hover{border-color:#fca5a5;background:#fef2f2}
+.wz-chip.on{border-color:#e73233;background:#fef2f2;color:#b91c1c;box-shadow:0 0 0 3px rgba(231,50,51,.12)}
 .wz-chip .wz-chic{font-size:20px;flex-shrink:0}
 .wz-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .wz-chip.center{justify-content:center;text-align:center;padding:14px 4px;font-size:15px}
 .wz-res{text-align:center;padding:6px}
-.wz-res-kw{font-size:46px;font-weight:800;color:#f97316;line-height:1}
+.wz-res-kw{font-size:46px;font-weight:800;color:#e73233;line-height:1}
 .wz-res-lbl{font-size:13px;color:#64748b;margin-top:4px}
 .wz-res-pump{margin-top:16px;display:inline-block;background:#f0fdf4;border:1.5px solid #86efac;color:#166534;font-weight:800;font-size:18px;padding:10px 20px;border-radius:12px}
 .wz-mini{margin-top:16px;background:none;border:none;color:#64748b;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline}
@@ -63,17 +69,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 .house .dim path{fill:#3b82f6}
 .house .dim text{fill:#1d4ed8;font-size:13px;font-weight:700}
 .house .weather{opacity:0;transition:.35s}
-.house.hl-floor .floor{fill:#f97316;stroke:#c2410c;filter:drop-shadow(0 3px 8px rgba(249,115,22,.5))}
-.house.hl-roof .roof{fill:#f97316;stroke:#c2410c;filter:drop-shadow(0 3px 8px rgba(249,115,22,.5))}
-.house.hl-walls .wall{fill:rgba(249,115,22,.32);stroke:#c2410c;stroke-width:2.5}
+.house.hl-floor .floor{fill:#e73233;stroke:#b91c1c;filter:drop-shadow(0 3px 8px rgba(231,50,51,.5))}
+.house.hl-roof .roof{fill:#e73233;stroke:#b91c1c;filter:drop-shadow(0 3px 8px rgba(231,50,51,.5))}
+.house.hl-walls .wall{fill:rgba(231,50,51,.32);stroke:#b91c1c;stroke-width:2.5}
 .house.hl-ins .wall{stroke:#2563eb;stroke-width:5}
 .house.hl-height .dim{opacity:1}
 .house.hl-height .wall{stroke:#3b82f6}
 .house.hl-zone .weather{opacity:1}
-.house.hl-done .floor,.house.hl-done .roof{fill:#fed7aa;stroke:#f97316}
-.house.hl-done .wall{fill:rgba(249,115,22,.14);stroke:#f97316}
-.house.hl-openings .det{stroke:#f97316;stroke-width:2.6}
-.house.hl-openings .det rect{fill:rgba(249,115,22,.20)}
+.house.hl-done .floor,.house.hl-done .roof{fill:#fecaca;stroke:#e73233}
+.house.hl-done .wall{fill:rgba(231,50,51,.14);stroke:#e73233}
+.house.hl-openings .det{stroke:#e73233;stroke-width:2.6}
+.house.hl-openings .det rect{fill:rgba(231,50,51,.20)}
 /* ---- printout ---- */
 #printout{display:none}
 @media print{
@@ -81,7 +87,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
   #printout{display:block!important;padding:0}
   body{background:#fff}
 }
-.pr-head{border-bottom:3px solid #f97316;padding-bottom:10px;margin-bottom:14px}
+.pr-head{border-bottom:3px solid #e73233;padding-bottom:10px;margin-bottom:14px}
 .pr-co{font-size:22px;font-weight:800;color:#0f172a}
 .pr-cosub{font-size:12px;color:#64748b}
 .pr-title{font-size:16px;font-weight:800;margin:14px 0 2px}
@@ -90,8 +96,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 .pr-tbl td{padding:7px 10px;border-bottom:1px solid #e5e7eb}
 .pr-tbl td:first-child{color:#64748b;width:52%}
 .pr-tbl td:last-child{font-weight:700;text-align:right}
-.pr-res{border:2px solid #f97316;border-radius:12px;padding:14px 18px;text-align:center}
-.pr-res .k{font-size:30px;font-weight:800;color:#c2410c}
+.pr-res{border:2px solid #e73233;border-radius:12px;padding:14px 18px;text-align:center}
+.pr-res .k{font-size:30px;font-weight:800;color:#b91c1c}
 .pr-res .p{margin-top:6px;font-size:16px;font-weight:800;color:#166534}
 .pr-note{font-size:10.5px;color:#94a3b8;margin-top:14px;line-height:1.4}
 /* ---- lead / detailed-offer modal ---- */
@@ -103,21 +109,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 .lead-info b{color:#0f172a}
 .lead-info h4{font-size:12px;font-weight:800;color:#0f172a;margin:10px 0 3px}
 .lead-consent{display:flex;gap:9px;align-items:flex-start;margin-top:12px;font-size:12.5px;color:#334155;cursor:pointer;line-height:1.45}
-.lead-consent input{margin-top:2px;width:18px;height:18px;flex-shrink:0;cursor:pointer;accent-color:#f97316}
+.lead-consent input{margin-top:2px;width:18px;height:18px;flex-shrink:0;cursor:pointer;accent-color:#e73233}
 .lead-row{display:flex;gap:10px}
 .lead-row>div{flex:1}
 .lead-fg{margin-top:10px}
 .lead-fg label{display:block;font-size:11.5px;font-weight:700;color:#475569;margin-bottom:4px}
 .lead-inp,.lead-sel,.lead-ta{width:100%;border:1.5px solid #cbd5e1;border-radius:9px;padding:10px 12px;font-size:14px;outline:none;font-family:inherit;background:#fff}
-.lead-inp:focus,.lead-sel:focus,.lead-ta:focus{border-color:#f97316}
+.lead-inp:focus,.lead-sel:focus,.lead-ta:focus{border-color:#e73233}
 .lead-ta{resize:vertical;min-height:56px}
-.lead-fee{margin-top:12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:11px 13px;font-size:12.5px;color:#9a3412;line-height:1.5}
+.lead-fee{margin-top:12px;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:11px 13px;font-size:12.5px;color:#991b1b;line-height:1.5}
 .lead-note{margin-top:8px;font-size:11.5px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;line-height:1.45}
 .lead-err{margin-top:10px;font-size:12px;color:#dc2626;font-weight:600}
 .lead-nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
-.lead-btn{background:linear-gradient(90deg,#fb923c,#f97316);color:#fff;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:800;cursor:pointer}
+.lead-btn{background:linear-gradient(90deg,#f0555a,#e73233);color:#fff;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:800;cursor:pointer}
 .lead-btn:disabled{opacity:.45;cursor:not-allowed}
 .lead-btn2{background:#fff;border:1.5px solid #cbd5e1;color:#475569;border-radius:10px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer}
+.lead-rate{margin-top:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 13px}
+.lead-rate-h{font-size:13px;font-weight:800;color:#0f172a}
+.lead-rate-h span{font-weight:600;color:#94a3b8;font-size:11px}
+.lead-rate-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:9px}
+.lead-rate-row .lbl{font-size:13px;font-weight:600;color:#334155}
+.lead-rate-opts{display:flex;gap:6px;flex-shrink:0}
+.lead-rate-opt{width:34px;height:34px;border:1.5px solid #cbd5e1;background:#fff;border-radius:8px;font-size:14px;font-weight:700;color:#64748b;cursor:pointer;transition:.12s}
+.lead-rate-opt:hover{border-color:#fca5a5}
+.lead-rate-opt.on{background:#e73233;border-color:#e73233;color:#fff}
 .lead-ok{text-align:center;padding:6px 0}
 .lead-ok .big{font-size:40px;line-height:1}
 </style></head>
@@ -125,7 +140,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 
 <div class="app">
   <div class="brand">
-    <div class="co">ΑΦΟΙ ΧΟΥΡΣΟΥΛΙΔΗ</div>
+    <div class="brand-row">
+      <img class="brand-logo" src="xoursoulidis.png" alt="ΧΟΥΡΣΟΥΛΙΔΗΣ">
+      <div class="brand-txt">
+        <div class="co">ΑΦΟΙ ΧΟΥΡΣΟΥΛΙΔΗ</div>
+        <div class="tagline">Καινοτόμα Συστήματα Ενέργειας</div>
+      </div>
+    </div>
     <div class="sub">Αντλίες Θερμότητας · Δωρεάν υπολογισμός</div>
     <div class="privacy">🔒 Δωρεάν &amp; ανώνυμος υπολογισμός — στοιχεία ζητάμε μόνο αν θέλεις εξατομικευμένη προσφορά</div>
   </div>
@@ -189,6 +210,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
       <div class="lead-fg"><label>Συμμετοχή σε πρόγραμμα επιδότησης;</label><select class="lead-sel" id="lead-prog" onchange="leadProgChanged()"><option value="no">Όχι</option><option value="eksoikonomo">Εξοικονομώ</option><option value="anakainizo">Ανακαινίζω</option><option value="other">Άλλο πρόγραμμα</option></select></div>
       <div class="lead-fg" id="lead-prog-other-fg" hidden><label>Ποιο πρόγραμμα;</label><input class="lead-inp" id="lead-prog-other" placeholder="Όνομα προγράμματος"></div>
       <div class="lead-fg"><label>Σημειώσεις (προαιρετικά)</label><textarea class="lead-ta" id="lead-notes" placeholder="π.χ. όροφος, ιδιαιτερότητες, ώρες επικοινωνίας"></textarea></div>
+      <div class="lead-rate">
+        <div class="lead-rate-h">Τι μετράει περισσότερο για εσάς; <span>(1 = λίγο → 4 = πάρα πολύ)</span></div>
+        <div class="lead-rate-row"><span class="lbl">💶 Τιμή</span><div class="lead-rate-opts" id="rate-price"></div></div>
+        <div class="lead-rate-row"><span class="lbl">🏆 Ποιότητα</span><div class="lead-rate-opts" id="rate-quality"></div></div>
+        <div class="lead-rate-row"><span class="lbl">📉 Εξοικονόμηση</span><div class="lead-rate-opts" id="rate-savings"></div></div>
+        <div class="lead-rate-row"><span class="lbl">🛠️ Τεχνική υποστήριξη</span><div class="lead-rate-opts" id="rate-support"></div></div>
+        <div class="lead-rate-row"><span class="lbl">🌱 Οικολογία / Περιβάλλον</span><div class="lead-rate-opts" id="rate-eco"></div></div>
+      </div>
       <div class="lead-fee">Αρχικό κόστος: <b id="lead-fee-total">€50</b><span id="lead-fee-extra" hidden> (μελέτη €50 + σκαρίφημα €20 σε DXF &amp; PDF)</span> — <b>θα αφαιρεθεί εξ ολοκλήρου από την αξία της εγκατάστασης</b>.</div>
       <div class="lead-err" id="lead-err"></div>
       <div class="lead-nav">
@@ -214,7 +243,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 </div>
 
 <script>
-var APP_VER='4.3';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var APP_VER='4.4';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 var OFFICE_EMAIL='charalambos@xoursoulidis.com';   // παραλήπτης αιτημάτων εξατομικευμένης προσφοράς
 var OFFICE_PHONE='2331028063';
 var STUDY_FEE=50, SKETCH_FEE=20;   // € αξία μελέτης / επιπλέον σκαρίφημα (DXF+PDF)
@@ -322,7 +351,7 @@ async function pushToCrm(info){
   var progNote=(info.progLabel && info.progLabel!=='Όχι') ? (' · Πρόγραμμα: '+info.progLabel) : '';
   var cust={id:cid, lastname:(info.ln||'').trim(), firstname:(info.fn||'').trim(),
     phone:(info.phone||'').trim(), email:(info.email||'').trim(), address:(info.addr||'').trim(),
-    zip:'', city:(info.regionLabel||''), notes:'Από αίτημα μελέτης (δωρεάν υπολογιστής)'+progNote, created_at:now};
+    zip:'', city:(info.regionLabel||''), notes:'Από αίτημα μελέτης (δωρεάν υπολογιστής)'+progNote+(info.rates?(' · Προτεραιότητες: '+info.rates):''), created_at:now};
   var kw1=Math.round(hl.kw*10)/10, safe1=Math.round(hl.safe*10)/10;
   var prop={id:pid, customer_id:cid, name:'Κατοικία',
     heat_kw:String(kw1), heat_safe:String(safe1), heat_pump:String(hl.pump),
@@ -407,7 +436,7 @@ function wzToggle(key,icon,label){
   var on=!!WZ.data[key];
   return '<button class="wz-chip'+(on?' on':'')+'" onclick="wizToggleKey(\''+key+'\')">'
     +'<span class="wz-chic">'+icon+'</span><span>'+label+'</span>'
-    +(on?'<span style="margin-left:auto;color:#f97316;font-weight:800">✓</span>':'')+'</button>';
+    +(on?'<span style="margin-left:auto;color:#e73233;font-weight:800">✓</span>':'')+'</button>';
 }
 function wizValidate(){
   var step=WZ_STEPS[WZ.i], d=WZ.data;
@@ -528,10 +557,10 @@ function wizRenderResult(){
     +'<div class="wz-res-kw">'+rng.lbl+'</div>'
     +'<div class="wz-res-lbl">ενδεικτικό εύρος ισχύος αντλίας θερμότητας<br><span style="font-size:12px;color:#94a3b8">η ακριβής επιλογή μοντέλου γίνεται από τον μηχανικό μας μετά από αυτοψία</span></div>'
     +((WZ.data.phase==='unknown')?'<div style="margin-top:8px;font-size:11.5px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;line-height:1.45">ℹ️ Δεν ήξερες την παροχή ρεύματος — την <b>εκτιμήσαμε '+(pi.eff==='tri'?'τριφασική':'μονοφασική')+'</b> βάσει έτους &amp; εμβαδού. Θα την επιβεβαιώσουμε εμείς από τον λογαριασμό ΔΕΗ ή στην αυτοψία.</div>':'')
-    +(pp.capped?'<div style="margin-top:12px;font-size:12.5px;font-weight:700;color:#c2410c">🔺 Μεγάλες ανάγκες — επικοινώνησε μαζί μας για ακριβή διαστασιολόγηση</div>':'')
+    +(pp.capped?'<div style="margin-top:12px;font-size:12.5px;font-weight:700;color:#b91c1c">🔺 Μεγάλες ανάγκες — επικοινώνησε μαζί μας για ακριβή διαστασιολόγηση</div>':'')
     +'<div style="margin-top:16px;padding-top:14px;border-top:1px solid #f1f5f9">'
       +'<div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:8px">Θέλεις ακριβή μελέτη &amp; δεσμευτική προσφορά;</div>'
-      +'<button onclick="openLead()" style="width:100%;background:linear-gradient(90deg,#fb923c,#f97316);color:#fff;border:none;border-radius:12px;padding:13px 16px;font-size:14.5px;font-weight:800;cursor:pointer">🔧 Λεπτομερής μελέτη &amp; εξατομικευμένη προσφορά</button>'
+      +'<button onclick="openLead()" style="width:100%;background:linear-gradient(90deg,#f0555a,#e73233);color:#fff;border:none;border-radius:12px;padding:13px 16px;font-size:14.5px;font-weight:800;cursor:pointer">🔧 Λεπτομερής μελέτη &amp; εξατομικευμένη προσφορά</button>'
       +'<div style="font-size:11px;color:#94a3b8;margin-top:6px">Επιτόπια αυτοψία (νομοί Ημαθίας &amp; Δράμας) · αξία μελέτης €50 που αφαιρείται από την αξία της εγκατάστασης</div>'
     +'</div>'
     +'<div style="font-size:11px;color:#94a3b8;margin-top:14px;line-height:1.45">* Ο υπολογισμός είναι <b>ενδεικτικός</b> και βασίζεται αποκλειστικά στα στοιχεία που δηλώσατε· πραγματικοί παράγοντες (προσανατολισμός, αεροστεγανότητα, πραγματικές μονώσεις, ανάγκες ζεστού νερού κ.ά.) μπορεί να διαφοροποιήσουν την προτεινόμενη ισχύ. Η τελική προσφορά και η ακριβής διαστασιολόγηση γίνονται από τον μηχανικό μας κατόπιν αυτοψίας.</div>'
@@ -572,6 +601,29 @@ function doPrint(){
   window.print();
 }
 
+// ---- Σημαντικότητα κριτηρίων (1-4) ----
+var LEAD_RATE={};
+var LEAD_RATE_KEYS=['price','quality','savings','support','eco'];
+var LEAD_RATE_LBL={price:'Τιμή',quality:'Ποιότητα',savings:'Εξοικονόμηση',support:'Τεχνική υποστήριξη',eco:'Οικολογία/Περιβάλλον'};
+function leadRateBuild(){
+  LEAD_RATE={};
+  LEAD_RATE_KEYS.forEach(function(k){
+    var el=g('rate-'+k); if(!el)return; el.innerHTML='';
+    for(var i=1;i<=4;i++){
+      var b=document.createElement('button'); b.type='button'; b.className='lead-rate-opt'; b.textContent=i; b.setAttribute('data-v',i);
+      (function(kk,vv){ b.onclick=function(){ leadRate(kk,vv); }; })(k,i);
+      el.appendChild(b);
+    }
+  });
+}
+function leadRate(k,v){
+  LEAD_RATE[k]=v;
+  var el=g('rate-'+k); if(!el)return;
+  [].forEach.call(el.children,function(b){ var bv=+b.getAttribute('data-v'); b.className='lead-rate-opt'+(bv<=v?' on':''); });
+}
+function leadRateStr(){
+  return LEAD_RATE_KEYS.filter(function(k){return LEAD_RATE[k];}).map(function(k){return LEAD_RATE_LBL[k]+' '+LEAD_RATE[k]+'/4';}).join(' · ');
+}
 // ---- Λεπτομερής μελέτη & εξατομικευμένη προσφορά (lead → email) ----
 function openLead(){
   var c=g('lead-consent'); if(c)c.checked=false;
@@ -579,7 +631,7 @@ function openLead(){
   var e=g('lead-err'); if(e)e.textContent='';
   var oe=g('lead-oemail'); if(oe)oe.textContent=OFFICE_EMAIL;
   var op=g('lead-ophone'); if(op)op.textContent=OFFICE_PHONE;
-  leadPlanChanged(); leadRegionChanged(); leadProgChanged();
+  leadPlanChanged(); leadRegionChanged(); leadProgChanged(); leadRateBuild();
   leadStep(1);
   g('lead-ovl').hidden=false;
 }
@@ -626,7 +678,8 @@ function leadSubmit(){
     +'Νομός: '+regL+NL
     +'Σχέδιο κτιρίου: '+planL+NL
     +'Πρόγραμμα επιδότησης: '+progL+NL
-    +'Σημειώσεις: '+(notes||'—')+NL+NL
+    +'Σημειώσεις: '+(notes||'—')+NL
+    +'Προτεραιότητες πελάτη (1-4): '+(leadRateStr()||'—')+NL+NL
     +'ΑΡΧΙΚΟ ΚΟΣΤΟΣ: €'+fee+' (μελέτη €'+STUDY_FEE+(plan==='no'?(' + σκαρίφημα €'+SKETCH_FEE+' σε DXF+PDF'):'')+') — θα αφαιρεθεί εξ ολοκλήρου από την αξία της εγκατάστασης'+NL+NL
     +'ΕΝΔΕΙΚΤΙΚΟΣ ΥΠΟΛΟΓΙΣΜΟΣ (δωρεάν υπολογιστής)'+NL
     +'Ονομασία: '+(d.calcName||'—')+NL
@@ -641,7 +694,7 @@ function leadSubmit(){
   calcLog('offer','offer',99);
   // Auto-δημιουργία πελάτη/ακινήτου/απωλειών/προσφοράς Bosch στο CRM (best-effort — το email φεύγει ό,τι κι αν γίνει)
   try{
-    if(hl&&pp){ pushToCrm({fn:fn,ln:ln,phone:ph,email:email,addr:addr,regionLabel:regL,planNo:(plan==='no'),progLabel:progL,d:d,hl:hl,pp:pp})
+    if(hl&&pp){ pushToCrm({fn:fn,ln:ln,phone:ph,email:email,addr:addr,regionLabel:regL,planNo:(plan==='no'),progLabel:progL,rates:leadRateStr(),d:d,hl:hl,pp:pp})
       .catch(function(e){ if(window.console)console.warn('CRM auto-create failed:',e&&e.message?e.message:e); }); }
   }catch(e){}
   leadStep(3);
