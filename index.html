@@ -2,7 +2,7 @@
 <html lang="el"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cachebust" content="202610070818">
+<meta name="cachebust" content="202610070827">
 <title>Υπολογιστής Αντλίας Θερμότητας</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 .wz-bar-fill{height:100%;width:0;background:linear-gradient(90deg,#f0555a,#e73233);border-radius:99px;transition:width .35s ease}
 .wz-step-num{font-size:12px;font-weight:700;color:#94a3b8;min-width:64px;text-align:right}
 .wz-body{display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:center;padding:14px 10px;min-height:320px}
-@media(max-width:680px){.wz-body{grid-template-columns:1fr;min-height:0}.wz-visual{max-height:210px}}
+@media(max-width:680px){.wz-body{grid-template-columns:1fr;min-height:0}.wz-visual{max-height:none;padding:4px}.wz-visual .house{max-width:250px}}
 .wz-visual{display:flex;align-items:center;justify-content:center;padding:8px}
 .wz-panel{padding:10px 24px}
 .wz-eyebrow{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#e73233;margin-bottom:6px}
@@ -257,7 +257,7 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 </div>
 
 <script>
-var APP_VER='4.7';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var APP_VER='4.8';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 var OFFICE_EMAIL='charalambos@xoursoulidis.com';   // παραλήπτης αιτημάτων εξατομικευμένης προσφοράς
 var OFFICE_PHONE='2331028063';
 var STUDY_FEE=50, SKETCH_FEE=20;   // € αξία μελέτης / επιπλέον σκαρίφημα (DXF+PDF)
