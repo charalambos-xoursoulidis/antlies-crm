@@ -2,7 +2,7 @@
 <html lang="el"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="cachebust" content="202610070754">
+<meta name="cachebust" content="202610070808">
 <title>Υπολογιστής Αντλίας Θερμότητας</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -81,6 +81,17 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 .house.hl-done .wall{fill:rgba(231,50,51,.14);stroke:#e73233}
 .house.hl-openings .det{stroke:#e73233;stroke-width:2.6}
 .house.hl-openings .det rect{fill:rgba(231,50,51,.20)}
+/* house — δυναμικές παραλλαγές ανά επιλογή (δάπεδο/οροφή/πλευρές) */
+.v-ground,.v-pilotis,.v-fclosed,.v-flatroof,.v-cehint,.v-nb-l,.v-nb-r{display:none}
+.house.fl-ground .v-ground{display:block}
+.house.fl-pilotis .v-pilotis{display:block}
+.house.fl-closed .v-fclosed{display:block}
+.house.ce-roof .roof,.house.ce-closed .roof{display:none}
+.house.ce-roof .v-flatroof,.house.ce-closed .v-flatroof{display:block}
+.house.ce-closed .v-cehint{display:block}
+.house.hl-roof .v-flatroof polygon{fill:#e73233;stroke:#b91c1c}
+.house.sd-3 .v-nb-r,.house.sd-2 .v-nb-r,.house.sd-1 .v-nb-r{display:block}
+.house.sd-2 .v-nb-l,.house.sd-1 .v-nb-l{display:block}
 /* ---- printout ---- */
 #printout{display:none}
 @media print{
@@ -246,7 +257,7 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 </div>
 
 <script>
-var APP_VER='4.5';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var APP_VER='4.6';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 var OFFICE_EMAIL='charalambos@xoursoulidis.com';   // παραλήπτης αιτημάτων εξατομικευμένης προσφοράς
 var OFFICE_PHONE='2331028063';
 var STUDY_FEE=50, SKETCH_FEE=20;   // € αξία μελέτης / επιπλέον σκαρίφημα (DXF+PDF)
@@ -396,7 +407,28 @@ var HOUSE_SVG='<svg class="house" viewBox="0 0 300 250" xmlns="http://www.w3.org
 +'<line x1="17" y1="40" x2="9" y2="40"/><line x1="67" y1="40" x2="75" y2="40"/>'
 +'<line x1="24" y1="22" x2="18" y2="16"/><line x1="60" y1="58" x2="66" y2="64"/></g>'
 +'<text x="248" y="48" font-size="30">❄️</text></g>'
+/* γείτονες (πλευρές) — πίσω από το σπίτι */
++'<g class="v-nb-l"><polygon points="40,206 70,206 70,150 40,150" fill="rgba(100,116,139,.16)" stroke="#94a3b8" stroke-width="1"/><polygon points="40,150 70,150 55,133 25,133" fill="rgba(100,116,139,.12)" stroke="#94a3b8" stroke-width="1"/></g>'
++'<g class="v-nb-r"><polygon points="248,170 278,156 278,100 248,104" fill="rgba(100,116,139,.16)" stroke="#94a3b8" stroke-width="1"/><polygon points="248,104 278,100 263,84 234,90" fill="rgba(100,116,139,.12)" stroke="#94a3b8" stroke-width="1"/></g>'
 +'<polygon class="floor" points="70,195 210,195 248,162 108,162"/>'
+/* δάπεδο — τι υπάρχει από κάτω */
++'<g class="v-ground">'
++'<polygon points="60,195 220,195 220,206 60,206" fill="#b07a44"/>'
++'<polygon points="220,195 258,162 258,173 220,206" fill="#8f5f30"/>'
++'<rect x="60" y="192" width="160" height="4" fill="#6cbf5f"/>'
++'<polygon points="220,192 258,159 258,163 220,196" fill="#57aa4c"/>'
++'<g stroke="#8a5e32" stroke-width="1.2" stroke-linecap="round"><line x1="80" y1="198" x2="80" y2="204"/><line x1="110" y1="199" x2="110" y2="205"/><line x1="140" y1="198" x2="140" y2="204"/><line x1="170" y1="199" x2="170" y2="205"/><line x1="200" y1="198" x2="200" y2="204"/></g></g>'
++'<g class="v-pilotis">'
++'<polygon points="210,195 248,162 248,196 210,229" fill="rgba(148,163,184,.10)"/>'
++'<rect x="66" y="229" width="150" height="5" rx="1" fill="#9aa3b0"/>'
++'<g fill="#c7cdd6" stroke="#9aa3b0" stroke-width="1"><rect x="74" y="196" width="8" height="33"/><rect x="135" y="196" width="8" height="33"/><rect x="198" y="196" width="8" height="33"/></g>'
++'<path d="M96,228 L96,220 Q96,217 99,217 L116,217 L124,209 L156,209 L165,217 L178,217 Q181,217 181,220 L181,228 Z" fill="#e73233"/>'
++'<rect x="123" y="211" width="30" height="7" rx="1" fill="#bcd6ef"/>'
++'<circle cx="113" cy="228" r="6" fill="#2b2f36"/><circle cx="165" cy="228" r="6" fill="#2b2f36"/></g>'
++'<g class="v-fclosed">'
++'<polygon points="210,195 248,162 248,196 210,229" fill="rgba(100,116,139,.10)"/>'
++'<rect x="70" y="195" width="140" height="34" fill="rgba(100,116,139,.12)" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="4 3"/>'
++'<rect x="92" y="204" width="24" height="15" fill="rgba(148,163,184,.3)"/><rect x="164" y="204" width="24" height="15" fill="rgba(148,163,184,.3)"/></g>'
 +'<g class="wall">'
 +'<polygon points="70,195 210,195 210,137 70,137"/>'
 +'<polygon points="210,195 248,162 248,104 210,137"/>'
@@ -405,6 +437,10 @@ var HOUSE_SVG='<svg class="house" viewBox="0 0 300 250" xmlns="http://www.w3.org
 +'<polygon points="70,137 210,137 159,68"/>'
 +'<polygon points="210,137 248,104 159,68"/>'
 +'<polygon points="70,137 108,104 159,68"/></g>'
+/* οροφή — επίπεδη ταράτσα (ταράτσα/κλειστός) */
++'<g class="v-flatroof"><polygon points="70,137 210,137 248,104 108,104" fill="#dfe4ec" stroke="#a3adba" stroke-width="2" stroke-linejoin="round"/><polygon points="68,139 212,139 212,131 68,131" fill="#c3cad6"/><polygon points="212,137 250,104 250,97 212,130" fill="#b2bac8"/></g>'
+/* οροφή — κλειστός (αχνός όροφος από πάνω) */
++'<g class="v-cehint"><polygon points="70,131 210,131 210,112 70,112" fill="rgba(100,116,139,.12)" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4 3"/><polygon points="210,131 248,98 248,80 210,112" fill="rgba(100,116,139,.08)" stroke="#94a3b8" stroke-width="1"/><rect x="92" y="117" width="22" height="10" fill="rgba(148,163,184,.3)"/><rect x="164" y="117" width="22" height="10" fill="rgba(148,163,184,.3)"/></g>'
 +'<g class="det"><rect x="128" y="159" width="30" height="36"/>'
 +'<rect x="88" y="150" width="26" height="22"/><rect x="166" y="150" width="26" height="22"/></g>'
 +'<g class="dim"><line x1="56" y1="137" x2="56" y2="195"/>'
@@ -425,7 +461,16 @@ function wizStart(){
   g('wz-nav').innerHTML=WZ_NAV_HTML;
   wizRender();
 }
-function wizHouse(cls){var v=g('wz-visual');var s=v?v.querySelector('svg'):null;if(s)s.setAttribute('class','house '+(cls||''));}
+function wizHouse(cls){
+  var v=g('wz-visual'),s=v?v.querySelector('svg'):null; if(!s)return;
+  var d=(WZ&&WZ.data)||{}, i=(WZ?WZ.i:0);
+  var fi=WZ_STEPS.indexOf('floor'),ci=WZ_STEPS.indexOf('ceil'),si=WZ_STEPS.indexOf('sides');
+  var p=['house']; if(cls)p.push(cls);
+  if(i>=fi)p.push('fl-'+(d.floorType||'pilotis'));   // δάπεδο: ground/pilotis/closed
+  if(i>=ci)p.push('ce-'+(d.ceilType||'roof'));        // οροφή: roof/attic/closed
+  if(i>=si)p.push('sd-'+(d.sides||2));                // πλευρές: 1-4 (γείτονες)
+  s.setAttribute('class',p.join(' '));
+}
 function wizSetData(k,v){if(WZ)WZ.data[k]=v;}
 function wizPick(k,v){WZ.data[k]=v;wizRender();}
 function wizToggleKey(k){WZ.data[k]=!WZ.data[k];wizRender();}
