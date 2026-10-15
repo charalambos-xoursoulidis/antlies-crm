@@ -1265,7 +1265,20 @@ async function supaRest(table, method, body, query) {
   if (!r.ok) { var t=await r.text(); throw new Error('Supabase '+method+' '+table+': '+t); }
   if (r.status===204||r.headers.get('content-length')=== '0') return [];
   var txt = await r.text();
-  return txt ? JSON.parse(txt) : [];
+  return txt ? safeData(JSON.parse(txt)) : [];
+}
+// ── Προστασία από κακόβουλα δεδομένα (XSS) ──────────────────────
+// Η δημόσια φόρμα γράφει στη βάση, και πολλά σημεία εμφανίζουν τα δεδομένα με innerHTML.
+// Γι' αυτό ό,τι διαβάζεται από τη βάση «εξουδετερώνεται» πριν φτάσει στην οθόνη:
+// < > " γίνονται ‹ › ″ (ίδια όψη, δεν εκτελούνται) και τα id κρατούν μόνο ασφαλείς χαρακτήρες.
+function safeData(v, key){
+  if (typeof v==='string') {
+    if (key && /(^|_)id$/.test(key)) return v.replace(/[^A-Za-z0-9_.\-]/g,'');
+    return v.replace(/</g,'\u2039').replace(/>/g,'\u203A').replace(/"/g,'\u2033');
+  }
+  if (Array.isArray(v)) return v.map(function(x){ return safeData(x, key); });
+  if (v && typeof v==='object') { var o={}; for (var k in v) o[k]=safeData(v[k], k); return o; }
+  return v;
 }
 
 const DB = {
@@ -1310,8 +1323,17 @@ const DB = {
     LOC.delQ(id);
   },
   async nextNum(cid) {
-    const q = await this.custQuotes(cid);
-    return `PRF-${new Date().getFullYear()}-${String(q.length+1).padStart(3,'0')}`;
+    // Ενιαία αρίθμηση για όλους τους πελάτες: μέγιστος αριθμός της χρονιάς + 1
+    // (παλιά: πλήθος προσφορών του πελάτη + 1 → κάθε πελάτης ξεκινούσε από 001 και οι αριθμοί επαναλαμβάνονταν).
+    const yr = new Date().getFullYear(), pre = `PRF-${yr}-`;
+    let nums = [];
+    try {
+      if (storageMode==='supa') nums = (await supaRest('quotes','GET',null,'select=quote_number&quote_number=like.'+encodeURIComponent(pre+'*'))).map(x=>x.quote_number);
+      else nums = (storageMode==='local' ? LOC.quotes() : await this.custQuotes(cid)).map(x=>x.quote_number);
+    } catch(e) { nums = (await this.custQuotes(cid)).map(x=>x.quote_number); }
+    let max = 0;
+    nums.forEach(n => { n=String(n||''); if (n.indexOf(pre)===0) { const v=parseInt(n.slice(pre.length),10); if (/^\d+$/.test(n.slice(pre.length)) && v>max) max=v; } });
+    return pre + String(max+1).padStart(3,'0');
   }
 };
 
@@ -1596,7 +1618,7 @@ async function crmLogin(){
   if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
   else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
 }
-var CRM_VER='2.9';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='3.0';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   loadCrmPass();
@@ -1847,11 +1869,12 @@ function demoSupaRest(table,method,body,query){
     return [];
   }
   if(method==='DELETE'){
-    var idD=demoParseEq(query,'id'), cD=demoParseEq(query,'customer_id');
+    var idD=demoParseEq(query,'id'), cD=demoParseEq(query,'customer_id'), pD=demoParseEq(query,'property_id');
     for(var i=t.length-1;i>=0;i--){
       if(idD!=null && String(t[i].id)!==String(idD)) continue;
       if(cD!=null && String(t[i].customer_id)!==String(cD)) continue;
-      if(idD!=null||cD!=null) t.splice(i,1);
+      if(pD!=null && String(t[i].property_id)!==String(pD)) continue;
+      if(idD!=null||cD!=null||pD!=null) t.splice(i,1);
     }
     return [];
   }
@@ -3012,6 +3035,9 @@ function propsSaveLocal(d) {
 }
 
 // ── API helpers ───────────────────────────────────────────────────
+// Φάση: το CRM αποθηκεύει 'mono'/'tri'· παλιά leads του υπολογιστή έχουν ελληνική ετικέτα
+// (π.χ. «Μονοφασικό» ή «Άγνωστη — εκτίμηση: Τριφασική»).
+function isMono(ph){ ph=String(ph||''); if(ph==='mono') return true; if(ph==='tri') return false; return !/Τριφ/.test(ph) && /Μονοφ/.test(ph); }
 async function loadProperties(custId) {
   try {
     // Supabase: primary storage
@@ -3030,7 +3056,8 @@ async function loadProperties(custId) {
       }
     }
   } catch(e){ console.warn('Properties load failed:',e); }
-  return local;
+  // Εφεδρεία: τοπική μνήμη (π.χ. χωρίς σύνδεση)
+  return propsLoadLocal().filter(function(p){return p.customer_id===custId;});
 }
 
 async function savePropertyAPI(prop) {
@@ -3040,7 +3067,7 @@ async function savePropertyAPI(prop) {
     } else if (storageMode==='server') {
       await apiFetch('properties','POST',prop);
     }
-  } catch(e) { alert('Σφάλμα αποθήκευσης ακινήτου: '+e.message); return prop; }
+  } catch(e) { throw new Error('Σφάλμα αποθήκευσης ακινήτου: '+(e&&e.message?e.message:e)); } // ο καλών δείχνει το μήνυμα
   // Sync localStorage
   var all = propsLoadLocal().filter(function(p){return p.id!==prop.id;});
   all.unshift(prop); propsSaveLocal(all);
@@ -3050,9 +3077,12 @@ async function savePropertyAPI(prop) {
 async function deletePropertyAPI(id) {
   propsSaveLocal(propsLoadLocal().filter(function(p){return p.id!==id;}));
   try {
-    if (storageMode==='supa') await supaRest('properties','DELETE',null,'id=eq.'+id);
+    if (storageMode==='supa') {
+      await supaRest('quotes','DELETE',null,'property_id=eq.'+id); // και οι προσφορές του ακινήτου, όπως λέει η επιβεβαίωση
+      await supaRest('properties','DELETE',null,'id=eq.'+id);
+    }
     else if (storageMode==='server') await apiFetch('properties','DELETE',null,{id:id});
-  } catch(e){ console.warn('Properties delete failed:',e); }
+  } catch(e){ console.warn('Properties delete failed:',e); alert('Σφάλμα διαγραφής ακινήτου: '+(e&&e.message?e.message:e)); }
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────
@@ -3113,7 +3143,7 @@ async function renderCustomerDetail() {
     if(typeLabels[p.proptype]) meta.push(typeLabels[p.proptype]);
     if(p.area) meta.push(p.area+'m²');
     if(p.year) meta.push(p.year);
-    if(p.phase) meta.push(p.phase==='mono'?'1φ':'3φ');
+    if(p.phase) meta.push(isMono(p.phase)?'1φ':'3φ');
     if(distribLabels[p.distrib]) meta.push(distribLabels[p.distrib]);
     return '<div class="prop-card" onclick="openProperty(\''+p.id+'\')">'
       +'<div class="prop-card-left">'
@@ -3159,7 +3189,7 @@ async function renderPropertyDetail() {
     if(prop.address) rows.push('📍 '+prop.address);
     if(prop.area) rows.push('📐 '+prop.area+' m²');
     if(prop.year) rows.push('🗓 '+prop.year);
-    if(prop.phase) rows.push(prop.phase==='mono'?'⚡ Μονοφασικό':'⚡⚡⚡ Τριφασικό');
+    if(prop.phase) rows.push(isMono(prop.phase)?'⚡ Μονοφασικό':'⚡⚡⚡ Τριφασικό');
     if(distribLabels[prop.distrib]) rows.push('🔧 '+distribLabels[prop.distrib]);
     if(prop.heating) rows.push('🔥 '+prop.heating);
     if(prop.gas) rows.push('⛽ Αέριο: '+(prop.gas==='yes'?'Ναι':prop.gas==='no'?'Όχι':'Άγνωστο'));
@@ -3349,7 +3379,8 @@ async function saveProperty() {
     znx:PF_VALS.znx||'',
     created_at: EDIT_PID?undefined:new Date().toISOString(),
   };
-  await savePropertyAPI(prop);
+  try { await savePropertyAPI(prop); }
+  catch(e){ alert(e&&e.message?e.message:e); return; } // η φόρμα μένει ανοιχτή, τίποτα δεν χάνεται
   if(APP.propHL && APP.propHL.area!=null){ await saveHLData(prop.id, APP.propHL); }
   g('modal-prop').classList.add('hidden');
   await renderCustomerDetail();

@@ -252,7 +252,7 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 </div>
 
 <script>
-var APP_VER='4.9';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var APP_VER='5.0';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 var OFFICE_EMAIL='charalambos@xoursoulidis.com';   // παραλήπτης αιτημάτων εξατομικευμένης προσφοράς
 var OFFICE_PHONE='2331028063';
 var STUDY_FEE=50, SKETCH_FEE=20;   // € αξία μελέτης / επιπλέον σκαρίφημα (DXF+PDF)
@@ -364,8 +364,8 @@ async function pushToCrm(info){
   var kw1=Math.round(hl.kw*10)/10, safe1=Math.round(hl.safe*10)/10;
   var prop={id:pid, customer_id:cid, name:'Κατοικία',
     heat_kw:String(kw1), heat_safe:String(safe1), heat_pump:String(hl.pump),
-    address:(info.addr||'').trim(), area:String(d.area||''), phase:phaseInfo(d).label,
-    notes:(info.planNo?'Χωρίς σχέδιο — να γίνει σκαρίφημα':''), status:'pending', priority:'medium', created_at:now};
+    address:(info.addr||'').trim(), area:String(d.area||''), phase:phaseInfo(d).eff,
+    notes:[(info.planNo?'Χωρίς σχέδιο — να γίνει σκαρίφημα':''), (phaseInfo(d).guess?('Παροχή: '+phaseInfo(d).label):'')].filter(Boolean).join(' · '), status:'pending', priority:'medium', created_at:now};
   var hlVal={kw:String(kw1), safe:String(safe1), pump:String(hl.pump),
     area:parseFloat(d.area)||0, h:parseFloat(d.h)||2.8, zone:d.zone, ins:d.ins,
     upWin:!!d.upWin, upWall:!!d.upWall, upCeil:!!d.upCeil, upFloor:!!d.upFloor,
