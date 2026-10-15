@@ -281,8 +281,9 @@ a{color:#2563eb}
   <div style="background:#fff;border-radius:18px;padding:30px 26px;max-width:340px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.45)">
     <div style="font-size:36px;margin-bottom:4px">🔒</div>
     <div style="font-size:18px;font-weight:800;color:#0f172a">Διαχείριση</div>
-    <div style="font-size:13px;color:#64748b;margin:4px 0 16px">Εισάγετε τον κωδικό πρόσβασης</div>
-    <input id="crm-pass" type="password" inputmode="numeric" autocomplete="off" placeholder="••••" onkeydown="if(event.key==='Enter')crmLogin()" style="width:100%;text-align:center;letter-spacing:8px;font-size:24px;border:1.5px solid #cbd5e1;border-radius:10px;padding:11px;outline:none">
+    <div style="font-size:13px;color:#64748b;margin:4px 0 16px">Σύνδεση με email και κωδικό</div>
+    <input id="crm-email" type="email" autocomplete="username" placeholder="email" onkeydown="if(event.key==='Enter')g('crm-pass').focus()" style="width:100%;text-align:center;font-size:16px;border:1.5px solid #cbd5e1;border-radius:10px;padding:11px;outline:none;margin-bottom:8px">
+    <input id="crm-pass" type="password" autocomplete="current-password" placeholder="κωδικός" onkeydown="if(event.key==='Enter')crmLogin()" style="width:100%;text-align:center;font-size:16px;border:1.5px solid #cbd5e1;border-radius:10px;padding:11px;outline:none">
     <div id="crm-pass-err" style="color:#dc2626;font-size:12px;height:16px;margin-top:6px"></div>
     <button onclick="crmLogin()" style="width:100%;margin-top:6px;background:linear-gradient(90deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer">Είσοδος</button>
   </div>
@@ -303,8 +304,8 @@ a{color:#2563eb}
 <div id="crm-pass-mod" style="position:fixed;inset:0;z-index:99998;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;padding:20px">
   <div style="background:#fff;border-radius:16px;padding:24px 22px;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35)">
     <div style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:4px">🔑 Αλλαγή κωδικού</div>
-    <div style="font-size:12.5px;color:#64748b;margin-bottom:14px">Ο νέος κωδικός θα ισχύει σε όλες τις συσκευές (γραφείο &amp; διαδίκτυο) στην επόμενη είσοδο.</div>
-    <input id="crm-newpass" type="text" autocomplete="off" placeholder="Νέος κωδικός" onkeydown="if(event.key==='Enter')crmChangePass()" style="width:100%;font-size:16px;border:1.5px solid #cbd5e1;border-radius:10px;padding:11px;outline:none">
+    <div style="font-size:12.5px;color:#64748b;margin-bottom:14px">Αλλάζει τον κωδικό του λογαριασμού σας (τουλάχιστον 6 χαρακτήρες). Ισχύει σε όλες τις συσκευές.</div>
+    <input id="crm-newpass" type="password" autocomplete="new-password" placeholder="Νέος κωδικός" onkeydown="if(event.key==='Enter')crmChangePass()" style="width:100%;font-size:16px;border:1.5px solid #cbd5e1;border-radius:10px;padding:11px;outline:none">
     <div style="display:flex;gap:8px;margin-top:14px">
       <button onclick="closeChangePass()" style="flex:1;background:#fff;border:1.5px solid #cbd5e1;color:#475569;border-radius:10px;padding:10px;font-weight:700;cursor:pointer">Ακύρωση</button>
       <button onclick="crmChangePass()" style="flex:1;background:linear-gradient(90deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;padding:10px;font-weight:700;cursor:pointer">Αποθήκευση</button>
@@ -319,6 +320,7 @@ a{color:#2563eb}
   <button class="hdr-btn" onclick="openPricing()">💶 Τιμές</button>
   <button class="hdr-btn" onclick="openStats()">📊 Στατιστικά</button>
   <button class="hdr-btn" onclick="openChangePass()">🔑 Κωδικός</button>
+  <button class="hdr-btn" onclick="crmLogout()">🚪 Έξοδος</button>
   <button class="conn-badge" id="conn-badge" onclick="openSetup()">⚙ Ρυθμίσεις</button>
   <button class="hdr-btn" onclick="call(goCustomers)">👥 Πελάτες</button>
   <button class="hdr-btn grn" id="hdr-new-cust" onclick="openNewCustomer()" style="display:none">+ Νέος Πελάτης</button>
@@ -940,8 +942,8 @@ CREATE TABLE quotes (
 );
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE quotes ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "allow_all" ON customers FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "allow_all" ON quotes FOR ALL USING (true) WITH CHECK (true);<button class="copy-sql" onclick="copySQL()">📋 Αντιγραφή</button></div>
+-- Κανόνες πρόσβασης: τρέξτε το supabase/security.sql του αποθετηρίου
+-- (ΟΧΙ πολιτική «allow_all»: θα άφηνε τα δεδομένα ανοιχτά σε όλους).<button class="copy-sql" onclick="copySQL()">📋 Αντιγραφή</button></div>
       <div class="form-grid" style="margin-top:8px">
         <div class="fld form-full"><label>Project URL</label><input id="supa-url" placeholder="https://xxxx.supabase.co" type="url"></div>
         <div class="fld form-full"><label>Anon Key</label><input id="supa-key" placeholder="eyJhbGci..."></div>
@@ -1253,15 +1255,18 @@ async function supaRest(table, method, body, query) {
   var _sUrl = (_scfg&&_scfg.supaUrl) ? _scfg.supaUrl : SUPA_URL_DEFAULT;
   var _sKey = (_scfg&&_scfg.supaKey) ? _scfg.supaKey : SUPA_KEY_DEFAULT;
   var url = _sUrl.replace(/\/$/,'')+'/rest/v1/'+table+(query?'?'+query:'');
+  // Με σύνδεση: το token του χρήστη (οι κανόνες RLS επιτρέπουν πρόσβαση μόνο σε συνδεδεμένους).
+  var _tok = await authToken();
   var headers = {
     'apikey': _sKey,
-    'Authorization': 'Bearer '+_sKey,
+    'Authorization': 'Bearer '+(_tok||_sKey),
     'Content-Type': 'application/json'
   };
   if (method==='POST') headers['Prefer'] = 'return=minimal,resolution=merge-duplicates';
   var opts = {method:method, headers:headers};
   if (body) opts.body = JSON.stringify(body);
   var r = await fetch(url, opts);
+  if (r.status===401 && _tok) { authClear(); crmShowGate('Η σύνδεση έληξε — συνδεθείτε ξανά.'); throw new Error('Η σύνδεση έληξε'); }
   if (!r.ok) { var t=await r.text(); throw new Error('Supabase '+method+' '+table+': '+t); }
   if (r.status===204||r.headers.get('content-length')=== '0') return [];
   var txt = await r.text();
@@ -1601,42 +1606,88 @@ function togLab(sid){const s=MSEC.find(x=>x.id===sid);if(s){s.labor.on=!s.labor.
 const SUPA_URL_DEFAULT = 'https://wdbgdrbkhkdtfmpdgzmy.supabase.co';
 const SUPA_KEY_DEFAULT = 'sb_publishable_xjrKqW_cm1sQBdjoY7mg7g_-E1bsUnQ';
 
-var CRM_PASS=null;
-async function loadCrmPass(){
-  var p=null;
-  try{ if(storageMode==='supa'){ var rows=await supaRest('hm_settings','GET',null,'id=eq.crm_pass&select=value'); if(rows&&rows[0]&&rows[0].value) p=rows[0].value.pass; } }catch(e){}
-  if(!p){ try{ var l=JSON.parse(localStorage.getItem('crm_pass')||'null'); if(l&&l.pass)p=l.pass; }catch(e){} }
-  CRM_PASS=(p!=null&&p!=='')?String(p):'0000';
-  return CRM_PASS;
+// ── ΣΥΝΔΕΣΗ (Supabase Auth) ─────────────────────────────────────
+// Οι χρήστες δημιουργούνται στο Supabase: Authentication → Users → Add user.
+// Το session (access/refresh token) κρατιέται στο localStorage· «Έξοδος» το σβήνει.
+var AUTH_KEY='crm_auth_v1';
+function authGet(){ try{ return JSON.parse(localStorage.getItem(AUTH_KEY)||'null'); }catch(e){ return null; } }
+function authSet(a){ try{ localStorage.setItem(AUTH_KEY, JSON.stringify(a)); }catch(e){} }
+function authClear(){ try{ localStorage.removeItem(AUTH_KEY); }catch(e){} }
+function authBase(){ var c=null; try{ c=JSON.parse(localStorage.getItem(CFG_KEY)||'null'); }catch(e){}
+  return { url:((c&&c.supaUrl)||SUPA_URL_DEFAULT).replace(/\/$/,''), key:(c&&c.supaKey)||SUPA_KEY_DEFAULT }; }
+async function authCall(path, body, token){
+  var b=authBase();
+  var r=await fetch(b.url+'/auth/v1/'+path,{method:'POST',headers:{'apikey':b.key,'Content-Type':'application/json','Authorization':'Bearer '+(token||b.key)},body:JSON.stringify(body||{})});
+  var t=await r.text(); var j=null; try{ j=t?JSON.parse(t):null; }catch(e){}
+  if(!r.ok) throw new Error((j&&(j.error_description||j.msg||j.message))||('HTTP '+r.status));
+  return j;
+}
+function authStore(j){ authSet({access_token:j.access_token, refresh_token:j.refresh_token,
+  expires_at:j.expires_at||(Math.floor(Date.now()/1000)+(j.expires_in||3600)), email:(j.user&&j.user.email)||''}); }
+var _authRefreshing=null;
+async function authToken(){
+  var a=authGet(); if(!a||!a.access_token) return null;
+  if(a.expires_at-60 > Date.now()/1000) return a.access_token;
+  if(!_authRefreshing) _authRefreshing=authCall('token?grant_type=refresh_token',{refresh_token:a.refresh_token})
+    .then(function(j){ authStore(j); return j.access_token; })
+    .catch(function(){ authClear(); return null; })
+    .finally(function(){ _authRefreshing=null; });
+  return _authRefreshing;
+}
+function crmShowGate(msg){
+  var gt=g('crm-gate'); if(gt)gt.style.display='flex';
+  var er=g('crm-pass-err'); if(er)er.textContent=msg||'';
+  var em=g('crm-email'); if(em&&!em.value){ try{ em.value=localStorage.getItem('crm_last_email')||''; }catch(e){} }
+  var f=(em&&!em.value)?em:g('crm-pass'); if(f)setTimeout(function(){f.focus();},120);
 }
 async function crmLogin(){
+  var em=((g('crm-email')||{}).value||'').trim();
   var v=(g('crm-pass')||{}).value||'';
-  // ── DEMO: δευτερεύων κωδικός → ίδιο πρόγραμμα, εικονικά δεδομένα, καμία αποθήκευση ──
-  // ΔΕΝ ορίζουμε crm_ok: ένα refresh επιστρέφει στην πύλη (το demo δεν διαρρέει στο κανονικό).
+  var er=g('crm-pass-err'); if(er)er.textContent='';
+  // ── DEMO: κωδικός «demo» → ίδιο πρόγραμμα, εικονικά δεδομένα, καμία αποθήκευση ──
+  // (κανένας πραγματικός κωδικός δεν μπορεί να είναι «demo»: το Supabase θέλει ≥6 χαρακτήρες)
+  // Δεν αποθηκεύεται session: ένα refresh επιστρέφει στην πύλη.
   if(v===DEMO_PASS){ enterDemo(); var gtd=g('crm-gate'); if(gtd)gtd.style.display='none'; call(goCustomers); return; }
-  var pass=CRM_PASS; if(pass==null){ pass=await loadCrmPass(); }
-  if(v===pass){ try{sessionStorage.setItem('crm_ok','1');}catch(e){} var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
-  else { var er=g('crm-pass-err'); if(er)er.textContent='Λάθος κωδικός'; var p=g('crm-pass'); if(p){p.value='';p.focus();} }
+  if(!em||!v){ if(er)er.textContent='Συμπληρώστε email και κωδικό'; return; }
+  try{
+    var j=await authCall('token?grant_type=password',{email:em,password:v});
+    authStore(j); try{ localStorage.setItem('crm_last_email', em); }catch(e){}
+    var gt=g('crm-gate'); if(gt)gt.style.display='none';
+    var p=g('crm-pass'); if(p)p.value='';
+    call(goCustomers);
+  }catch(e){
+    if(er)er.textContent=/invalid/i.test(e.message)?'Λάθος email ή κωδικός':('Σφάλμα: '+e.message);
+    var p2=g('crm-pass'); if(p2){p2.value='';p2.focus();}
+  }
 }
-var CRM_VER='3.0';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
-function crmBoot(){
+async function crmLogout(){
+  if(DEMO){ location.reload(); return; }
+  var t=await authToken();
+  try{ if(t) await authCall('logout',{},t); }catch(e){}
+  authClear(); location.reload();
+}
+var CRM_VER='3.1';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+async function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
-  loadCrmPass();
-  var ok=false; try{ok=sessionStorage.getItem('crm_ok')==='1';}catch(e){}
-  var gt=g('crm-gate');
-  if(ok){ if(gt)gt.style.display='none'; call(goCustomers); }
-  else { if(gt)gt.style.display='flex'; var p=g('crm-pass'); if(p)setTimeout(function(){p.focus();},120); }
+  try{ localStorage.removeItem('crm_pass'); }catch(e){}  // παλιός τοπικός κωδικός — δεν χρησιμοποιείται πια
+  var t=await authToken();
+  if(t){ var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
+  else crmShowGate('');
 }
 function openChangePass(){ var m=g('crm-pass-mod'); if(m)m.style.display='flex'; var i=g('crm-newpass'); if(i){i.value='';setTimeout(function(){i.focus();},80);} }
 function closeChangePass(){ var m=g('crm-pass-mod'); if(m)m.style.display='none'; }
 async function crmChangePass(){
-  var np=((g('crm-newpass')||{}).value||'').trim();
-  if(np.length<1){ alert('Δώσε νέο κωδικό.'); return; }
-  try{ if(!DEMO) localStorage.setItem('crm_pass',JSON.stringify({pass:np})); }catch(e){}
-  try{ if(storageMode==='supa'){ await supaRest('hm_settings','POST',{id:'crm_pass',value:{pass:np}},'on_conflict=id'); } }
-  catch(e){ alert('Σφάλμα αποθήκευσης κωδικού: '+(e&&e.message?e.message:e)); return; }
-  CRM_PASS=np; closeChangePass();
-  alert('Ο κωδικός άλλαξε. Θα ισχύει στην επόμενη είσοδο, σε όλες τις συσκευές.');
+  var np=((g('crm-newpass')||{}).value||'');
+  if(DEMO){ alert('Στο demo δεν αλλάζει κωδικός.'); closeChangePass(); return; }
+  if(np.length<6){ alert('Ο κωδικός πρέπει να έχει τουλάχιστον 6 χαρακτήρες.'); return; }
+  var t=await authToken(); if(!t){ closeChangePass(); crmShowGate('Συνδεθείτε πρώτα.'); return; }
+  try{
+    var b=authBase();
+    var r=await fetch(b.url+'/auth/v1/user',{method:'PUT',headers:{'apikey':b.key,'Authorization':'Bearer '+t,'Content-Type':'application/json'},body:JSON.stringify({password:np})});
+    if(!r.ok){ var tx=await r.text(); throw new Error(tx||('HTTP '+r.status)); }
+  }catch(e){ alert('Σφάλμα αλλαγής κωδικού: '+(e&&e.message?e.message:e)); return; }
+  closeChangePass();
+  alert('Ο κωδικός άλλαξε.');
 }
 var STATS_LAST=null;
 async function openStats(){
