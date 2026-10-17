@@ -286,6 +286,7 @@ a{color:#2563eb}
     <input id="crm-pass" type="password" autocomplete="current-password" placeholder="κωδικός" onkeydown="if(event.key==='Enter')crmLogin()" style="width:100%;text-align:center;font-size:16px;border:1.5px solid #cbd5e1;border-radius:10px;padding:11px;outline:none">
     <div id="crm-pass-err" style="color:#dc2626;font-size:12px;height:16px;margin-top:6px"></div>
     <button onclick="crmLogin()" style="width:100%;margin-top:6px;background:linear-gradient(90deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer">Είσοδος</button>
+    <div id="crm-gate-ver" style="font-size:11px;color:#94a3b8;margin-top:12px"></div>
   </div>
 </div>
 <div id="stats-mod" style="position:fixed;inset:0;z-index:99998;background:rgba(15,23,42,.5);display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto">
@@ -1667,9 +1668,10 @@ async function crmLogout(){
   try{ if(t) await authCall('logout',{},t); }catch(e){}
   authClear(); location.reload();
 }
-var CRM_VER='3.1';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='3.4';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 async function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
+  var gv=g('crm-gate-ver'); if(gv)gv.textContent='έκδοση v'+CRM_VER;
   try{ localStorage.removeItem('crm_pass'); }catch(e){}  // παλιός τοπικός κωδικός — δεν χρησιμοποιείται πια
   var t=await authToken();
   if(t){ var gt=g('crm-gate'); if(gt)gt.style.display='none'; call(goCustomers); }
