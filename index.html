@@ -360,7 +360,7 @@ async function pushToCrm(info){
   var progNote=(info.progLabel && info.progLabel!=='Όχι') ? (' · Πρόγραμμα: '+info.progLabel) : '';
   var cust={id:cid, lastname:(info.ln||'').trim(), firstname:(info.fn||'').trim(),
     phone:(info.phone||'').trim(), email:(info.email||'').trim(), address:(info.addr||'').trim(),
-    zip:'', city:(info.regionLabel||''), notes:'Από αίτημα μελέτης (δωρεάν υπολογιστής)'+progNote+(info.rates?(' · Προτεραιότητες: '+info.rates):''), created_at:now};
+    zip:'', city:(info.regionLabel||''), notes:'Από αίτημα μελέτης (δωρεάν υπολογιστής)'+progNote+(info.rates?(' · Προτεραιότητες: '+info.rates):'')+' · Πηγή: '+(CALC_SRC_LBL[CALC_SRC]||CALC_SRC), created_at:now};
   var kw1=Math.round(hl.kw*10)/10, safe1=Math.round(hl.safe*10)/10;
   var prop={id:pid, customer_id:cid, name:'Κατοικία',
     heat_kw:String(kw1), heat_safe:String(safe1), heat_pump:String(hl.pump),
@@ -388,6 +388,28 @@ async function pushToCrm(info){
 
 // ---- Funnel analytics (best-effort → Supabase table calc_events) ----
 var CALC_SID=null, CALC_MAX=-1;
+// Πηγή επισκέπτη: ?src=viber στον σύνδεσμο (κρατιέται στη συσκευή), αλλιώς από το referrer
+function calcSource(){
+  var s='';
+  try{ var q=new URLSearchParams(location.search); s=(q.get('src')||q.get('utm_source')||''); }catch(e){}
+  s=String(s).toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,30);
+  if(s){ try{ localStorage.setItem('calc_src',s); }catch(e){} return s; }
+  try{ s=localStorage.getItem('calc_src')||''; }catch(e){}
+  if(s) return s;
+  var r=document.referrer||'', host='';
+  try{ host=r?new URL(r).hostname:''; }catch(e){}
+  if(!host) return 'direct';
+  if(host===location.hostname) return /welcome\.html/.test(r)?'welcome':'direct';
+  if(/viber/i.test(host)) return 'viber';
+  if(/messenger|m\.me$/i.test(host)) return 'messenger';
+  if(/facebook|fb\.(com|me)$/i.test(host)) return 'facebook';
+  if(/instagram/i.test(host)) return 'instagram';
+  if(/whatsapp|wa\.me$/i.test(host)) return 'whatsapp';
+  if(/google\./i.test(host)) return 'google';
+  return 'web';
+}
+var CALC_SRC=calcSource();
+var CALC_SRC_LBL={viber:'Viber',facebook:'Facebook',messenger:'Messenger',instagram:'Instagram',whatsapp:'WhatsApp',google:'Google',welcome:'Σελίδα καλωσορίσματος',web:'Άλλη ιστοσελίδα',direct:'Απευθείας'};
 function calcLog(ev, step, idx){
   try{
     if(!CALC_SID) return;
@@ -466,6 +488,7 @@ var WZ_NAV_HTML='<button class="wz-btn wz-back" id="wz-back" onclick="wizPrev()"
 
 function wizStart(){
   CALC_SID='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); CALC_MAX=-1;
+  calcLog('src', CALC_SRC, null);
   WZ={i:0,data:wizDefaults()}; LEAD_RATE={};
   g('wz-body').innerHTML=WZ_BODY_HTML;
   g('wz-visual').innerHTML=HOUSE_SVG;

@@ -1739,7 +1739,7 @@ function statsBucketLabel(d,gran){
   return dm+'/'+d.getFullYear();
 }
 async function statsFetchEvents(){
-  var q='select=sid,ev,idx,created_at&order=created_at.desc';
+  var q='select=sid,ev,step,idx,created_at&order=created_at.desc';
   var f=statsParse(STATS_RANGE.from), t=statsParse(STATS_RANGE.to);
   if(f) q+='&created_at=gte.'+encodeURIComponent(f.toISOString());
   if(t) q+='&created_at=lt.'+encodeURIComponent(new Date(t.getFullYear(),t.getMonth(),t.getDate()+1).toISOString());
@@ -1786,8 +1786,9 @@ async function openStats(){
     var rows = await statsFetchEvents();
     var bySid={}; var minT=null,maxT=null;
     rows.forEach(function(r){
-      var s=bySid[r.sid]||(bySid[r.sid]={max:-1,offer:false,first:null});
-      if(r.ev==='offer') s.offer=true;
+      var s=bySid[r.sid]||(bySid[r.sid]={max:-1,offer:false,first:null,src:null});
+      if(r.ev==='src'){ s.src=r.step||'direct'; }
+      else if(r.ev==='offer') s.offer=true;
       else if(typeof r.idx==='number' && r.idx>s.max) s.max=r.idx;
       if(r.created_at){ var t=new Date(r.created_at).getTime(); if(!isNaN(t)){ if(minT===null||t<minT)minT=t; if(maxT===null||t>maxT)maxT=t; if(s.first===null||t<s.first)s.first=t; } }
     });
@@ -1820,12 +1821,23 @@ async function openStats(){
       });
     }
     buckets.reverse(); // νεότερα πρώτα
+
+    // Ανάλυση ανά πηγή (από πού ήρθαν: ?src=viber στον σύνδεσμο ή referrer)
+    var SRC_LBL={viber:'Viber',facebook:'Facebook',messenger:'Messenger',instagram:'Instagram',whatsapp:'WhatsApp',google:'Google',welcome:'Σελίδα καλωσορίσματος (χωρίς ?src)',web:'Άλλη ιστοσελίδα',direct:'Απευθείας / άγνωστο',_none:'Χωρίς καταγραφή (πριν την ενεργοποίηση)'};
+    var smap={};
+    sids.forEach(function(sid){
+      var s=bySid[sid]; if(s.max<1 && !s.offer) return;
+      var k=s.src||'_none', o=smap[k]||(smap[k]={k:k,l:esc(SRC_LBL[k]||k),started:0,finished:0,offers:0});
+      if(s.max>=1)o.started++; if(s.max>=10)o.finished++; if(s.offer)o.offers++;
+    });
+    var sources=Object.keys(smap).map(function(k){return smap[k];}).sort(function(a,b){ return (a.k==='_none')-(b.k==='_none') || b.offers-a.offers || b.started-a.started; });
     var bMax=Math.max.apply(null,[1].concat(buckets.map(function(b){return b.started;})));
     function convPct(b){ return b.started?Math.round(b.offers/b.started*100)+'%':'—'; }
 
     STATS_LAST={reportDate:reportDate, period:period, filter:filter, gran:GL, started:started, finished:finished, offers:offers,
       steps:STEP.map(function(st){var n=reached(st.i);return {l:st.l,n:n,pct:Math.round(n/maxN*100)};}),
-      buckets:buckets.map(function(b){return {l:b.l,started:b.started,finished:b.finished,offers:b.offers,conv:convPct(b)};})};
+      buckets:buckets.map(function(b){return {l:b.l,started:b.started,finished:b.finished,offers:b.offers,conv:convPct(b)};}),
+      sources:sources.map(function(b){return {l:b.l,started:b.started,finished:b.finished,offers:b.offers,conv:convPct(b)};})};
     var html='<div style="font-size:11.5px;color:#64748b;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e2e8f0">📅 Ημερομηνία αναφοράς: <b>'+reportDate+'</b><br>Φίλτρο: <b>'+filter+'</b> · Περίοδος δεδομένων: <b>'+period+'</b></div>'
       +'<div style="display:flex;gap:8px;margin-bottom:16px">'
       +'<div style="flex:1;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px;text-align:center"><div style="font-size:22px;font-weight:800;color:#1e3a5f">'+started+'</div><div style="font-size:11px;color:#64748b">Ξεκίνησαν</div></div>'
@@ -1860,6 +1872,24 @@ async function openStats(){
       });
       html+='</tbody></table></div>';
     }
+    html+='<div style="font-size:12px;font-weight:700;color:#475569;margin:16px 0 6px">Από πού ήρθαν (πηγή)</div>';
+    if(!sources.length){
+      html+='<div style="font-size:12px;color:#94a3b8">Δεν υπάρχουν δεδομένα στο διάστημα.</div>';
+    } else {
+      var th2='padding:5px 6px;border-bottom:1px solid #e2e8f0;font-size:11px;color:#64748b;font-weight:700';
+      var td2='padding:5px 6px;border-bottom:1px solid #f1f5f9;font-size:12px';
+      html+='<div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden"><table style="width:100%;border-collapse:collapse">'
+        +'<thead style="background:#f8fafc"><tr><th style="'+th2+';text-align:left">Πηγή</th><th style="'+th2+';text-align:right">Ξεκίν.</th><th style="'+th2+';text-align:right">Ολοκλ.</th><th style="'+th2+';text-align:right">Προσφ.</th><th style="'+th2+';text-align:right">Μετατρ.</th></tr></thead><tbody>';
+      sources.forEach(function(b){
+        var dim=b.k==='_none'?';color:#94a3b8':'';
+        html+='<tr><td style="'+td2+dim+'">'+b.l+'</td>'
+          +'<td style="'+td2+';text-align:right;font-weight:700'+dim+'">'+b.started+'</td>'
+          +'<td style="'+td2+';text-align:right'+dim+'">'+b.finished+'</td>'
+          +'<td style="'+td2+';text-align:right;color:#c2410c;font-weight:700'+dim+'">'+b.offers+'</td>'
+          +'<td style="'+td2+';text-align:right'+dim+'">'+convPct(b)+'</td></tr>';
+      });
+      html+='</tbody></table></div>';
+    }
     html+='<div style="font-size:11px;color:#94a3b8;margin-top:12px">Συνεδρίες με δραστηριότητα: '+started+'. «Ξεκίνησαν» = προχώρησαν πέρα από το όνομα του υπολογισμού. «Μετατρ.» = προσφορές / ξεκίνησαν. Κάθε συνεδρία μετρά στην ημέρα της πρώτης της κίνησης.</div>';
     body.innerHTML=html;
   }catch(e){
@@ -1890,6 +1920,7 @@ function printStats(){
     +'<h2>Πού έφτασαν (funnel)</h2>'
     +'<table><thead><tr><th>Βήμα</th><th style="text-align:right">Έφτασαν</th><th style="text-align:right">%</th></tr></thead><tbody>'+rowsHtml+'</tbody></table>'
     +(s.buckets.length?'<h2>Ανάλυση ανά '+s.gran.toLowerCase()+'</h2><table><thead><tr><th>'+s.gran+'</th><th style="text-align:right">Ξεκίνησαν</th><th style="text-align:right">Ολοκλήρωσαν</th><th style="text-align:right">Προσφορές</th><th style="text-align:right">Μετατροπή</th></tr></thead><tbody>'+bucketsHtml+'</tbody></table>':'')
+    +((s.sources&&s.sources.length)?'<h2>Από πού ήρθαν (πηγή)</h2><table><thead><tr><th>Πηγή</th><th style="text-align:right">Ξεκίνησαν</th><th style="text-align:right">Ολοκλήρωσαν</th><th style="text-align:right">Προσφορές</th><th style="text-align:right">Μετατροπή</th></tr></thead><tbody>'+s.sources.map(function(b){ return '<tr><td>'+b.l+'</td><td style="text-align:right">'+b.started+'</td><td style="text-align:right">'+b.finished+'</td><td style="text-align:right">'+b.offers+'</td><td style="text-align:right">'+b.conv+'</td></tr>'; }).join('')+'</tbody></table>':'')
     +'<div style="font-size:10px;color:#94a3b8;margin-top:16px">«Ξεκίνησαν» = προχώρησαν πέρα από το όνομα του υπολογισμού.</div>'
     +'<scr'+'ipt>window.onload=function(){setTimeout(function(){window.print();},200);};</scr'+'ipt></body></html>';
   w.document.open(); w.document.write(doc); w.document.close();
