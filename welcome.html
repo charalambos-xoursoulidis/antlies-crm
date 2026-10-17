@@ -45,7 +45,7 @@
       <h1>Σας ευχαριστούμε για το ενδιαφέρον σας!</h1>
       <p>Είμαστε η εταιρία <b>ΑΦΟΙ ΧΟΥΡΣΟΥΛΙΔΗ</b>, συνεργάτες της <b>Διαθερμικής</b> στη Βέροια. Επικοινωνούμε μαζί σας σε συνέχεια του ενδιαφέροντός σας στη σελίδα της Διαθερμικής.</p>
       <p>Παρακάτω θα βρείτε μια σύντομη εφαρμογή — μια <b>συντόμευση</b> που θα σας βοηθήσει να κάνετε μια πρώτη <b>προσέγγιση των αναγκών σας</b>. Δωρεάν, ανώνυμα και σε λίγα βήματα.</p>
-      <a class="cta" href="https://charalambos-xoursoulidis.github.io/antlies-crm/">🔧 Ξεκινήστε τον δωρεάν υπολογισμό →</a>
+      <a class="cta" id="cta" href="https://charalambos-xoursoulidis.github.io/antlies-crm/">🔧 Ξεκινήστε τον δωρεάν υπολογισμό →</a>
       <div class="sub">Δωρεάν &amp; ανώνυμος υπολογισμός · ~2 λεπτά</div>
     </div>
     <div class="foot">
@@ -53,5 +53,9 @@
       📞 <a href="tel:2331028063">23310 28063</a>
     </div>
   </div>
+<script>
+// Μεταφέρει την πηγή του συνδέσμου (π.χ. ?src=viber) στον υπολογιστή
+try{ var src=new URLSearchParams(location.search).get('src'); if(src){ var a=document.getElementById('cta'); a.href=a.href.split('?')[0]+'?src='+encodeURIComponent(src); } }catch(e){}
+</script>
 </body>
 </html>
