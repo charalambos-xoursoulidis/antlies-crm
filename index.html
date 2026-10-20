@@ -153,6 +153,7 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 .lead-rate-opt.on{background:#d97706;border-color:#d97706;color:#fff}
 .wz-rate-hint{font-size:12px;font-weight:700;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:7px 10px;margin-top:12px;text-align:center}
 .wz-rate-hint.ok{color:#15803d;background:#f0fdf4;border-color:#bbf7d0}
+.lead-hp{position:absolute;left:-9999px;top:0;width:1px;height:1px;overflow:hidden}
 .lead-ok{text-align:center;padding:6px 0}
 .lead-ok .big{font-size:40px;line-height:1}
 </style></head>
@@ -213,6 +214,7 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 
     <!-- STEP 2: στοιχεία -->
     <div id="lead-s2" hidden>
+      <div class="lead-hp" aria-hidden="true"><label>Website <input id="lead-website" type="text" tabindex="-1" autocomplete="off"></label></div>
       <div class="lead-h">Τα στοιχεία σου</div>
       <div class="lead-row">
         <div class="lead-fg"><label>Όνομα *</label><input class="lead-inp" id="lead-fname"></div>
@@ -257,7 +259,7 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 </div>
 
 <script>
-var APP_VER='5.1';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var APP_VER='5.2';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 var OFFICE_EMAIL='charalambos@xoursoulidis.com';   // παραλήπτης αιτημάτων εξατομικευμένης προσφοράς
 var OFFICE_PHONE='2331028063';
 var STUDY_FEE=50, SKETCH_FEE=20;   // € αξία μελέτης / επιπλέον σκαρίφημα (DXF+PDF)
@@ -740,6 +742,7 @@ function leadRateStr(){
 }
 // ---- Λεπτομερής μελέτη & εξατομικευμένη προσφορά (lead → email) ----
 function openLead(){
+  LEAD_T0=0;
   var c=g('lead-consent'); if(c)c.checked=false;
   var b=g('lead-toS2'); if(b)b.disabled=true;
   var e=g('lead-err'); if(e)e.textContent='';
@@ -750,7 +753,8 @@ function openLead(){
   g('lead-ovl').hidden=false;
 }
 function closeLead(){ var o=g('lead-ovl'); if(o)o.hidden=true; }
-function leadStep(n){ ['lead-s1','lead-s2','lead-s3'].forEach(function(id,i){var el=g(id); if(el)el.hidden=(i+1!==n);}); }
+var LEAD_T0=0;   // πότε άνοιξαν τα στοιχεία — ένα bot τα «συμπληρώνει» σε κλάσματα του δευτερολέπτου
+function leadStep(n){ ['lead-s1','lead-s2','lead-s3'].forEach(function(id,i){var el=g(id); if(el)el.hidden=(i+1!==n);}); if(n===2&&!LEAD_T0)LEAD_T0=Date.now(); }
 function leadConsentChanged(){ var b=g('lead-toS2'); if(b)b.disabled=!(g('lead-consent')||{}).checked; }
 function leadPlanChanged(){
   var plan=(g('lead-plan')||{}).value;
@@ -773,7 +777,10 @@ function leadSubmit(){
   var fn=vv('lead-fname'), ln=vv('lead-lname'), ph=vv('lead-phone'), addr=vv('lead-addr');
   var err=g('lead-err');
   if(!fn||!ln||!ph||!addr){ if(err)err.textContent='Συμπλήρωσε όνομα, επίθετο, τηλέφωνο και διεύθυνση ακινήτου.'; return; }
+  if(ph.replace(/\D/g,'').length<10){ if(err)err.textContent='Γράψε το τηλέφωνο με 10 ψηφία (π.χ. 69xxxxxxxx).'; return; }
   if(err)err.textContent='';
+  // Φίλτρο bots: κρυφό πεδίο συμπληρωμένο ή υποβολή σε λιγότερο από 3″ → δείχνουμε «επιτυχία» χωρίς να γράψουμε τίποτα
+  if(vv('lead-website') || (LEAD_T0 && Date.now()-LEAD_T0<3000)){ leadStep(3); return; }
   var email=vv('lead-email'), region=(g('lead-region')||{}).value, plan=(g('lead-plan')||{}).value, notes=vv('lead-notes');
   var regL={imathia:'Ημαθία',drama:'Δράμα',other:'Άλλος (εκτός τρέχουσας κάλυψης)'}[region]||region;
   var planL=(plan==='no')?('ΟΧΙ — να γίνει σκαρίφημα (+€'+SKETCH_FEE+', DXF+PDF)'):'ΝΑΙ, υπάρχει σχέδιο';
@@ -794,7 +801,7 @@ function leadSubmit(){
     +'Πρόγραμμα επιδότησης: '+progL+NL
     +'Σημειώσεις: '+(notes||'—')+NL
     +'Προτεραιότητες πελάτη (σειρά σημασίας): '+(leadRateStr()||'—')+NL+NL
-    +'ΑΡΧΙΚΟ ΚΟΣΤΟΣ: €'+fee+' (μελέτη €'+STUDY_FEE+(plan==='no'?(' + σκαρίφημα €'+SKETCH_FEE+' σε DXF+PDF'):'')+') — θα αφαιρεθεί εξ ολοκλήρου από την αξία της εγκατάστασης'+NL+NL
+    +'ΧΡΕΩΣΗ: €'+fee+' (αυτοψία, μελέτη & προσφορά €'+STUDY_FEE+(plan==='no'?(' + σκαρίφημα €'+SKETCH_FEE+' σε DXF+PDF'):'')+') — αφαιρείται ολόκληρο από την τιμή της εγκατάστασης'+NL+NL
     +'ΕΝΔΕΙΚΤΙΚΟΣ ΥΠΟΛΟΓΙΣΜΟΣ (δωρεάν υπολογιστής)'+NL
     +'Ονομασία: '+(d.calcName||'—')+NL
     +'Εμβαδόν: '+(d.area||'—')+' m² · Ύψος: '+(d.h||'—')+' m'+NL
