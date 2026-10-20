@@ -12,7 +12,7 @@
 body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#eef2f7;color:#0f172a;-webkit-font-smoothing:antialiased}
 .app{min-height:100vh;display:flex;flex-direction:column}
 .brand{background:#1a1a1a;padding:14px 16px 13px;text-align:center;position:relative}
-.hdr-ver{position:absolute;top:8px;right:10px;font-size:10.5px;font-weight:700;color:#e5e7eb;background:rgba(231,50,51,.9);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:2px 9px;letter-spacing:.3px;line-height:1.4;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.hdr-ver{position:absolute;top:8px;right:10px;font-size:10.5px;font-weight:700;color:#e5e7eb;background:rgba(22,163,74,.9);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:2px 9px;letter-spacing:.3px;line-height:1.4;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .brand-row{display:flex;align-items:center;justify-content:center;gap:12px}
 .brand-logo{width:44px;height:44px;flex-shrink:0}
 .brand-txt{text-align:left}
@@ -28,13 +28,13 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 .wz-home{background:none;border:none;color:#64748b;font-size:13px;font-weight:600;cursor:pointer;padding:5px 8px;border-radius:6px}
 .wz-home:hover{background:#f1f5f9;color:#0f172a}
 .wz-progress{flex:1;height:8px;background:#eef2f7;border-radius:99px;overflow:hidden}
-.wz-bar-fill{height:100%;width:0;background:linear-gradient(90deg,#f0555a,#e73233);border-radius:99px;transition:width .35s ease}
+.wz-bar-fill{height:100%;width:0;background:linear-gradient(90deg,#22c55e,#16a34a);border-radius:99px;transition:width .35s ease}
 .wz-step-num{font-size:12px;font-weight:700;color:#94a3b8;min-width:64px;text-align:right}
 .wz-body{display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:center;padding:14px 10px;min-height:320px}
 @media(max-width:680px){.wz-body{grid-template-columns:1fr;min-height:0}.wz-visual{max-height:none;padding:4px}.wz-visual .house{max-width:250px}}
 .wz-visual{display:flex;align-items:center;justify-content:center;padding:8px}
 .wz-panel{padding:10px 24px}
-.wz-eyebrow{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#e73233;margin-bottom:6px}
+.wz-eyebrow{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#16a34a;margin-bottom:6px}
 .wz-q{font-size:22px;font-weight:800;color:#0f172a;line-height:1.2}
 .wz-sub{font-size:13px;color:#64748b;margin-top:6px;line-height:1.45}
 .wz-field{margin-top:16px}
@@ -42,21 +42,21 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 .wz-btn{border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:700;cursor:pointer}
 .wz-back{background:#fff;border:1.5px solid #cbd5e1;color:#475569}
 .wz-back:hover{background:#f1f5f9}
-.wz-next{background:linear-gradient(90deg,#f0555a,#e73233);color:#fff;min-width:150px}
+.wz-next{background:linear-gradient(90deg,#22c55e,#16a34a);color:#fff;min-width:150px}
 .wz-next:hover{filter:brightness(1.05)}
 .wz-next:disabled{opacity:.45;cursor:not-allowed;filter:none}
 .wz-inp{width:100%;border:1.5px solid #cbd5e1;border-radius:10px;padding:12px 14px;font-size:16px;outline:none;transition:border-color .15s}
-.wz-inp:focus{border-color:#e73233}
+.wz-inp:focus{border-color:#16a34a}
 .wz-lbl{font-size:12px;font-weight:700;color:#475569;margin:12px 0 4px}
 .wz-chips{display:flex;flex-direction:column;gap:8px}
 .wz-chip{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid #e2e8f0;background:#fff;border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600;color:#334155;cursor:pointer;transition:.12s}
-.wz-chip:hover{border-color:#fca5a5;background:#fef2f2}
-.wz-chip.on{border-color:#e73233;background:#fef2f2;color:#b91c1c;box-shadow:0 0 0 3px rgba(231,50,51,.12)}
+.wz-chip:hover{border-color:#fcd34d;background:#fffbeb}
+.wz-chip.on{border-color:#d97706;background:#fffbeb;color:#b45309;box-shadow:0 0 0 3px rgba(217,119,6,.12)}
 .wz-chip .wz-chic{font-size:20px;flex-shrink:0}
 .wz-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .wz-chip.center{justify-content:center;text-align:center;padding:14px 4px;font-size:15px}
 .wz-res{text-align:center;padding:6px}
-.wz-res-kw{font-size:46px;font-weight:800;color:#e73233;line-height:1}
+.wz-res-kw{font-size:46px;font-weight:800;color:#16a34a;line-height:1}
 .wz-res-lbl{font-size:13px;color:#64748b;margin-top:4px}
 .wz-res-pump{margin-top:16px;display:inline-block;background:#f0fdf4;border:1.5px solid #86efac;color:#166534;font-weight:800;font-size:18px;padding:10px 20px;border-radius:12px}
 .wz-mini{margin-top:16px;background:none;border:none;color:#64748b;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline}
@@ -71,17 +71,17 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 .house .dim path{fill:#3b82f6}
 .house .dim text{fill:#1d4ed8;font-size:13px;font-weight:700}
 .house .weather{opacity:0;transition:.35s}
-.house.hl-floor .floor{fill:#e73233;stroke:#b91c1c;filter:drop-shadow(0 3px 8px rgba(231,50,51,.5))}
-.house.hl-roof .roof{fill:#e73233;stroke:#b91c1c;filter:drop-shadow(0 3px 8px rgba(231,50,51,.5))}
-.house.hl-walls .wall{fill:rgba(231,50,51,.32);stroke:#b91c1c;stroke-width:2.5}
+.house.hl-floor .floor{fill:#d97706;stroke:#b45309;filter:drop-shadow(0 3px 8px rgba(217,119,6,.5))}
+.house.hl-roof .roof{fill:#d97706;stroke:#b45309;filter:drop-shadow(0 3px 8px rgba(217,119,6,.5))}
+.house.hl-walls .wall{fill:rgba(217,119,6,.32);stroke:#b45309;stroke-width:2.5}
 .house.hl-ins .wall{stroke:#2563eb;stroke-width:5}
 .house.hl-height .dim{opacity:1}
 .house.hl-height .wall{stroke:#3b82f6}
 .house.hl-zone .weather{opacity:1}
-.house.hl-done .floor,.house.hl-done .roof{fill:#fecaca;stroke:#e73233}
-.house.hl-done .wall{fill:rgba(231,50,51,.14);stroke:#e73233}
-.house.hl-openings .det{stroke:#e73233;stroke-width:2.6}
-.house.hl-openings .det rect{fill:rgba(231,50,51,.20)}
+.house.hl-done .floor,.house.hl-done .roof{fill:#fde68a;stroke:#d97706}
+.house.hl-done .wall{fill:rgba(217,119,6,.14);stroke:#d97706}
+.house.hl-openings .det{stroke:#d97706;stroke-width:2.6}
+.house.hl-openings .det rect{fill:rgba(217,119,6,.20)}
 /* house — δυναμικές παραλλαγές ανά επιλογή (δάπεδο/οροφή/πλευρές) */
 .v-ground,.v-pilotis,.v-fclosed,.v-flatroof,.v-cehint,.v-nb-l,.v-nb-r{display:none}
 .house.fl-ground .v-ground{display:block}
@@ -90,7 +90,7 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 .house.ce-roof .roof,.house.ce-closed .roof{display:none}
 .house.ce-roof .v-flatroof,.house.ce-closed .v-flatroof{display:block}
 .house.ce-closed .v-cehint{display:block}
-.house.hl-roof .v-flatroof polygon{fill:#e73233;stroke:#b91c1c}
+.house.hl-roof .v-flatroof polygon{fill:#d97706;stroke:#b45309}
 .house.sd-3 .v-nb-r,.house.sd-2 .v-nb-r,.house.sd-1 .v-nb-r{display:block}
 .house.sd-2 .v-nb-l,.house.sd-1 .v-nb-l{display:block}
 /* ---- printout ---- */
@@ -100,7 +100,7 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
   #printout{display:block!important;padding:0}
   body{background:#fff}
 }
-.pr-head{border-bottom:3px solid #e73233;padding-bottom:10px;margin-bottom:14px}
+.pr-head{border-bottom:3px solid #16a34a;padding-bottom:10px;margin-bottom:14px}
 .pr-co{font-size:22px;font-weight:800;color:#0f172a}
 .pr-cosub{font-size:12px;color:#64748b}
 .pr-title{font-size:16px;font-weight:800;margin:14px 0 2px}
@@ -109,8 +109,8 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 .pr-tbl td{padding:7px 10px;border-bottom:1px solid #e5e7eb}
 .pr-tbl td:first-child{color:#64748b;width:52%}
 .pr-tbl td:last-child{font-weight:700;text-align:right}
-.pr-res{border:2px solid #e73233;border-radius:12px;padding:14px 18px;text-align:center}
-.pr-res .k{font-size:30px;font-weight:800;color:#b91c1c}
+.pr-res{border:2px solid #16a34a;border-radius:12px;padding:14px 18px;text-align:center}
+.pr-res .k{font-size:30px;font-weight:800;color:#15803d}
 .pr-res .p{margin-top:6px;font-size:16px;font-weight:800;color:#166534}
 .pr-note{font-size:10.5px;color:#94a3b8;margin-top:14px;line-height:1.4}
 /* ---- lead / detailed-offer modal ---- */
@@ -122,19 +122,19 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 .lead-info b{color:#0f172a}
 .lead-info h4{font-size:12px;font-weight:800;color:#0f172a;margin:10px 0 3px}
 .lead-consent{display:flex;gap:9px;align-items:flex-start;margin-top:12px;font-size:12.5px;color:#334155;cursor:pointer;line-height:1.45}
-.lead-consent input{margin-top:2px;width:18px;height:18px;flex-shrink:0;cursor:pointer;accent-color:#e73233}
+.lead-consent input{margin-top:2px;width:18px;height:18px;flex-shrink:0;cursor:pointer;accent-color:#16a34a}
 .lead-row{display:flex;gap:10px}
 .lead-row>div{flex:1}
 .lead-fg{margin-top:10px}
 .lead-fg label{display:block;font-size:11.5px;font-weight:700;color:#475569;margin-bottom:4px}
 .lead-inp,.lead-sel,.lead-ta{width:100%;border:1.5px solid #cbd5e1;border-radius:9px;padding:10px 12px;font-size:14px;outline:none;font-family:inherit;background:#fff}
-.lead-inp:focus,.lead-sel:focus,.lead-ta:focus{border-color:#e73233}
+.lead-inp:focus,.lead-sel:focus,.lead-ta:focus{border-color:#16a34a}
 .lead-ta{resize:vertical;min-height:56px}
-.lead-fee{margin-top:12px;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:11px 13px;font-size:12.5px;color:#991b1b;line-height:1.5}
+.lead-fee{margin-top:12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:11px 13px;font-size:12.5px;color:#166534;line-height:1.5}
 .lead-note{margin-top:8px;font-size:11.5px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;line-height:1.45}
 .lead-err{margin-top:10px;font-size:12px;color:#dc2626;font-weight:600}
 .lead-nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
-.lead-btn{background:linear-gradient(90deg,#f0555a,#e73233);color:#fff;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:800;cursor:pointer}
+.lead-btn{background:linear-gradient(90deg,#22c55e,#16a34a);color:#fff;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:800;cursor:pointer}
 .lead-btn:disabled{opacity:.45;cursor:not-allowed}
 .lead-btn2{background:#fff;border:1.5px solid #cbd5e1;color:#475569;border-radius:10px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer}
 .lead-rate{margin-top:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 13px}
@@ -144,8 +144,13 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 .lead-rate-row .lbl{font-size:13px;font-weight:600;color:#334155}
 .lead-rate-opts{display:flex;gap:6px;flex-shrink:0}
 .lead-rate-opt{width:34px;height:34px;border:1.5px solid #cbd5e1;background:#fff;border-radius:8px;font-size:14px;font-weight:700;color:#64748b;cursor:pointer;transition:.12s}
-.lead-rate-opt:hover{border-color:#fca5a5}
-.lead-rate-opt.on{background:#e73233;border-color:#e73233;color:#fff}
+.lead-rate-opt:hover{border-color:#fcd34d}
+.lead-rate-pick{width:100%;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 10px;cursor:pointer;text-align:left;font-family:inherit;transition:.12s}
+.lead-rate-pick:first-child{margin-top:0}
+.lead-rate-pick:hover{border-color:#fcd34d;background:#fffbeb}
+.lead-rate-pick.on{border-color:#d97706;background:#fffbeb}
+.lead-rate-pick .lead-rate-opt{display:flex;align-items:center;justify-content:center;font-size:12.5px}
+.lead-rate-opt.on{background:#d97706;border-color:#d97706;color:#fff}
 .wz-rate-hint{font-size:12px;font-weight:700;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:7px 10px;margin-top:12px;text-align:center}
 .wz-rate-hint.ok{color:#15803d;background:#f0fdf4;border-color:#bbf7d0}
 .lead-ok{text-align:center;padding:6px 0}
@@ -192,10 +197,10 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
       <div class="lead-h">🔧 Λεπτομερής μελέτη &amp; εξατομικευμένη προσφορά</div>
       <div class="lead-info">
         <b>Τι περιλαμβάνει:</b> επιτόπια αυτοψία στη διεύθυνση του ακινήτου (νομοί <b>Ημαθίας &amp; Δράμας</b>), ακριβής υπολογισμός θερμικών απωλειών και <b>δεσμευτική, εξατομικευμένη προσφορά</b>.
-        <h4>Κόστος</h4>
-        Αξία μελέτης <b>€50</b> (ή <b>€70</b> αν χρειαστεί σκαρίφημα). Το ποσό <b>θα αφαιρεθεί εξ ολοκλήρου από την αξία της εγκατάστασης</b>. Αν δεν υπάρχει σχέδιο κτιρίου, <b>μετά την αποδοχή του αρχικού κόστους</b> φτιάχνουμε <b>σκαρίφημα</b> των εξωτερικών επιφανειών (<b>+€20</b>) που σας παραδίδουμε σε <b>DXF &amp; PDF</b> και το κρατάτε.
+        <h4>Αυτοψία, μελέτη &amp; προσφορά</h4>
+        Αυτοψία στον χώρο σας από τεχνικό, μελέτη και εξατομικευμένη προσφορά, όλα μαζί <b>50 €</b>. Αν δεν υπάρχει σχέδιο του κτιρίου, προστίθενται <b>20 €</b> για σκαρίφημα (σύνολο <b>70 €</b>), που σας παραδίδεται σε <b>DXF &amp; PDF</b> και το κρατάτε. Δεν υπάρχει άλλη χρέωση. Το ποσό <b>αφαιρείται ολόκληρο από την τιμή της εγκατάστασης</b>.
         <h4>Διαδικασία &amp; πληρωμή</h4>
-        Μετά την υποβολή, επικοινωνεί μαζί σας το <b>λογιστήριό</b> μας: σας δίνει <b>IBAN</b>, ζητά τα <b>φορολογικά σας στοιχεία</b> και εκδίδει <b>παραστατικό</b>. Μόλις εξοφληθεί το αρχικό κόστος, φτιάχνουμε το <b>σκαρίφημα</b> (αν χρειάζεται) και κανονίζουμε την <b>αυτοψία</b>.
+        Μετά την υποβολή, επικοινωνεί μαζί σας το <b>λογιστήριό</b> μας: σας δίνει <b>IBAN</b>, ζητά τα <b>φορολογικά σας στοιχεία</b> και εκδίδει <b>παραστατικό</b>. Μόλις εξοφληθεί το ποσό, φτιάχνουμε το <b>σκαρίφημα</b> (αν χρειάζεται) και κανονίζουμε την <b>αυτοψία</b>.
         <h4>Προσωπικά δεδομένα (GDPR)</h4>
         <b>Υπεύθυνος επεξεργασίας:</b> ΑΦΟΙ ΧΟΥΡΣΟΥΛΙΔΗ, Βέροια — τηλ. 2331028063, charalambos@xoursoulidis.com. <b>Σκοπός:</b> η σύνταξη της μελέτης/προσφοράς που ζητάτε. <b>Νομική βάση:</b> λήψη μέτρων κατ' αίτησή σας πριν από τη σύναψη σύμβασης (άρθρο 6§1β GDPR). <b>Αποδέκτες:</b> η εταιρεία μας· το <b>λογιστήριό</b> μας εκδίδει το παραστατικό (ζητά χωριστά &amp; διατηρεί τα φορολογικά στοιχεία όσο ορίζει η νομοθεσία, ~5 έτη). <b>Διατήρηση:</b> αν δεν προχωρήσει η συνεργασία, διαγράφουμε τα στοιχεία επικοινωνίας σας (τηλέφωνο/email)· διατηρούμε μόνο <b>όνομα &amp; διεύθυνση ακινήτου</b> ως εμπορικό αρχείο των ακινήτων που έχουμε μελετήσει (βάσει εννόμου συμφέροντος), με περιοδική επανεξέταση και δυνατότητα διαγραφής όποτε το ζητήσετε. <b>Δικαιώματα:</b> πρόσβαση / διόρθωση / διαγραφή / εναντίωση στο charalambos@xoursoulidis.com· καταγγελία στην Αρχή Προστασίας Δεδομένων Προσωπικού Χαρακτήρα (dpa.gr). <b>Υπαναχώρηση:</b> με την υποβολή ζητάτε τη <b>άμεση έναρξη</b> της υπηρεσίας και αναγνωρίζετε ότι, μόλις αυτή ολοκληρωθεί, χάνετε το 14ήμερο δικαίωμα υπαναχώρησης για το ποσό που αντιστοιχεί στην παρασχεθείσα υπηρεσία.
       </div>
@@ -223,11 +228,11 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
         <div class="lead-fg"><label>Υπάρχει σχέδιο κτιρίου;</label><select class="lead-sel" id="lead-plan" onchange="leadPlanChanged()"><option value="yes">Ναι, υπάρχει</option><option value="no">Όχι</option></select></div>
       </div>
       <div class="lead-note" id="lead-region-note" hidden>Η επιτόπια υπηρεσία καλύπτει προς το παρόν <b>Ημαθία &amp; Δράμα</b>. Μπορείς να υποβάλεις το αίτημα και θα επικοινωνήσουμε για τις δυνατότητες.</div>
-      <div class="lead-note" id="lead-plan-note" hidden>Χωρίς σχέδιο, <b>μετά την αποδοχή του αρχικού κόστους</b> φτιάχνουμε <b>σκαρίφημα</b> των εξωτερικών επιφανειών (+€20) που σας δίνουμε σε <b>DXF &amp; PDF</b>.</div>
+      <div class="lead-note" id="lead-plan-note" hidden>Χωρίς σχέδιο, <b>μετά την εξόφληση</b> φτιάχνουμε <b>σκαρίφημα</b> των εξωτερικών επιφανειών (+€20) που σας δίνουμε σε <b>DXF &amp; PDF</b>.</div>
       <div class="lead-fg"><label>Συμμετοχή σε πρόγραμμα επιδότησης;</label><select class="lead-sel" id="lead-prog" onchange="leadProgChanged()"><option value="no">Όχι</option><option value="eksoikonomo">Εξοικονομώ</option><option value="anakainizo">Ανακαινίζω</option><option value="other">Άλλο πρόγραμμα</option></select></div>
       <div class="lead-fg" id="lead-prog-other-fg" hidden><label>Ποιο πρόγραμμα;</label><input class="lead-inp" id="lead-prog-other" placeholder="Όνομα προγράμματος"></div>
       <div class="lead-fg"><label>Σημειώσεις (προαιρετικά)</label><textarea class="lead-ta" id="lead-notes" placeholder="π.χ. όροφος, ιδιαιτερότητες, ώρες επικοινωνίας"></textarea></div>
-      <div class="lead-fee">Αρχικό κόστος: <b id="lead-fee-total">€50</b><span id="lead-fee-extra" hidden> (μελέτη €50 + σκαρίφημα €20 σε DXF &amp; PDF)</span> — <b>θα αφαιρεθεί εξ ολοκλήρου από την αξία της εγκατάστασης</b>.</div>
+      <div class="lead-fee">Αυτοψία στον χώρο σας από τεχνικό, μελέτη και εξατομικευμένη προσφορά, όλα μαζί <b>50 €</b><span id="lead-fee-extra" hidden>, και <b>20 €</b> για σκαρίφημα σε DXF &amp; PDF επειδή δεν υπάρχει σχέδιο (σύνολο <b>70 €</b>)</span>. Δεν υπάρχει άλλη χρέωση. Το ποσό <b>αφαιρείται ολόκληρο από την τιμή της εγκατάστασης</b>.</div>
       <div class="lead-err" id="lead-err"></div>
       <div class="lead-nav">
         <button class="lead-btn2" onclick="leadStep(1)">← Πίσω</button>
@@ -252,7 +257,7 @@ body{font-family:'Open Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
 </div>
 
 <script>
-var APP_VER='5.0';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var APP_VER='5.1';   // έκδοση Υπολογιστή — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 var OFFICE_EMAIL='charalambos@xoursoulidis.com';   // παραλήπτης αιτημάτων εξατομικευμένης προσφοράς
 var OFFICE_PHONE='2331028063';
 var STUDY_FEE=50, SKETCH_FEE=20;   // € αξία μελέτης / επιπλέον σκαρίφημα (DXF+PDF)
@@ -315,11 +320,13 @@ function pickPump(safe,phase){
 function fmtEur(n){return Math.round(n).toLocaleString('el-GR');}
 function kwNum(n){ return (Math.round((parseFloat(n)||0)*10)/10).toString().replace('.',','); }
 // Δημόσια παρουσίαση ισχύος ως ΕΥΡΟΣ: (επιλεγμένο μοντέλο −1kW) έως το ΕΠΟΜΕΝΟ μοντέλο (π.χ. 10kW → «9–12 kW»)
-function pumpRange(pp){
+// Αν οι ανάγκες ξεπερνούν το μεγαλύτερο μοντέλο (capped), δείχνει την πραγματική ανάγκη (π.χ. «~31 kW») αντί για «14,9+ kW»
+function pumpRange(pp,safe){
   var list=BOSCH[(pp&&pp.phase)||'mono']||BOSCH.mono, idx=-1;
   for(var i=0;i<list.length;i++){ if(list[i].id===(pp&&pp.id)){ idx=i; break; } }
+  if(pp&&pp.capped&&parseFloat(safe)>0){ var need=Math.round(parseFloat(safe)); return { low:need, high:null, lbl:'~'+need+' kW' }; }
   var low=Math.max(1, ((pp&&pp.kw)||0)-1);
-  var high=(idx>=0 && idx<list.length-1) ? list[idx+1].kw : null;
+  var high=(idx>=0 && idx<list.length-1) ? list[idx+1].kw : ((pp&&pp.kw)||null);
   return { low:low, high:high, lbl:(high==null) ? (kwNum(low)+'+ kW') : (kwNum(low)+'–'+kwNum(high)+' kW') };
 }
 function phaseLbl(ph){ return ph==='tri'?'Τριφασικό':(ph==='unknown'?'Άγνωστη (προς επιβεβαίωση)':'Μονοφασικό'); }
@@ -518,7 +525,7 @@ function wzToggle(key,icon,label){
   var on=!!WZ.data[key];
   return '<button class="wz-chip'+(on?' on':'')+'" onclick="wizToggleKey(\''+key+'\')">'
     +'<span class="wz-chic">'+icon+'</span><span>'+label+'</span>'
-    +(on?'<span style="margin-left:auto;color:#e73233;font-weight:800">✓</span>':'')+'</button>';
+    +(on?'<span style="margin-left:auto;color:#d97706;font-weight:800">✓</span>':'')+'</button>';
 }
 function wizValidate(){
   var step=WZ_STEPS[WZ.i], d=WZ.data;
@@ -625,15 +632,8 @@ function wizRender(){
   } else if(step==='rate'){
     house='';
     eb.textContent='Προτεραιότητες'; q.textContent='Τι μετράει περισσότερο για εσάς;';
-    sub.textContent='Βαθμολόγησε κάθε κριτήριο από 1 (λίγο) έως 4 (πάρα πολύ). Συμπλήρωσε και τα 6 για να δεις το αποτέλεσμα.';
-    fld.innerHTML='<div class="lead-rate" style="margin-top:2px">'
-      +'<div class="lead-rate-row"><span class="lbl">💶 Τιμή</span><div class="lead-rate-opts" id="rate-price"></div></div>'
-      +'<div class="lead-rate-row"><span class="lbl">🏆 Ποιότητα</span><div class="lead-rate-opts" id="rate-quality"></div></div>'
-      +'<div class="lead-rate-row"><span class="lbl">🤝 Αξιόπιστος συνεργάτης</span><div class="lead-rate-opts" id="rate-partner"></div></div>'
-      +'<div class="lead-rate-row"><span class="lbl">📉 Εξοικονόμηση</span><div class="lead-rate-opts" id="rate-savings"></div></div>'
-      +'<div class="lead-rate-row"><span class="lbl">🛠️ Τεχνική υποστήριξη</span><div class="lead-rate-opts" id="rate-support"></div></div>'
-      +'<div class="lead-rate-row"><span class="lbl">🌱 Αειφορία και προστασία περιβάλλοντος</span><div class="lead-rate-opts" id="rate-eco"></div></div>'
-      +'</div>'
+    sub.textContent='Διάλεξε τα 1 ή 2 πιο σημαντικά για εσάς. Πάτα πρώτα το πιο σημαντικό.';
+    fld.innerHTML='<div class="lead-rate" id="wz-rate-list" style="margin-top:2px"></div>'
       +'<div class="wz-rate-hint" id="wz-rate-hint"></div>';
     wizRateBuild();
   } else if(step==='result'){
@@ -646,19 +646,19 @@ function wizRenderResult(){
   var hl=hlCompute(WZ.data); WZ._hl=hl;
   var pi=phaseInfo(WZ.data);
   var pp=pickPump(hl.safe,pi.eff); WZ._pp=pp;
-  var rng=pumpRange(pp);
+  var rng=pumpRange(pp,hl.safe);
   g('wz-eyebrow').textContent='Αποτέλεσμα';
   g('wz-q').textContent=(WZ.data.calcName||'Ο υπολογισμός σου');
   g('wz-qsub').textContent='Με βάση τα στοιχεία που έδωσες, η προτεινόμενη ισχύς αντλίας θερμότητας:';
   g('wz-field').innerHTML='<div class="wz-res">'
     +'<div class="wz-res-kw">'+rng.lbl+'</div>'
-    +'<div class="wz-res-lbl">ενδεικτικό εύρος ισχύος αντλίας θερμότητας<br><span style="font-size:12px;color:#94a3b8">η ακριβής επιλογή μοντέλου γίνεται από τον μηχανικό μας μετά από αυτοψία</span></div>'
+    +'<div class="wz-res-lbl">'+(pp.capped?'ενδεικτική ανάγκη σε ισχύ':'ενδεικτικό εύρος ισχύος')+' αντλίας θερμότητας<br><span style="font-size:12px;color:#94a3b8">η ακριβής επιλογή μοντέλου γίνεται από τον μηχανικό μας μετά από αυτοψία</span></div>'
     +((WZ.data.phase==='unknown')?'<div style="margin-top:8px;font-size:11.5px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;line-height:1.45">ℹ️ Δεν ήξερες την παροχή ρεύματος — την <b>εκτιμήσαμε '+(pi.eff==='tri'?'τριφασική':'μονοφασική')+'</b> βάσει έτους &amp; εμβαδού. Θα την επιβεβαιώσουμε εμείς από τον λογαριασμό ΔΕΗ ή στην αυτοψία.</div>':'')
-    +(pp.capped?'<div style="margin-top:12px;font-size:12.5px;font-weight:700;color:#b91c1c">🔺 Μεγάλες ανάγκες — επικοινώνησε μαζί μας για ακριβή διαστασιολόγηση</div>':'')
+    +(pp.capped?'<div style="margin-top:12px;font-size:12.5px;font-weight:700;color:#b45309">⚠️ Μεγάλες ανάγκες, πάνω από το μεγαλύτερο μοντέλο του καταλόγου. Επικοινώνησε μαζί μας για ακριβή διαστασιολόγηση.</div>':'')
     +'<div style="margin-top:16px;padding-top:14px;border-top:1px solid #f1f5f9">'
       +'<div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:8px">Θέλεις ακριβή μελέτη &amp; δεσμευτική προσφορά;</div>'
-      +'<button onclick="openLead()" style="width:100%;background:linear-gradient(90deg,#f0555a,#e73233);color:#fff;border:none;border-radius:12px;padding:13px 16px;font-size:14.5px;font-weight:800;cursor:pointer">🔧 Λεπτομερής μελέτη &amp; εξατομικευμένη προσφορά</button>'
-      +'<div style="font-size:11px;color:#94a3b8;margin-top:6px">Επιτόπια αυτοψία (νομοί Ημαθίας &amp; Δράμας) · αξία μελέτης €50 που αφαιρείται από την αξία της εγκατάστασης</div>'
+      +'<button onclick="openLead()" style="width:100%;background:linear-gradient(90deg,#22c55e,#16a34a);color:#fff;border:none;border-radius:12px;padding:13px 16px;font-size:14.5px;font-weight:800;cursor:pointer">🔧 Λεπτομερής μελέτη &amp; εξατομικευμένη προσφορά</button>'
+      +'<div style="font-size:11px;color:#94a3b8;margin-top:6px">Επιτόπια αυτοψία (νομοί Ημαθίας &amp; Δράμας) · αυτοψία, μελέτη &amp; προσφορά 50 €, που αφαιρούνται ολόκληρα από την τιμή της εγκατάστασης</div>'
     +'</div>'
     +'<div style="font-size:11px;color:#94a3b8;margin-top:14px;line-height:1.45">* Ο υπολογισμός είναι <b>ενδεικτικός</b> και βασίζεται αποκλειστικά στα στοιχεία που δηλώσατε· πραγματικοί παράγοντες (προσανατολισμός, αεροστεγανότητα, πραγματικές μονώσεις, ανάγκες ζεστού νερού κ.ά.) μπορεί να διαφοροποιήσουν την προτεινόμενη ισχύ. Η τελική προσφορά και η ακριβής διαστασιολόγηση γίνονται από τον μηχανικό μας κατόπιν αυτοψίας.</div>'
     +'<button class="wz-mini" onclick="wizStart()">↻ Νέος υπολογισμός</button>'
@@ -670,7 +670,7 @@ function wizRenderResult(){
 }
 function doPrint(){
   var d=WZ.data, hl=WZ._hl||hlCompute(d);
-  var pp=WZ._pp||pickPump(hl.safe,phaseInfo(d).eff); var rng=pumpRange(pp);
+  var pp=WZ._pp||pickPump(hl.safe,phaseInfo(d).eff); var rng=pumpRange(pp,hl.safe);
   var upg=[]; if(d.upWin)upg.push('Διπλά τζάμια'); if(d.upWall)upg.push('Θερμοπρόσοψη'); if(d.upCeil)upg.push('Μόνωση οροφής'); if(d.upFloor)upg.push('Μόνωση δαπέδου');
   var now=new Date().toLocaleDateString('el-GR');
   var row=function(k,v){return '<tr><td>'+k+'</td><td>'+v+'</td></tr>';};
@@ -692,42 +692,51 @@ function doPrint(){
     +row('Προτεινόμενη ισχύς', rng.lbl)
     +'</table>'
     +'<div class="pr-res"><div class="k">'+rng.lbl+'</div>'
-    +'<div style="font-size:11px;color:#64748b;margin-top:2px">ενδεικτικό εύρος ισχύος αντλίας θερμότητας — η ακριβής επιλογή μοντέλου γίνεται από τον μηχανικό μας κατόπιν αυτοψίας</div></div>'
+    +'<div style="font-size:11px;color:#64748b;margin-top:2px">'+(pp.capped?'ενδεικτική ανάγκη σε ισχύ':'ενδεικτικό εύρος ισχύος')+' αντλίας θερμότητας — η ακριβής επιλογή μοντέλου γίνεται από τον μηχανικό μας κατόπιν αυτοψίας</div></div>'
     +'<div class="pr-note">* Ο υπολογισμός είναι ενδεικτικός και βασίζεται αποκλειστικά στα στοιχεία που δηλώθηκαν· πραγματικοί παράγοντες (προσανατολισμός, αεροστεγανότητα, πραγματικές μονώσεις, ανάγκες ζεστού νερού κ.ά.) μπορεί να διαφοροποιήσουν την προτεινόμενη ισχύ. Η τελική προσφορά και η ακριβής διαστασιολόγηση γίνονται από τον μηχανικό μας κατόπιν αυτοψίας.</div>'
     +'<div style="font-size:9px;color:#cbd5e1;margin-top:10px;text-align:right">Υπολογιστής Αντλίας Θερμότητας — έκδοση v'+APP_VER+'</div>';
   window.print();
 }
 
-// ---- Σημαντικότητα κριτηρίων (1-4) ----
+// ---- Προτεραιότητες: ο πελάτης διαλέγει τα 1-2 πιο σημαντικά (LEAD_RATE[k] = σειρά 1 ή 2) ----
 var LEAD_RATE={};
 var LEAD_RATE_KEYS=['price','quality','partner','savings','support','eco'];
 var LEAD_RATE_LBL={price:'Τιμή',quality:'Ποιότητα',partner:'Αξιόπιστος συνεργάτης',savings:'Εξοικονόμηση',support:'Τεχνική υποστήριξη',eco:'Αειφορία και προστασία περιβάλλοντος'};
-function wizRateHilite(k,v){
-  var el=g('rate-'+k); if(!el)return;
-  [].forEach.call(el.children,function(b){ var bv=+b.getAttribute('data-v'); b.className='lead-rate-opt'+(bv<=v?' on':''); });
-}
+var LEAD_RATE_ICO={price:'💶',quality:'🏆',partner:'🤝',savings:'📉',support:'🛠️',eco:'🌱'};
+var LEAD_RATE_MAX=2;
 function wizRateBuild(){
+  var el=g('wz-rate-list'); if(!el)return; el.innerHTML='';
   LEAD_RATE_KEYS.forEach(function(k){
-    var el=g('rate-'+k); if(!el)return; el.innerHTML='';
-    for(var i=1;i<=4;i++){
-      var b=document.createElement('button'); b.type='button'; b.className='lead-rate-opt'; b.textContent=i; b.setAttribute('data-v',i);
-      (function(kk,vv){ b.onclick=function(){ wizRate(kk,vv); }; })(k,i);
-      el.appendChild(b);
-    }
-    if(LEAD_RATE[k]) wizRateHilite(k,LEAD_RATE[k]);   // κράτα τις προηγούμενες επιλογές όταν γυρνάς πίσω
+    var r=LEAD_RATE[k]||0;
+    var b=document.createElement('button'); b.type='button'; b.className='lead-rate-row lead-rate-pick'+(r?' on':'');
+    b.innerHTML='<span class="lbl">'+LEAD_RATE_ICO[k]+' '+LEAD_RATE_LBL[k]+'</span><span class="lead-rate-opt'+(r?' on':'')+'">'+(r?(r+'η'):'')+'</span>';
+    b.onclick=function(){ wizRate(k); };
+    el.appendChild(b);
   });
   wizRateHint();
 }
-function wizRate(k,v){ LEAD_RATE[k]=v; wizRateHilite(k,v); wizRateHint(); wizUpdateNav(); }
-function wizRateDone(){ return LEAD_RATE_KEYS.every(function(k){return LEAD_RATE[k]>=1;}); }
+function wizRateCount(){ return LEAD_RATE_KEYS.filter(function(k){return LEAD_RATE[k];}).length; }
+function wizRate(k){
+  if(LEAD_RATE[k]){                       // ξαναπάτημα = αφαίρεση· η 2η ανεβαίνει σε 1η
+    var r=LEAD_RATE[k]; delete LEAD_RATE[k];
+    LEAD_RATE_KEYS.forEach(function(x){ if(LEAD_RATE[x]>r) LEAD_RATE[x]--; });
+  } else if(wizRateCount()<LEAD_RATE_MAX){
+    LEAD_RATE[k]=wizRateCount()+1;
+  }
+  wizRateBuild(); wizUpdateNav();
+}
+function wizRateDone(){ return wizRateCount()>=1; }
 function wizRateHint(){
   var h=g('wz-rate-hint'); if(!h)return;
-  var done=LEAD_RATE_KEYS.filter(function(k){return LEAD_RATE[k];}).length, n=LEAD_RATE_KEYS.length;
-  if(done>=n){ h.textContent='✓ Όλα συμπληρωμένα — μπορείς να συνεχίσεις'; h.className='wz-rate-hint ok'; }
-  else{ h.textContent='Συμπλήρωσε και τα '+n+' κριτήρια — απομένουν '+(n-done); h.className='wz-rate-hint'; }
+  var n=wizRateCount();
+  if(n>=LEAD_RATE_MAX){ h.textContent='✓ Διάλεξες 2. Πάτα σε ένα για να το αλλάξεις.'; h.className='wz-rate-hint ok'; }
+  else if(n===1){ h.textContent='✓ Μπορείς να συνεχίσεις ή να διαλέξεις και 2ο.'; h.className='wz-rate-hint ok'; }
+  else{ h.textContent='Διάλεξε τουλάχιστον 1 για να δεις το αποτέλεσμα.'; h.className='wz-rate-hint'; }
 }
 function leadRateStr(){
-  return LEAD_RATE_KEYS.filter(function(k){return LEAD_RATE[k];}).map(function(k){return LEAD_RATE_LBL[k]+' '+LEAD_RATE[k]+'/4';}).join(' · ');
+  return LEAD_RATE_KEYS.filter(function(k){return LEAD_RATE[k];})
+    .sort(function(x,y){return LEAD_RATE[x]-LEAD_RATE[y];})
+    .map(function(k){return LEAD_RATE[k]+'. '+LEAD_RATE_LBL[k];}).join(' · ');
 }
 // ---- Λεπτομερής μελέτη & εξατομικευμένη προσφορά (lead → email) ----
 function openLead(){
@@ -784,7 +793,7 @@ function leadSubmit(){
     +'Σχέδιο κτιρίου: '+planL+NL
     +'Πρόγραμμα επιδότησης: '+progL+NL
     +'Σημειώσεις: '+(notes||'—')+NL
-    +'Προτεραιότητες πελάτη (1-4): '+(leadRateStr()||'—')+NL+NL
+    +'Προτεραιότητες πελάτη (σειρά σημασίας): '+(leadRateStr()||'—')+NL+NL
     +'ΑΡΧΙΚΟ ΚΟΣΤΟΣ: €'+fee+' (μελέτη €'+STUDY_FEE+(plan==='no'?(' + σκαρίφημα €'+SKETCH_FEE+' σε DXF+PDF'):'')+') — θα αφαιρεθεί εξ ολοκλήρου από την αξία της εγκατάστασης'+NL+NL
     +'ΕΝΔΕΙΚΤΙΚΟΣ ΥΠΟΛΟΓΙΣΜΟΣ (δωρεάν υπολογιστής)'+NL
     +'Ονομασία: '+(d.calcName||'—')+NL
@@ -792,7 +801,7 @@ function leadSubmit(){
     +'Ζώνη: '+((LBL.zone&&LBL.zone[d.zone])||d.zone||'—')+' · Μόνωση: '+((LBL.ins&&LBL.ins[d.ins])||d.ins||'—')+NL
     +'Μπαλκονόπορτες/Παράθυρα: '+(d.nDoors||0)+' / '+(d.nWindows||0)+NL
     +'Παροχή: '+phaseInfo(d).label+NL
-    +(hl?('Απώλειες: ~'+(+hl.kw).toFixed(1)+' kW · +20%: ~'+(+hl.safe).toFixed(1)+' kW · Προτεινόμενη ισχύς: '+(pp?pumpRange(pp).lbl:'—')+NL):'')
+    +(hl?('Απώλειες: ~'+(+hl.kw).toFixed(1)+' kW · +20%: ~'+(+hl.safe).toFixed(1)+' kW · Προτεινόμενη ισχύς: '+(pp?pumpRange(pp,hl.safe).lbl:'—')+NL):'')
     +NL+'— Στάλθηκε από τον δωρεάν υπολογιστή αντλίας θερμότητας (v'+APP_VER+')';
   var subject='Αίτημα εξατομικευμένης προσφοράς — '+fn+' '+ln+' ('+regL+')';
   var pv=g('lead-preview'); if(pv)pv.value='Προς: '+OFFICE_EMAIL+'\nΘέμα: '+subject+'\n\n'+body;
