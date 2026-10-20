@@ -1221,6 +1221,7 @@ let storageMode = 'supa'; // default: Supabase
 var DEMO = false;         // true όσο τρέχει το demo
 var DEMO_DB = {};         // in-memory PostgREST-mimic (καθαρίζει σε κάθε login/refresh)
 var DEMO_PASS = 'demo';   // ο δευτερεύων κωδικός
+var DEMO_EMAIL = 'info@xoursoulidis.com'; // το email εισόδου του demo (μαζί με τον κωδικό DEMO_PASS)
 
 // ── PHP API ────────────────────────────────────────────────────
 async function apiFetch(action, method='GET', body=null, params={}) {
@@ -1646,10 +1647,10 @@ async function crmLogin(){
   var em=((g('crm-email')||{}).value||'').trim();
   var v=(g('crm-pass')||{}).value||'';
   var er=g('crm-pass-err'); if(er)er.textContent='';
-  // ── DEMO: κωδικός «demo» → ίδιο πρόγραμμα, εικονικά δεδομένα, καμία αποθήκευση ──
+  // ── DEMO: email info@xoursoulidis.com + κωδικός «demo» → ίδιο πρόγραμμα, εικονικά δεδομένα, καμία αποθήκευση ──
   // (κανένας πραγματικός κωδικός δεν μπορεί να είναι «demo»: το Supabase θέλει ≥6 χαρακτήρες)
   // Δεν αποθηκεύεται session: ένα refresh επιστρέφει στην πύλη.
-  if(v===DEMO_PASS){ enterDemo(); var gtd=g('crm-gate'); if(gtd)gtd.style.display='none'; call(goCustomers); return; }
+  if(v===DEMO_PASS && em.toLowerCase()===DEMO_EMAIL){ enterDemo(); var gtd=g('crm-gate'); if(gtd)gtd.style.display='none'; call(goCustomers); return; }
   if(!em||!v){ if(er)er.textContent='Συμπληρώστε email και κωδικό'; return; }
   try{
     var j=await authCall('token?grant_type=password',{email:em,password:v});
@@ -1668,7 +1669,7 @@ async function crmLogout(){
   try{ if(t) await authCall('logout',{},t); }catch(e){}
   authClear(); location.reload();
 }
-var CRM_VER='3.4';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='3.5';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 async function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   var gv=g('crm-gate-ver'); if(gv)gv.textContent='έκδοση v'+CRM_VER;
@@ -2046,12 +2047,42 @@ function demoScrub(){
 function enterDemo(){
   DEMO=true; storageMode='supa'; DEMO_DB={};   // καθαρή, εικονική βάση στη μνήμη
   demoScrub();
+  demoSeed();   // εικονικός πελάτης + ακίνητο + προσφορά (ΜΟΝΟ στη μνήμη του demo)
   try{ ES.equipType='hp'; ES.brand='bosch'; ES.typeIdx=0; ES.pump=null; }catch(e){}
   // demo: το κουμπί «Περιγραφή (Word)» είναι ΔΙΑΘΕΣΙΜΟ (δείχνει την περιγραφή Atlantic)
   try{ var wb=g('btn-word'); if(wb) wb.style.display=''; }catch(e){}
   // οπτική ένδειξη demo
   try{ var vv=g('crm-ver'); if(vv) vv.textContent='v'+CRM_VER+' · DEMO'; }catch(e){}
   try{ var b=g('conn-badge'); if(b){ b.className='conn-badge'; b.style.background='#7c3aed'; b.style.color='#fff'; b.textContent='🟣 DEMO — δεν αποθηκεύεται τίποτα'; } }catch(e){}
+}
+// Εικονική προσφορά του demo: γράφεται ΜΟΝΟ στο DEMO_DB (μνήμη), ποτέ στο Supabase/localStorage,
+// οπότε δεν εμφανίζεται ποτέ στα πραγματικά δεδομένα. Χτίζεται από τις ήδη εικονικές τιμές (demoScrub).
+function demoSeed(){
+  var now=new Date(), d=now.toISOString().split('T')[0];
+  var cid='c_demo1', pid='p_demo1';
+  DEMO_DB.customers=[{id:cid,lastname:'Παπαδόπουλος',firstname:'Νίκος',phone:'6900000000',email:'demo@example.gr',
+    address:'Οδός Παραδείγματος 1',zip:'59100',city:'Βέροια',notes:'Εικονικός πελάτης (demo)',created_at:now.toISOString()}];
+  DEMO_DB.properties=[{id:pid,customer_id:cid,name:'Μονοκατοικία Βέροιας',heat_kw:'7.5',heat_safe:'8.2',heat_pump:'8',
+    address:'Οδός Παραδείγματος 1, Βέροια',area:'120',year:'1995',floors:'1',floor:'Ισόγειο',heating:'Πετρέλαιο',
+    notes:'Εικονικό ακίνητο (demo)',assigned:'',amount:'',reqdate:d,deadline:'',budget:'',when:'',status:'sent',priority:'medium',
+    proptype:'',phase:'',distrib:'',gas:'',heatwork:'',renov:'',znx:'',created_at:now.toISOString()}];
+  var sec=JSON.parse(JSON.stringify(MAT_TPL));
+  sec.forEach(function(s){ if(s.id==='boiler'){ s.on=true; s.items.forEach(function(it){ if(s.defaultOn.indexOf(it.id)>=0) it.on=true; }); } });
+  var pump=null; BRANDS[0].types.forEach(function(t){ t.pumps.forEach(function(p){ if(p.id==='xhp_m8') pump=p; }); });
+  var tC=pump.cost, tR=pump.retail;
+  sec.forEach(function(s){
+    if(!s.on && s.hasToggle) return;
+    s.items.forEach(function(i){ if(i.on){ tC+=i.cost*i.qty; tR+=i.retail*i.qty; } });
+    if(s.labor && s.labor.on){ tC+=s.labor.days*s.labor.costPerDay; tR+=s.labor.days*s.labor.retailPerDay; }
+  });
+  tC=Math.round(tC*100)/100; tR=Math.round(tR*100)/100;
+  var prof=tR-tC;
+  DEMO_DB.quotes=[{id:'q_demo1',customer_id:cid,property_id:pid,created_at:now.toISOString(),
+    quote_number:'PRF-'+now.getFullYear()+'-001',date:d,status:'sent',notes:'Εικονική προσφορά (demo)',
+    equip_type:'hp',brand:'bosch',brand_label:BRANDS[0].label,type_idx:0,
+    pump_id:pump.id,pump_name:pump.name,pump_kw:pump.kw,pump_cost:pump.cost,pump_retail:pump.retail,
+    agreed_amount:null,sections:sec,
+    totals:{pump_c:pump.cost,pump_r:pump.retail,total_c:tC,total_r:tR,profit:prof,profit_pct:tC>0?prof/tC*100:0,agreed_amount:null}}];
 }
 // ── In-memory PostgREST-mimic: μιμείται όσο χρειάζεται το Supabase REST ──
 function demoParseEq(query,field){
