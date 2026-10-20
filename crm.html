@@ -329,8 +329,6 @@ a{color:#2563eb}
   <button class="hdr-btn grn" id="hdr-new-quote" onclick="call(newQuoteForCurrent)" style="display:none">+ Νέα Προσφορά</button>
 </div>
 
-
-
 <style>
 /* ===== LANDING ===== */
 #v-landing{min-height:calc(100vh - 24px);display:flex;align-items:center;justify-content:center;padding:24px}
@@ -986,215 +984,215 @@ ALTER TABLE quotes ENABLE ROW LEVEL SECURITY;
 const BRANDS=[
   {id:'bosch',label:'Bosch',icon:'🔴',color:'#c0001a',sub:'CS200 AWF',types:[
     {key:'mono',label:'⚡ Μονοφ. R-S',pumps:[
-      {id:'bs4',kw:'4,4kW',name:'AWF 4 R‑S',cost:1431.44,retail:2089.90},{id:'bs6',kw:'6kW',name:'AWF 6 R‑S',cost:2478.34,retail:3618.38},
-      {id:'bs8',kw:'8kW',name:'AWF 8 R‑S',cost:2394,retail:3495.24},{id:'bs10',kw:'10kW',name:'AWF 10 R‑S',cost:2480,retail:3620.80},
-      {id:'bs12',kw:'12kW',name:'AWF 12 R‑S',cost:3388,retail:4946.48},{id:'bs14',kw:'14,5kW',name:'AWF 14 R‑S',cost:3548,retail:5180.08},
-      {id:'bs16',kw:'15,9kW',name:'AWF 16 R‑S',cost:3667,retail:5353.82},
+      {id:'bs4',kw:'4,4kW',name:'AWF 4 R‑S',cost:0,retail:0},{id:'bs6',kw:'6kW',name:'AWF 6 R‑S',cost:0,retail:0},
+      {id:'bs8',kw:'8kW',name:'AWF 8 R‑S',cost:0,retail:0},{id:'bs10',kw:'10kW',name:'AWF 10 R‑S',cost:0,retail:0},
+      {id:'bs12',kw:'12kW',name:'AWF 12 R‑S',cost:0,retail:0},{id:'bs14',kw:'14,5kW',name:'AWF 14 R‑S',cost:0,retail:0},
+      {id:'bs16',kw:'15,9kW',name:'AWF 16 R‑S',cost:0,retail:0},
     ]},
     {key:'tri',label:'⚡⚡ Τριφ. R-T',pumps:[
-      {id:'bt12',kw:'12kW',name:'AWF 12 R‑T',cost:3446,retail:5031.16},{id:'bt14',kw:'14,5kW',name:'AWF 14 R‑T',cost:3646,retail:5323.16},
-      {id:'bt16',kw:'15,9kW',name:'AWF 16 R‑T',cost:3813,retail:5566.98},{id:'bt18',kw:'18kW',name:'AWF 18 R‑T',cost:4889,retail:7137.94},
-      {id:'bt22',kw:'22kW',name:'AWF 22 R‑T',cost:5392,retail:7872.32},{id:'bt26',kw:'26kW',name:'AWF 26 R‑T',cost:5463,retail:7975.98},
-      {id:'bt30',kw:'30kW',name:'AWF 30 R‑T',cost:5675,retail:8285.50},
+      {id:'bt12',kw:'12kW',name:'AWF 12 R‑T',cost:0,retail:0},{id:'bt14',kw:'14,5kW',name:'AWF 14 R‑T',cost:0,retail:0},
+      {id:'bt16',kw:'15,9kW',name:'AWF 16 R‑T',cost:0,retail:0},{id:'bt18',kw:'18kW',name:'AWF 18 R‑T',cost:0,retail:0},
+      {id:'bt22',kw:'22kW',name:'AWF 22 R‑T',cost:0,retail:0},{id:'bt26',kw:'26kW',name:'AWF 26 R‑T',cost:0,retail:0},
+      {id:'bt30',kw:'30kW',name:'AWF 30 R‑T',cost:0,retail:0},
     ]}
   ]},
   {id:'hitachi',label:'Hitachi',icon:'⚫',color:'#1e293b',sub:'HZKF',types:[
-    {key:'mono',label:'⚡ KME-Q · Μονοφασικό',pumps:[{id:'hm8',kw:'8kW',name:'HZKF08KME-Q',cost:2300,retail:3358.00},{id:'hm12',kw:'12kW',name:'HZKF12KME-Q',cost:2960,retail:4321.60},{id:'hm16',kw:'16kW',name:'HZKF16KME-Q',cost:3230,retail:4715.80}]},
-    {key:'tri',label:'⚡⚡ KMO-Q · Τριφασικό',pumps:[{id:'ht12',kw:'12kW',name:'HZKF12KMO-Q',cost:3050,retail:4453.00},{id:'ht16',kw:'16kW',name:'HZKF16KMO-Q',cost:3310,retail:4832.60}]},
-    {key:'a800_1',label:'⚡ airH2O 800 R290 · Μονοφασικό',pumps:[{id:'h800_2v',kw:'4 kW',name:'airH2O 800 RASM-2VTW2E · 1φ',cost:3605.00,retail:5263.30},{id:'h800_3v',kw:'6 kW',name:'airH2O 800 RASM-3VTW2E · 1φ',cost:3700.00,retail:5402.00},{id:'h800_35v',kw:'8 kW',name:'airH2O 800 RASM-3.5VTW2E · 1φ',cost:4275.00,retail:6241.50},{id:'h800_4v',kw:'10 kW',name:'airH2O 800 RASM-4VTW2E · 1φ',cost:4635.00,retail:6767.10},{id:'h800_5v',kw:'12 kW',name:'airH2O 800 RASM-5VTW2E · 1φ',cost:4735.00,retail:6913.10},{id:'h800_6v',kw:'14 kW',name:'airH2O 800 RASM-6VTW2E · 1φ',cost:4990.00,retail:7285.40}]},
-    {key:'a800_3',label:'⚡⚡ airH2O 800 R290 · Τριφασικό',pumps:[{id:'h800_4t',kw:'10 kW',name:'airH2O 800 RASM-4TW2E · 3φ',cost:4680.00,retail:6832.80},{id:'h800_5t',kw:'12 kW',name:'airH2O 800 RASM-5TW2E · 3φ',cost:4815.00,retail:7029.90},{id:'h800_6t',kw:'14 kW',name:'airH2O 800 RASM-6TW2E · 3φ',cost:5075.00,retail:7409.50}]}
+    {key:'mono',label:'⚡ KME-Q · Μονοφασικό',pumps:[{id:'hm8',kw:'8kW',name:'HZKF08KME-Q',cost:0,retail:0},{id:'hm12',kw:'12kW',name:'HZKF12KME-Q',cost:0,retail:0},{id:'hm16',kw:'16kW',name:'HZKF16KME-Q',cost:0,retail:0}]},
+    {key:'tri',label:'⚡⚡ KMO-Q · Τριφασικό',pumps:[{id:'ht12',kw:'12kW',name:'HZKF12KMO-Q',cost:0,retail:0},{id:'ht16',kw:'16kW',name:'HZKF16KMO-Q',cost:0,retail:0}]},
+    {key:'a800_1',label:'⚡ airH2O 800 R290 · Μονοφασικό',pumps:[{id:'h800_2v',kw:'4 kW',name:'airH2O 800 RASM-2VTW2E · 1φ',cost:0,retail:0},{id:'h800_3v',kw:'6 kW',name:'airH2O 800 RASM-3VTW2E · 1φ',cost:0,retail:0},{id:'h800_35v',kw:'8 kW',name:'airH2O 800 RASM-3.5VTW2E · 1φ',cost:0,retail:0},{id:'h800_4v',kw:'10 kW',name:'airH2O 800 RASM-4VTW2E · 1φ',cost:0,retail:0},{id:'h800_5v',kw:'12 kW',name:'airH2O 800 RASM-5VTW2E · 1φ',cost:0,retail:0},{id:'h800_6v',kw:'14 kW',name:'airH2O 800 RASM-6VTW2E · 1φ',cost:0,retail:0}]},
+    {key:'a800_3',label:'⚡⚡ airH2O 800 R290 · Τριφασικό',pumps:[{id:'h800_4t',kw:'10 kW',name:'airH2O 800 RASM-4TW2E · 3φ',cost:0,retail:0},{id:'h800_5t',kw:'12 kW',name:'airH2O 800 RASM-5TW2E · 3φ',cost:0,retail:0},{id:'h800_6t',kw:'14 kW',name:'airH2O 800 RASM-6TW2E · 3φ',cost:0,retail:0}]}
   ]},
   {id:'inventor',label:'Inventor',icon:'🔵',color:'#1d4ed8',sub:'X FORCE',types:[
-    {key:'mono',label:'⚡ S3',pumps:[{id:'im8',kw:'8kW',name:'XFMH08S3',cost:1677,retail:2448.42},{id:'im10',kw:'10kW',name:'XFMH10S3',cost:1833,retail:2676.18},{id:'im16',kw:'16kW',name:'XFMH16S3',cost:2652,retail:3871.92}]},
-    {key:'tri',label:'⚡⚡ T9',pumps:[{id:'it12',kw:'12kW',name:'XFMH12T9',cost:2028,retail:2960.88},{id:'it14',kw:'14kW',name:'XFMH14T9',cost:2262,retail:3302.52},{id:'it16',kw:'16kW',name:'XFMH16T9',cost:2496,retail:3644.16}]}
+    {key:'mono',label:'⚡ S3',pumps:[{id:'im8',kw:'8kW',name:'XFMH08S3',cost:0,retail:0},{id:'im10',kw:'10kW',name:'XFMH10S3',cost:0,retail:0},{id:'im16',kw:'16kW',name:'XFMH16S3',cost:0,retail:0}]},
+    {key:'tri',label:'⚡⚡ T9',pumps:[{id:'it12',kw:'12kW',name:'XFMH12T9',cost:0,retail:0},{id:'it14',kw:'14kW',name:'XFMH14T9',cost:0,retail:0},{id:'it16',kw:'16kW',name:'XFMH16T9',cost:0,retail:0}]}
   ]},
   {id:'toyotomi',label:'Toyotomi',icon:'🟠',color:'#c2410c',sub:'HYDRIA/ATRIA',types:[
     {key:'h1',label:'HYDRIA 1PH',pumps:[
-      {id:'th1_6',kw:'6kW',name:'THMUSG406/1',cost:1944.76,retail:2839.35},{id:'th1_8',kw:'8kW',name:'THMUSG408/1',cost:2008.7,retail:2932.70},
-      {id:'th1_10',kw:'10kW',name:'THMUSG410/1',cost:2372.18,retail:3463.38},{id:'th1_12',kw:'12kW',name:'THMUSG412/1',cost:2679.92,retail:3912.68},
-      {id:'th1_14',kw:'14kW',name:'THMUSG414/1',cost:2731.21,retail:3987.57},{id:'th1_16',kw:'16kW',name:'THMUSG416/1',cost:3013.3,retail:4399.42},
+      {id:'th1_6',kw:'6kW',name:'THMUSG406/1',cost:0,retail:0},{id:'th1_8',kw:'8kW',name:'THMUSG408/1',cost:0,retail:0},
+      {id:'th1_10',kw:'10kW',name:'THMUSG410/1',cost:0,retail:0},{id:'th1_12',kw:'12kW',name:'THMUSG412/1',cost:0,retail:0},
+      {id:'th1_14',kw:'14kW',name:'THMUSG414/1',cost:0,retail:0},{id:'th1_16',kw:'16kW',name:'THMUSG416/1',cost:0,retail:0},
     ]},
     {key:'h3',label:'HYDRIA 3PH',pumps:[
-      {id:'th3_10',kw:'10kW',name:'THMUSG410/3',cost:2756.67,retail:4024.74},{id:'th3_12',kw:'12kW',name:'THMUSG412/3',cost:2799.6,retail:4087.42},
-      {id:'th3_14',kw:'14kW',name:'THMUSG414/3',cost:2885.08,retail:4212.22},{id:'th3_16',kw:'16kW',name:'THMUSG416/3',cost:3184.27,retail:4649.03},
+      {id:'th3_10',kw:'10kW',name:'THMUSG410/3',cost:0,retail:0},{id:'th3_12',kw:'12kW',name:'THMUSG412/3',cost:0,retail:0},
+      {id:'th3_14',kw:'14kW',name:'THMUSG414/3',cost:0,retail:0},{id:'th3_16',kw:'16kW',name:'THMUSG416/3',cost:0,retail:0},
     ]},
     {key:'at',label:'ATRIA 1PH',pumps:[
-      {id:'ta10',kw:'10kW',name:'ATRIA TAMUSG10/1',cost:1954.31,retail:2853.29},{id:'ta12',kw:'12kW',name:'ATRIA TAMUSG12/1',cost:2344.81,retail:3423.42},
-      {id:'ta14',kw:'14kW',name:'ATRIA TAMUSG14/1',cost:2458.86,retail:3589.94},{id:'ta16',kw:'16kW',name:'ATRIA TAMUSG16/1',cost:2573.35,retail:3757.09},
+      {id:'ta10',kw:'10kW',name:'ATRIA TAMUSG10/1',cost:0,retail:0},{id:'ta12',kw:'12kW',name:'ATRIA TAMUSG12/1',cost:0,retail:0},
+      {id:'ta14',kw:'14kW',name:'ATRIA TAMUSG14/1',cost:0,retail:0},{id:'ta16',kw:'16kW',name:'ATRIA TAMUSG16/1',cost:0,retail:0},
     ]}
   ]},
   {id:'atlantic',label:'Atlantic',icon:'🔷',color:'#0369a1',sub:'Alfea · Extensa · Excellia',types:[
     {key:'extm',  label:'Extensa M Compact R32 (1ph)', pumps:[
-      {id:'aem5', kw:'4 kW',  name:'Alfea Extensa M 5 Compact R32',  cost:2839.10,retail:4145.09},
-      {id:'aem6', kw:'5 kW',  name:'Alfea Extensa M 6 Compact R32',  cost:3059.50,retail:4466.87},
-      {id:'aem8', kw:'8 kW',  name:'Alfea Extensa M 8 Compact R32',  cost:3308.90,retail:4830.99},
-      {id:'aem11',kw:'10 kW', name:'Alfea Extensa M 11 Compact R32', cost:3511.90,retail:5127.37},
+      {id:'aem5', kw:'4 kW',  name:'Alfea Extensa M 5 Compact R32',  cost:0,retail:0},
+      {id:'aem6', kw:'5 kW',  name:'Alfea Extensa M 6 Compact R32',  cost:0,retail:0},
+      {id:'aem8', kw:'8 kW',  name:'Alfea Extensa M 8 Compact R32',  cost:0,retail:0},
+      {id:'aem11',kw:'10 kW', name:'Alfea Extensa M 11 Compact R32', cost:0,retail:0},
     ]},
     {key:'r290m', label:'M Compact R290 Mono (1ph)', pumps:[
-      {id:'ar290m6', kw:'~8 kW',  name:'Alfea M 6 Compact R290 mono',  cost:3854.10,retail:5626.99},
-      {id:'ar290m8', kw:'~11 kW', name:'Alfea M 8 Compact R290 mono',  cost:4178.90,retail:6101.19},
-      {id:'ar290m10',kw:'~14 kW', name:'Alfea M 10 Compact R290 mono', cost:4587.80,retail:6698.19},
-      {id:'ar290m12',kw:'~16 kW', name:'Alfea M 12 Compact R290 mono', cost:4770.50,retail:6964.93},
+      {id:'ar290m6', kw:'~8 kW',  name:'Alfea M 6 Compact R290 mono',  cost:0,retail:0},
+      {id:'ar290m8', kw:'~11 kW', name:'Alfea M 8 Compact R290 mono',  cost:0,retail:0},
+      {id:'ar290m10',kw:'~14 kW', name:'Alfea M 10 Compact R290 mono', cost:0,retail:0},
+      {id:'ar290m12',kw:'~16 kW', name:'Alfea M 12 Compact R290 mono', cost:0,retail:0},
     ]},
     {key:'r290t', label:'M Compact R290 TRI (3ph)', pumps:[
-      {id:'ar290t6', kw:'~8 kW',  name:'Alfea M 6 Compact R290 TRI',  cost:4007.80,retail:5851.39},
-      {id:'ar290t8', kw:'~11 kW', name:'Alfea M 8 Compact R290 TRI',  cost:4347.10,retail:6346.77},
-      {id:'ar290t10',kw:'~14 kW', name:'Alfea M 10 Compact R290 TRI', cost:4886.50,retail:7134.29},
-      {id:'ar290t12',kw:'~16 kW', name:'Alfea M 12 Compact R290 TRI', cost:4950.30,retail:7227.44},
+      {id:'ar290t6', kw:'~8 kW',  name:'Alfea M 6 Compact R290 TRI',  cost:0,retail:0},
+      {id:'ar290t8', kw:'~11 kW', name:'Alfea M 8 Compact R290 TRI',  cost:0,retail:0},
+      {id:'ar290t10',kw:'~14 kW', name:'Alfea M 10 Compact R290 TRI', cost:0,retail:0},
+      {id:'ar290t12',kw:'~16 kW', name:'Alfea M 12 Compact R290 TRI', cost:0,retail:0},
     ]},
     {key:'sp_mono', label:'M Smart Protect R290 Mono (1ph)', pumps:[
-      {id:'asp_m6', kw:'~8 kW', name:'Alfea M 6 Smart Protect R290 mono', cost:3935.25,retail:5745.46},
-      {id:'asp_m8', kw:'~11 kW', name:'Alfea M 8 Smart Protect R290 mono', cost:4248.75,retail:6203.18},
-      {id:'asp_m10', kw:'~14 kW', name:'Alfea M 10 Smart Protect R290 mono', cost:4749.25,retail:6933.90},
-      {id:'asp_m12', kw:'~16 kW', name:'Alfea M 12 Smart Protect R290 mono', cost:4859.25,retail:7094.50},
+      {id:'asp_m6', kw:'~8 kW', name:'Alfea M 6 Smart Protect R290 mono', cost:0,retail:0},
+      {id:'asp_m8', kw:'~11 kW', name:'Alfea M 8 Smart Protect R290 mono', cost:0,retail:0},
+      {id:'asp_m10', kw:'~14 kW', name:'Alfea M 10 Smart Protect R290 mono', cost:0,retail:0},
+      {id:'asp_m12', kw:'~16 kW', name:'Alfea M 12 Smart Protect R290 mono', cost:0,retail:0},
     ]},
     {key:'sp_tri', label:'M Smart Protect R290 TRI (3ph)', pumps:[
-      {id:'asp_t6', kw:'~8 kW', name:'Alfea M 6 Smart Protect R290 TRI', cost:4158.00,retail:6070.68},
-      {id:'asp_t8', kw:'~11 kW', name:'Alfea M 8 Smart Protect R290 TRI', cost:4523.75,retail:6604.68},
-      {id:'asp_t10', kw:'~14 kW', name:'Alfea M 10 Smart Protect R290 TRI', cost:4941.75,retail:7214.96},
-      {id:'asp_t12', kw:'~16 kW', name:'Alfea M 12 Smart Protect R290 TRI', cost:5010.50,retail:7315.33},
+      {id:'asp_t6', kw:'~8 kW', name:'Alfea M 6 Smart Protect R290 TRI', cost:0,retail:0},
+      {id:'asp_t8', kw:'~11 kW', name:'Alfea M 8 Smart Protect R290 TRI', cost:0,retail:0},
+      {id:'asp_t10', kw:'~14 kW', name:'Alfea M 10 Smart Protect R290 TRI', cost:0,retail:0},
+      {id:'asp_t12', kw:'~16 kW', name:'Alfea M 12 Smart Protect R290 TRI', cost:0,retail:0},
     ]},
     {key:'extensa',label:'Extensa S R32 (1ph)', pumps:[
-      {id:'ae5', kw:'4,5 kW',name:'Alfea Extensa S 5 R32',  cost:2804.30,retail:4094.28},
-      {id:'ae6', kw:'5,5 kW',name:'Alfea Extensa S 6 R32',  cost:3016.00,retail:4403.36},
-      {id:'ae8', kw:'7,5 kW',name:'Alfea Extensa S 8 R32',  cost:3242.20,retail:4733.61},
-      {id:'ae10',kw:'9,5 kW',name:'Alfea Extensa S 10 R32', cost:3683.00,retail:5377.18},
+      {id:'ae5', kw:'4,5 kW',name:'Alfea Extensa S 5 R32',  cost:0,retail:0},
+      {id:'ae6', kw:'5,5 kW',name:'Alfea Extensa S 6 R32',  cost:0,retail:0},
+      {id:'ae8', kw:'7,5 kW',name:'Alfea Extensa S 8 R32',  cost:0,retail:0},
+      {id:'ae10',kw:'9,5 kW',name:'Alfea Extensa S 10 R32', cost:0,retail:0},
     ]},
     {key:'mono',  label:'Excellia S R32 Mono (1ph)', pumps:[
-      {id:'am9', kw:'~10 kW',name:'Alfea Excellia S9 R32',       cost:3790.30,retail:5533.84},
-      {id:'am12',kw:'~12 kW',name:'Alfea Excellia S12 R32',      cost:4051.30,retail:5914.90},
-      {id:'am14',kw:'~14 kW',name:'Alfea Excellia S14 R32',      cost:4393.50,retail:6414.51},
+      {id:'am9', kw:'~10 kW',name:'Alfea Excellia S9 R32',       cost:0,retail:0},
+      {id:'am12',kw:'~12 kW',name:'Alfea Excellia S12 R32',      cost:0,retail:0},
+      {id:'am14',kw:'~14 kW',name:'Alfea Excellia S14 R32',      cost:0,retail:0},
     ]},
     {key:'tri',   label:'Excellia S R32 TRI (3ph)', pumps:[
-      {id:'at12',kw:'~12 kW',name:'Alfea Excellia S12 R32 TRI',  cost:4141.20,retail:6046.15},
-      {id:'at14',kw:'~14 kW',name:'Alfea Excellia S14 R32 TRI',  cost:4474.70,retail:6533.06},
+      {id:'at12',kw:'~12 kW',name:'Alfea Excellia S12 R32 TRI',  cost:0,retail:0},
+      {id:'at14',kw:'~14 kW',name:'Alfea Excellia S14 R32 TRI',  cost:0,retail:0},
     ]},
     {key:'hpai',  label:'Excellia HP AI TRI — Υψηλής Ισχύος (3ph)', pumps:[
-      {id:'ahp15',kw:'~16 kW',name:'Alfea Excellia HP AI 15 TRI', cost:5698.50,retail:8319.81},
-      {id:'ahp17',kw:'~18 kW',name:'Alfea Excellia HP AI 17 TRI', cost:6235.00,retail:9103.10},
+      {id:'ahp15',kw:'~16 kW',name:'Alfea Excellia HP AI 15 TRI', cost:0,retail:0},
+      {id:'ahp17',kw:'~18 kW',name:'Alfea Excellia HP AI 17 TRI', cost:0,retail:0},
     ]}
   ]}
   ,{id:'mdv',label:'MDV',icon:'🔵',color:'#1565c0',sub:'Arctic Series',types:[
     {key:'mono',label:'⚡ Μονοφ. 1-phase',pumps:[
-      {id:'mdv_v9_c2',  kw:'~10 kW',name:'MHC-V9W/D2N8-C2',    cost:2403.59,retail:3509.24},
-      {id:'mdv_v10_b2', kw:'~10 kW',name:'MHC-V10W/D2N8-B2',   cost:2537.04,retail:3704.08},
-      {id:'mdv_v12_b2', kw:'12 kW', name:'MHC-V12W/D2N8-B2/C2',cost:3494.47,retail:5101.93},
-      {id:'mdv_v14_b2', kw:'14 kW', name:'MHC-V14W/D2N8-B2/C2',cost:3658.62,retail:5341.59},
-      {id:'mdv_v16_b2', kw:'16 kW', name:'MHC-V16W/D2N8-B2/C2',cost:3781.84,retail:5521.49},
+      {id:'mdv_v9_c2',  kw:'~10 kW',name:'MHC-V9W/D2N8-C2',    cost:0,retail:0},
+      {id:'mdv_v10_b2', kw:'~10 kW',name:'MHC-V10W/D2N8-B2',   cost:0,retail:0},
+      {id:'mdv_v12_b2', kw:'12 kW', name:'MHC-V12W/D2N8-B2/C2',cost:0,retail:0},
+      {id:'mdv_v14_b2', kw:'14 kW', name:'MHC-V14W/D2N8-B2/C2',cost:0,retail:0},
+      {id:'mdv_v16_b2', kw:'16 kW', name:'MHC-V16W/D2N8-B2/C2',cost:0,retail:0},
     ]},
     {key:'tri',label:'⚡⚡ Τριφ. 3-phase',pumps:[
-      {id:'mdv_v12_rn8', kw:'12 kW',name:'MHC-V12W/D2RN8-B2/C2',cost:3520.05,retail:5139.27},
-      {id:'mdv_v14_rn8', kw:'14 kW',name:'MHC-V14W/D2RN8-B2/C2',cost:3725.58,retail:5439.35},
-      {id:'mdv_v16_rn8', kw:'16 kW',name:'MHC-V16W/D2RN8-B2/C2',cost:3894.84,retail:5686.47},
-      {id:'mdv_v18_rn8', kw:'18 kW',name:'MHC-V18W/D2RN8',        cost:4105.95,retail:5994.69},
-      {id:'mdv_v22_rn8', kw:'22 kW',name:'MHC-V22W/D2RN8',        cost:4240.80,retail:6191.57},
-      {id:'mdv_v26_rn8', kw:'26 kW',name:'MHC-V26W/D2RN8',        cost:4380.30,retail:6395.24},
-      {id:'mdv_v30_rn8', kw:'30 kW',name:'MHC-V30W/D2RN8',        cost:4538.40,retail:6626.06},
+      {id:'mdv_v12_rn8', kw:'12 kW',name:'MHC-V12W/D2RN8-B2/C2',cost:0,retail:0},
+      {id:'mdv_v14_rn8', kw:'14 kW',name:'MHC-V14W/D2RN8-B2/C2',cost:0,retail:0},
+      {id:'mdv_v16_rn8', kw:'16 kW',name:'MHC-V16W/D2RN8-B2/C2',cost:0,retail:0},
+      {id:'mdv_v18_rn8', kw:'18 kW',name:'MHC-V18W/D2RN8',        cost:0,retail:0},
+      {id:'mdv_v22_rn8', kw:'22 kW',name:'MHC-V22W/D2RN8',        cost:0,retail:0},
+      {id:'mdv_v26_rn8', kw:'26 kW',name:'MHC-V26W/D2RN8',        cost:0,retail:0},
+      {id:'mdv_v30_rn8', kw:'30 kW',name:'MHC-V30W/D2RN8',        cost:0,retail:0},
     ]}
   ]}
   ,{id:'aux',label:'AUX',icon:'🟡',color:'#d97706',sub:'ACHP Monoblock R32',types:[
     {key:'mono',label:'⚡ Μονοφ. /4R3HA (1Φ)',pumps:[
-      {id:'aux_h04',kw:'4,3 kW', name:'ACHP-H04/4R3HA-ME',cost:1963.10,retail:2866.13},
-      {id:'aux_h06',kw:'6,35 kW',name:'ACHP-H06/4R3HA-ME',cost:2036.80,retail:2973.73},
-      {id:'aux_h08',kw:'8,4 kW', name:'ACHP-H08/4R3HA-ME',cost:2056.90,retail:3003.07},
-      {id:'aux_h10',kw:'10 kW',  name:'ACHP-H10/4R3HA-ME',cost:2137.30,retail:3120.46},
-      {id:'aux_h12',kw:'12,2 kW',name:'ACHP-H12/4R3HA-ME',cost:2726.90,retail:3981.27},
-      {id:'aux_h14',kw:'14,5 kW',name:'ACHP-H14/4R3HA-ME',cost:2961.40,retail:4323.64},
-      {id:'aux_h16',kw:'16,1 kW',name:'ACHP-H16/4R3HA-ME',cost:3075.30,retail:4489.94},
+      {id:'aux_h04',kw:'4,3 kW', name:'ACHP-H04/4R3HA-ME',cost:0,retail:0},
+      {id:'aux_h06',kw:'6,35 kW',name:'ACHP-H06/4R3HA-ME',cost:0,retail:0},
+      {id:'aux_h08',kw:'8,4 kW', name:'ACHP-H08/4R3HA-ME',cost:0,retail:0},
+      {id:'aux_h10',kw:'10 kW',  name:'ACHP-H10/4R3HA-ME',cost:0,retail:0},
+      {id:'aux_h12',kw:'12,2 kW',name:'ACHP-H12/4R3HA-ME',cost:0,retail:0},
+      {id:'aux_h14',kw:'14,5 kW',name:'ACHP-H14/4R3HA-ME',cost:0,retail:0},
+      {id:'aux_h16',kw:'16,1 kW',name:'ACHP-H16/4R3HA-ME',cost:0,retail:0},
     ]},
     {key:'tri',label:'⚡⚡ Τριφ. /5R3HA (3Φ)',pumps:[
-      {id:'aux_h12t',kw:'12,2 kW',name:'ACHP-H12/5R3HA-ME',cost:3015.00,retail:4401.90},
-      {id:'aux_h14t',kw:'14,5 kW',name:'ACHP-H14/5R3HA-ME',cost:3202.60,retail:4675.80},
-      {id:'aux_h16t',kw:'16,1 kW',name:'ACHP-H16/5R3HA-ME',cost:3376.80,retail:4930.13},
+      {id:'aux_h12t',kw:'12,2 kW',name:'ACHP-H12/5R3HA-ME',cost:0,retail:0},
+      {id:'aux_h14t',kw:'14,5 kW',name:'ACHP-H14/5R3HA-ME',cost:0,retail:0},
+      {id:'aux_h16t',kw:'16,1 kW',name:'ACHP-H16/5R3HA-ME',cost:0,retail:0},
     ]}
   ]},
     {id:'daikin',label:'Daikin',icon:'🟦',color:'#0a4595',sub:'Altherma 3 M (−45% + χειριστήριο)',types:[
     {key:'dk_heat',label:'Μόνο θέρμανση (EDLA)',pumps:[
-      {id:'dk_edla04ev3',kw:'4 kW',name:'Altherma 3 M EDLA04EV3',cost:2823.70,retail:4122.60},
-      {id:'dk_edla06ev3',kw:'6 kW',name:'Altherma 3 M EDLA06EV3',cost:3019.50,retail:4408.47},
-      {id:'dk_edla08ev3',kw:'8 kW',name:'Altherma 3 M EDLA08EV3',cost:3204.85,retail:4679.08},
-      {id:'dk_edla09dv3',kw:'9,4 kW',name:'Altherma 3 M EDLA09DV3',cost:4085.40,retail:5964.68},
-      {id:'dk_edla09dw1',kw:'9,4 kW',name:'Altherma 3 M EDLA09DW1',cost:4214.10,retail:6152.59},
-      {id:'dk_edla11dv3',kw:'10,6 kW',name:'Altherma 3 M EDLA11DV3',cost:4130.50,retail:6030.53},
-      {id:'dk_edla11dw1',kw:'10,6 kW',name:'Altherma 3 M EDLA11DW1',cost:4353.80,retail:6356.55},
-      {id:'dk_edla14dv3',kw:'12 kW',name:'Altherma 3 M EDLA14DV3',cost:4277.35,retail:6244.93},
-      {id:'dk_edla14dw1',kw:'12 kW',name:'Altherma 3 M EDLA14DW1',cost:4466.55,retail:6521.16},
-      {id:'dk_edla16dv3',kw:'16 kW',name:'Altherma 3 M EDLA16DV3',cost:4382.95,retail:6399.11},
-      {id:'dk_edla16dw1',kw:'16 kW',name:'Altherma 3 M EDLA16DW1',cost:4729.45,retail:6905.00}
+      {id:'dk_edla04ev3',kw:'4 kW',name:'Altherma 3 M EDLA04EV3',cost:0,retail:0},
+      {id:'dk_edla06ev3',kw:'6 kW',name:'Altherma 3 M EDLA06EV3',cost:0,retail:0},
+      {id:'dk_edla08ev3',kw:'8 kW',name:'Altherma 3 M EDLA08EV3',cost:0,retail:0},
+      {id:'dk_edla09dv3',kw:'9,4 kW',name:'Altherma 3 M EDLA09DV3',cost:0,retail:0},
+      {id:'dk_edla09dw1',kw:'9,4 kW',name:'Altherma 3 M EDLA09DW1',cost:0,retail:0},
+      {id:'dk_edla11dv3',kw:'10,6 kW',name:'Altherma 3 M EDLA11DV3',cost:0,retail:0},
+      {id:'dk_edla11dw1',kw:'10,6 kW',name:'Altherma 3 M EDLA11DW1',cost:0,retail:0},
+      {id:'dk_edla14dv3',kw:'12 kW',name:'Altherma 3 M EDLA14DV3',cost:0,retail:0},
+      {id:'dk_edla14dw1',kw:'12 kW',name:'Altherma 3 M EDLA14DW1',cost:0,retail:0},
+      {id:'dk_edla16dv3',kw:'16 kW',name:'Altherma 3 M EDLA16DV3',cost:0,retail:0},
+      {id:'dk_edla16dw1',kw:'16 kW',name:'Altherma 3 M EDLA16DW1',cost:0,retail:0}
     ]},
     {key:'dk_heatbh',label:'Μόνο θέρμανση + αντιστάσεις (EDLA …3)',pumps:[
-      {id:'dk_edla04e3v3',kw:'4 kW',name:'Altherma 3 M EDLA04E3V3',cost:3071.20,retail:4483.95},
-      {id:'dk_edla06e3v3',kw:'6 kW',name:'Altherma 3 M EDLA06E3V3',cost:3267.00,retail:4769.82},
-      {id:'dk_edla08e3v3',kw:'8 kW',name:'Altherma 3 M EDLA08E3V3',cost:3441.90,retail:5025.17},
-      {id:'dk_edla09d3v3',kw:'9,4 kW',name:'Altherma 3 M EDLA09D3V3',cost:4192.65,retail:6121.27},
-      {id:'dk_edla09d3w1',kw:'9,4 kW',name:'Altherma 3 M EDLA09D3W1',cost:4332.35,retail:6325.23},
-      {id:'dk_edla11d3v3',kw:'10,6 kW',name:'Altherma 3 M EDLA11D3V3',cost:4428.05,retail:6464.95},
-      {id:'dk_edla11d3w1',kw:'10,6 kW',name:'Altherma 3 M EDLA11D3W1',cost:4619.45,retail:6744.40},
-      {id:'dk_edla14d3v3',kw:'12 kW',name:'Altherma 3 M EDLA14D3V3',cost:4519.35,retail:6598.25},
-      {id:'dk_edla14d3w1',kw:'12 kW',name:'Altherma 3 M EDLA14D3W1',cost:4739.90,retail:6920.25},
-      {id:'dk_edla16d3v3',kw:'16 kW',name:'Altherma 3 M EDLA16D3V3',cost:4729.45,retail:6905.00},
-      {id:'dk_edla16d3w1',kw:'16 kW',name:'Altherma 3 M EDLA16D3W1',cost:5076.50,retail:7411.69}
+      {id:'dk_edla04e3v3',kw:'4 kW',name:'Altherma 3 M EDLA04E3V3',cost:0,retail:0},
+      {id:'dk_edla06e3v3',kw:'6 kW',name:'Altherma 3 M EDLA06E3V3',cost:0,retail:0},
+      {id:'dk_edla08e3v3',kw:'8 kW',name:'Altherma 3 M EDLA08E3V3',cost:0,retail:0},
+      {id:'dk_edla09d3v3',kw:'9,4 kW',name:'Altherma 3 M EDLA09D3V3',cost:0,retail:0},
+      {id:'dk_edla09d3w1',kw:'9,4 kW',name:'Altherma 3 M EDLA09D3W1',cost:0,retail:0},
+      {id:'dk_edla11d3v3',kw:'10,6 kW',name:'Altherma 3 M EDLA11D3V3',cost:0,retail:0},
+      {id:'dk_edla11d3w1',kw:'10,6 kW',name:'Altherma 3 M EDLA11D3W1',cost:0,retail:0},
+      {id:'dk_edla14d3v3',kw:'12 kW',name:'Altherma 3 M EDLA14D3V3',cost:0,retail:0},
+      {id:'dk_edla14d3w1',kw:'12 kW',name:'Altherma 3 M EDLA14D3W1',cost:0,retail:0},
+      {id:'dk_edla16d3v3',kw:'16 kW',name:'Altherma 3 M EDLA16D3V3',cost:0,retail:0},
+      {id:'dk_edla16d3w1',kw:'16 kW',name:'Altherma 3 M EDLA16D3W1',cost:0,retail:0}
     ]},
     {key:'dk_cool',label:'Θέρμανση/Ψύξη (EBLA)',pumps:[
-      {id:'dk_ebla04ev3',kw:'4 kW',name:'Altherma 3 M EBLA04EV3',cost:3009.05,retail:4393.21},
-      {id:'dk_ebla06ev3',kw:'6 kW',name:'Altherma 3 M EBLA06EV3',cost:3204.85,retail:4679.08},
-      {id:'dk_ebla08ev3',kw:'8 kW',name:'Altherma 3 M EBLA08EV3',cost:3390.75,retail:4950.50},
-      {id:'dk_ebla09dv3',kw:'9,4 kW',name:'Altherma 3 M EBLA09DV3',cost:4224.55,retail:6167.84},
-      {id:'dk_ebla09dw1',kw:'9,4 kW',name:'Altherma 3 M EBLA09DW1',cost:4418.15,retail:6450.50},
-      {id:'dk_ebla11dv3',kw:'10,6 kW',name:'Altherma 3 M EBLA11DV3',cost:4396.15,retail:6418.38},
-      {id:'dk_ebla11dw1',kw:'10,6 kW',name:'Altherma 3 M EBLA11DW1',cost:4629.90,retail:6759.65},
-      {id:'dk_ebla14dv3',kw:'12 kW',name:'Altherma 3 M EBLA14DV3',cost:4488.00,retail:6552.48},
-      {id:'dk_ebla14dw1',kw:'12 kW',name:'Altherma 3 M EBLA14DW1',cost:4719.00,retail:6889.74},
-      {id:'dk_ebla16dv3',kw:'16 kW',name:'Altherma 3 M EBLA16DV3',cost:4698.10,retail:6859.23},
-      {id:'dk_ebla16dw1',kw:'16 kW',name:'Altherma 3 M EBLA16DW1',cost:4961.00,retail:7243.06}
+      {id:'dk_ebla04ev3',kw:'4 kW',name:'Altherma 3 M EBLA04EV3',cost:0,retail:0},
+      {id:'dk_ebla06ev3',kw:'6 kW',name:'Altherma 3 M EBLA06EV3',cost:0,retail:0},
+      {id:'dk_ebla08ev3',kw:'8 kW',name:'Altherma 3 M EBLA08EV3',cost:0,retail:0},
+      {id:'dk_ebla09dv3',kw:'9,4 kW',name:'Altherma 3 M EBLA09DV3',cost:0,retail:0},
+      {id:'dk_ebla09dw1',kw:'9,4 kW',name:'Altherma 3 M EBLA09DW1',cost:0,retail:0},
+      {id:'dk_ebla11dv3',kw:'10,6 kW',name:'Altherma 3 M EBLA11DV3',cost:0,retail:0},
+      {id:'dk_ebla11dw1',kw:'10,6 kW',name:'Altherma 3 M EBLA11DW1',cost:0,retail:0},
+      {id:'dk_ebla14dv3',kw:'12 kW',name:'Altherma 3 M EBLA14DV3',cost:0,retail:0},
+      {id:'dk_ebla14dw1',kw:'12 kW',name:'Altherma 3 M EBLA14DW1',cost:0,retail:0},
+      {id:'dk_ebla16dv3',kw:'16 kW',name:'Altherma 3 M EBLA16DV3',cost:0,retail:0},
+      {id:'dk_ebla16dw1',kw:'16 kW',name:'Altherma 3 M EBLA16DW1',cost:0,retail:0}
     ]},
     {key:'dk_coolbh',label:'Θέρμανση/Ψύξη + αντιστάσεις (EBLA …3)',pumps:[
-      {id:'dk_ebla04e3v3',kw:'4 kW',name:'Altherma 3 M EBLA04E3V3',cost:3256.55,retail:4754.56},
-      {id:'dk_ebla06e3v3',kw:'6 kW',name:'Altherma 3 M EBLA06E3V3',cost:3411.10,retail:4980.21},
-      {id:'dk_ebla08e3v3',kw:'8 kW',name:'Altherma 3 M EBLA08E3V3',cost:3565.65,retail:5205.85},
-      {id:'dk_ebla09d3v3',kw:'9,4 kW',name:'Altherma 3 M EBLA09D3V3',cost:4299.90,retail:6277.85},
-      {id:'dk_ebla09d3w1',kw:'9,4 kW',name:'Altherma 3 M EBLA09D3W1',cost:4525.40,retail:6607.08},
-      {id:'dk_ebla11d3v3',kw:'10,6 kW',name:'Altherma 3 M EBLA11D3V3',cost:4661.80,retail:6806.23},
-      {id:'dk_ebla11d3w1',kw:'10,6 kW',name:'Altherma 3 M EBLA11D3W1',cost:4895.55,retail:7147.50},
-      {id:'dk_ebla14d3v3',kw:'12 kW',name:'Altherma 3 M EBLA14D3V3',cost:4719.00,retail:6889.74},
-      {id:'dk_ebla14d3w1',kw:'12 kW',name:'Altherma 3 M EBLA14D3W1',cost:4971.45,retail:7258.32},
-      {id:'dk_ebla16d3v3',kw:'16 kW',name:'Altherma 3 M EBLA16D3V3',cost:4971.45,retail:7258.32},
-      {id:'dk_ebla16d3w1',kw:'16 kW',name:'Altherma 3 M EBLA16D3W1',cost:5255.25,retail:7672.66}
+      {id:'dk_ebla04e3v3',kw:'4 kW',name:'Altherma 3 M EBLA04E3V3',cost:0,retail:0},
+      {id:'dk_ebla06e3v3',kw:'6 kW',name:'Altherma 3 M EBLA06E3V3',cost:0,retail:0},
+      {id:'dk_ebla08e3v3',kw:'8 kW',name:'Altherma 3 M EBLA08E3V3',cost:0,retail:0},
+      {id:'dk_ebla09d3v3',kw:'9,4 kW',name:'Altherma 3 M EBLA09D3V3',cost:0,retail:0},
+      {id:'dk_ebla09d3w1',kw:'9,4 kW',name:'Altherma 3 M EBLA09D3W1',cost:0,retail:0},
+      {id:'dk_ebla11d3v3',kw:'10,6 kW',name:'Altherma 3 M EBLA11D3V3',cost:0,retail:0},
+      {id:'dk_ebla11d3w1',kw:'10,6 kW',name:'Altherma 3 M EBLA11D3W1',cost:0,retail:0},
+      {id:'dk_ebla14d3v3',kw:'12 kW',name:'Altherma 3 M EBLA14D3V3',cost:0,retail:0},
+      {id:'dk_ebla14d3w1',kw:'12 kW',name:'Altherma 3 M EBLA14D3W1',cost:0,retail:0},
+      {id:'dk_ebla16d3v3',kw:'16 kW',name:'Altherma 3 M EBLA16D3V3',cost:0,retail:0},
+      {id:'dk_ebla16d3w1',kw:'16 kW',name:'Altherma 3 M EBLA16D3W1',cost:0,retail:0}
     ]}
   ]},
   {id:'other_pump',label:'Άλλο',icon:'⚙️',color:'#6b7280',sub:'Ελεύθερη επιλογή',types:[
     {key:'other',label:'Άλλη αντλία',pumps:[
-      {id:'other_p1',kw:'',name:'Άλλη αντλία θερμότητας',cost:0,retail:0.00}
+      {id:'other_p1',kw:'',name:'Άλλη αντλία θερμότητας',cost:0,retail:0}
     ]}
   ]}
 ];
 const MAT_TPL=[
   {id:'pump',icon:'🔧',label:'Υλικά Αντλίας',hdrClass:'pump-hdr',hasToggle:false,on:true,defaultOn:[],
    items:[
-    {id:'av',name:'Αντικραδασμικά',unit:'τεμ',qty:1,on:true,cost:74,retail:107.3},
-    {id:'pi',name:'Σωλήνα Πολυστρ. Φ26',unit:'μ',qty:20,on:true,cost:4.65,retail:6.74},
-    {id:'mm',name:'Υλικά μηχανοστάσιο',unit:'σετ',qty:1,on:true,cost:130,retail:188.5},
-    {id:'em',name:'Υλικά ηλεκτρολογικά',unit:'σετ',qty:1,on:true,cost:50,retail:72.5},
-    {id:'sc',name:'StopCOr A3',unit:'τεμ',qty:1,on:false,cost:54,retail:103},
-    {id:'mf',name:'Mag-Filter φίλτρα 1"',unit:'τεμ',qty:1,on:false,cost:139,retail:201.55},
-    {id:'mg',name:'Μαγνητικό φίλτρο 1"',unit:'τεμ',qty:1,on:true,cost:20.32,retail:29.46},
-    {id:'ap',name:'Αυτόματος Πληρωτής',unit:'τεμ',qty:1,on:true,cost:27.56,retail:39.96},
-    {id:'ref_pipe',name:'Ψυκτικές σωλήνες',unit:'μ.',qty:0,on:false,cost:10.13,retail:14.69},
-   ],free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'},labor:{on:true,days:6,costPerDay:165,retailPerDay:230}},
+    {id:'av',name:'Αντικραδασμικά',unit:'τεμ',qty:1,on:true,cost:0,retail:0},
+    {id:'pi',name:'Σωλήνα Πολυστρ. Φ26',unit:'μ',qty:20,on:true,cost:0,retail:0},
+    {id:'mm',name:'Υλικά μηχανοστάσιο',unit:'σετ',qty:1,on:true,cost:0,retail:0},
+    {id:'em',name:'Υλικά ηλεκτρολογικά',unit:'σετ',qty:1,on:true,cost:0,retail:0},
+    {id:'sc',name:'StopCOr A3',unit:'τεμ',qty:1,on:false,cost:0,retail:0},
+    {id:'mf',name:'Mag-Filter φίλτρα 1"',unit:'τεμ',qty:1,on:false,cost:0,retail:0},
+    {id:'mg',name:'Μαγνητικό φίλτρο 1"',unit:'τεμ',qty:1,on:true,cost:0,retail:0},
+    {id:'ap',name:'Αυτόματος Πληρωτής',unit:'τεμ',qty:1,on:true,cost:0,retail:0},
+    {id:'ref_pipe',name:'Ψυκτικές σωλήνες',unit:'μ.',qty:0,on:false,cost:0,retail:0},
+   ],free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'},labor:{on:true,days:6,costPerDay:0,retailPerDay:230}},
   {id:'buffer',icon:'💧',label:'Δοχείο Αδράνειας',hdrClass:'buf-hdr',hasToggle:true,on:false,defaultOn:['bf2'],
    items:[
-    {id:'ci1',name:'Κυκλοφορητής NMT MINI 32/70-180',unit:'τεμ',qty:1,on:false,cost:162.5,retail:235.63},
-    {id:'bf1',name:'Δοχείο Intrasol 40lit',unit:'τεμ',qty:1,on:false,cost:72.5,retail:105.13},
-    {id:'bf2',name:'Δοχείο Intrasol 60-80lit',unit:'τεμ',qty:1,on:false,cost:177.5,retail:257.38},
-    {id:'bf3',name:'Δοχείο Intrasol 110-200lit',unit:'τεμ',qty:1,on:false,cost:220,retail:319},
-   ],free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'},labor:{on:false,days:2,costPerDay:165,retailPerDay:230}},
+    {id:'ci1',name:'Κυκλοφορητής NMT MINI 32/70-180',unit:'τεμ',qty:1,on:false,cost:0,retail:0},
+    {id:'bf1',name:'Δοχείο Intrasol 40lit',unit:'τεμ',qty:1,on:false,cost:0,retail:0},
+    {id:'bf2',name:'Δοχείο Intrasol 60-80lit',unit:'τεμ',qty:1,on:false,cost:0,retail:0},
+    {id:'bf3',name:'Δοχείο Intrasol 110-200lit',unit:'τεμ',qty:1,on:false,cost:0,retail:0},
+   ],free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'},labor:{on:false,days:2,costPerDay:0,retailPerDay:230}},
   {id:'boiler',icon:'🔥',label:'Μπόιλερ',hdrClass:'boil-hdr',hasToggle:true,on:false,defaultOn:['bx','v3b','bo'],
    items:[
-    {id:'bx',name:'Υλικά Επίπλεον Μπόιλερ',unit:'σετ',qty:1,on:false,cost:100,retail:145},
-    {id:'ci2',name:'Κυκλ. IMP Mini 25/70-180',unit:'τεμ',qty:1,on:false,cost:147.63,retail:214.06},
-    {id:'v3b',name:'Ηλεκτροβάνα 3οδη 1"',unit:'τεμ',qty:1,on:false,cost:157,retail:227.65},
-    {id:'bo',name:'Boiler 200lit BLS ΑΘ',unit:'τεμ',qty:1,on:false,cost:440,retail:638},
-   ],free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'},labor:{on:false,days:3,costPerDay:165,retailPerDay:230}}
+    {id:'bx',name:'Υλικά Επίπλεον Μπόιλερ',unit:'σετ',qty:1,on:false,cost:0,retail:0},
+    {id:'ci2',name:'Κυκλ. IMP Mini 25/70-180',unit:'τεμ',qty:1,on:false,cost:0,retail:0},
+    {id:'v3b',name:'Ηλεκτροβάνα 3οδη 1"',unit:'τεμ',qty:1,on:false,cost:0,retail:0},
+    {id:'bo',name:'Boiler 200lit BLS ΑΘ',unit:'τεμ',qty:1,on:false,cost:0,retail:0},
+   ],free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'},labor:{on:false,days:3,costPerDay:0,retailPerDay:230}}
 ];
 
 const ST={draft:{icon:'📝',label:'Πρόχειρο',color:'#64748b',bg:'#f1f5f9'},sent:{icon:'📤',label:'Απεστάλη',color:'#2563eb',bg:'#eff6ff'},accepted:{icon:'✅',label:'Αποδεκτή',color:'#16a34a',bg:'#f0fdf4'},rejected:{icon:'❌',label:'Απορριφθείσα',color:'#dc2626',bg:'#fef2f2'}};
@@ -1409,7 +1407,10 @@ function copySQL() {
 let APP = {custId:null, _custCache:null};
 let ES  = {brand:'bosch', typeIdx:0, pump:null};
 let MSEC = JSON.parse(JSON.stringify(MAT_TPL));
-const LAB_RATE=165, LAB_RET=1.30;
+const LAB_RET=1.30;
+// Κόστος εργασίας/ημέρα: φορτώνεται από τον κλειδωμένο κατάλογο (loadCatalog) μετά τη σύνδεση — όχι στον κώδικα
+var LAB_COST=0;
+function labCPD(sec){ return (sec&&sec.labor&&sec.labor.costPerDay!==undefined&&sec.labor.costPerDay!==null)?sec.labor.costPerDay:LAB_COST; }
 
 function uuid(){return crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2)}
 function fmt(n){return n.toLocaleString('el-GR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'}
@@ -1418,12 +1419,6 @@ function call(fn,...a){Promise.resolve(fn(...a)).catch(e=>{console.error(e);aler
 function loading(id){const el=document.getElementById(id);if(el)el.innerHTML='<div class="loading"><div class="spin">⏳</div><p>Φόρτωση...</p></div>'}
 function g(id){return document.getElementById(id)}
 
-function showView(id) {
-  ['v-customers','v-customer','v-editor'].forEach(v=>g(v).classList.add('hidden'));
-  g(id).classList.remove('hidden');
-  g('hdr-new-cust').style.display = id==='v-customers'?'':'none';
-  g('hdr-new-quote').style.display = id==='v-customer'?'':'none';
-}
 
 async function goCustomers(){showView('v-customers');await renderCustomers();}
 async function goCustomer(){if(APP.custId){showView('v-customer');await renderCustomerDetail()}}
@@ -1457,7 +1452,6 @@ async function renderCustomers(){
 // CUSTOMER MODAL
 // ══════════════════════════════════════════════════════════════════
 let editCustId=null;
-function openNewCustomer(){editCustId=null;g('modal-cust-title').textContent='Νέος Πελάτης';clearCustForm();g('modal-cust').classList.remove('hidden');}
 function openEditCustomer(id) {
   // id may be omitted — fallback to current customer
   var cid = id || APP.custId;
@@ -1488,37 +1482,10 @@ async function deleteCurrentCustomer(){
   const c=APP._custCache;if(!c||!confirm(`Διαγραφή "${c.lastname}";\nΘα διαγραφούν και όλες οι προσφορές.`))return;
   await DB.delCust(APP.custId);APP.custId=null;await goCustomers();
 }
-async function newQuoteForCurrent(){await openEditor(null)}
 
 // ══════════════════════════════════════════════════════════════════
 // QUOTES
 // ══════════════════════════════════════════════════════════════════
-async function renderQuotes(){
-  g('q-cards').innerHTML='<div style="padding:20px;text-align:center;color:#94a3b8">⏳ Φόρτωση...</div>';
-  const quotes=await DB.custQuotes(APP.custId);
-  g('q-count').textContent=quotes.length?`(${quotes.length})`:'';
-  if(!combined.length){g('q-cards').innerHTML='<div class="no-quotes"><div style="font-size:32px;margin-bottom:8px">📋</div><p style="font-weight:600;margin-bottom:4px">Δεν υπάρχουν προσφορές</p><p style="font-size:12px">Κάντε κλικ στο «Νέα Προσφορά»</p></div>';return}
-  const bmap=Object.fromEntries(BRANDS.map(b=>[b.id,b]));
-  g('q-cards').innerHTML=quotes.map(q=>{
-    const st=ST[q.status]||ST.draft;const t=q.totals||{};const br=bmap[q.brand]||{icon:'🔌'};
-    return`<div class="qcard">
-      <div class="qcard-hdr"><div class="q-num">📄 ${q.quote_number||'—'}</div>
-        <span class="qst" style="background:${st.bg};color:${st.color}">${st.icon} ${st.label}</span></div>
-      <div class="qcard-body">
-        <div class="q-pump">${br.icon} ${q.brand_label?q.brand_label+' ':''}${q.pump_name||'—'} · ${q.pump_kw||''}</div>
-        <div class="q-date">📅 ${q.date||'—'}${q.notes?' · '+q.notes:''}</div>
-        <div class="q-totals">
-          <div class="qtb"><span class="qtb-lbl">Κόστος</span><span class="qtb-val">${fmt(t.total_c||0)}</span></div>
-          <div class="qtb"><span class="qtb-lbl">Λιανική</span><span class="qtb-val">${fmt(t.total_r||0)}</span></div>
-          <div class="qtb profit"><span class="qtb-lbl">Κέρδος</span><span class="qtb-val">${fmt(t.profit||0)} <small style="font-size:9px;font-weight:400">(${(t.profit_pct||0).toFixed(0)}%)</small></span></div>
-        </div>
-        <div class="q-acts">
-          <button class="qab edit" onclick="call(()=>openEditor('${q.id}'))">✏ Επεξεργασία</button>
-          <button class="qab copy" onclick="call(()=>copyQuote('${q.id}'))">📋 Αντιγραφή</button>
-          <button class="qab del" onclick="call(()=>delQuote('${q.id}'))">🗑</button>
-        </div>
-      </div></div>`}).join('');
-}
 async function delQuote(id){if(!confirm('Διαγραφή;'))return;await DB.delQuote(id);await renderQuotes()}
 async function copyQuote(id){
   const quotes=await DB.custQuotes(APP.custId);
@@ -1532,66 +1499,11 @@ async function copyQuote(id){
 // EDITOR
 // ══════════════════════════════════════════════════════════════════
 let EDIT_QID=null;
-async function openEditor(qid){
-  EDIT_QID=qid;
-  const c=APP._custCache;
-  const cn=c?c.lastname+(c.firstname?' '+c.firstname:''):'—';
-  const bcec=g('bc-ecust');if(bcec)bcec.textContent=cn;
-  if(qid){
-    const qs=await DB.custQuotes(APP.custId);
-    const q=qs.find(x=>x.id===qid);if(!q)return;
-    if(g('e-title'))g('e-title').value=q.title||'';g('e-num').value=q.quote_number||'';g('e-date').value=q.date||'';
-    g('e-status').value=q.status||'draft';g('e-notes').value=q.notes||'';
-    g('bc-equote').textContent=q.quote_number||'Προσφορά';
-    ES.brand=q.brand||'bosch';ES.typeIdx=q.type_idx||0;ES.pump=q.pump_id||null;
-    MSEC=JSON.parse(JSON.stringify(q.sections||MAT_TPL));
-  }else{
-    const num=await DB.nextNum(APP.custId);
-    g('e-num').value=num;g('e-date').value=new Date().toISOString().split('T')[0];
-    if(g('e-title'))g('e-title').value='';g('e-status').value='draft';g('e-notes').value='';
-    g('bc-equote').textContent='Νέα Προσφορά';
-    ES={brand:'bosch',typeIdx:0,pump:null};MSEC=JSON.parse(JSON.stringify(MAT_TPL));
-  }
-  // HL banner: check localStorage + propCache
-  (function(){
-    var hlData=null, pc=APP._propCache;
-    if(pc&&pc.heat_kw) hlData={kw:String(pc.heat_kw),safe:String(pc.heat_safe),pump:pc.heat_pump};
-    if(!hlData&&APP.propId){try{var _s=localStorage.getItem('hl_'+APP.propId);if(_s)hlData=JSON.parse(_s);}catch(e){}}
-    var hlb=document.getElementById('hl-editor-banner');
-    if(hlb){if(hlData&&hlData.kw){g('hlb-kw').textContent=hlData.kw+' kW';g('hlb-safe').textContent=hlData.safe+' kW';g('hlb-pump').textContent=hlData.pump+' kW';hlb.style.display='flex';}else{hlb.style.display='none';}}
-  })();
-  showView('v-editor');rBrands();rTypeTabs();rPumps();rMats();rSum();
-}
 
-async function saveQuote(){
-  const brand=BRANDS.find(b=>b.id===ES.brand);
-  const type=brand.types[ES.typeIdx];
-  const p=ES.pump?type.pumps.find(x=>x.id===ES.pump):null;
-  const pm=sTotals('pump'),bf=sTotals('buffer'),bo=sTotals('boiler');
-  const pC=p?p.cost:0,pR=p?p.retail:0;
-  const tC=pC+pm.c+bf.c+bo.c,tR=pR+pm.r+bf.r+bo.r;
-  const q={id:EDIT_QID||uuid(),customer_id:APP.custId,created_at:new Date().toISOString(),
-    title:g('e-title')?g('e-title').value:'',
-    property_id:APP.propId||null,
-    quote_number:g('e-num').value,date:g('e-date').value,status:g('e-status').value,notes:g('e-notes').value,
-    brand:ES.brand,brand_label:brand.label,type_idx:ES.typeIdx,
-    pump_id:ES.pump,pump_name:p?.name||null,pump_kw:p?.kw||null,
-    sections:JSON.parse(JSON.stringify(MSEC)),
-    totals:{pump_c:pC,pump_r:pR,mat_c:pm.c,mat_r:pm.r,buf_c:bf.c,buf_r:bf.r,boi_c:bo.c,boi_r:bo.r,
-            total_c:tC,total_r:tR,profit:tR-tC,profit_pct:tC>0?(tR-tC)/tC*100:0}};
-  await DB.saveQuote(q);EDIT_QID=q.id;
-  g('bc-equote').textContent=q.quote_number;
-  alert(`✅ Η προσφορά "${q.quote_number}" αποθηκεύτηκε!`);
-  await goCustomer();
-}
 
 // ══════════════════════════════════════════════════════════════════
 // EDITOR RENDERING
 // ══════════════════════════════════════════════════════════════════
-function selBrand(id){ES.brand=id;ES.typeIdx=0;ES.pump=null;rBrands();rTypeTabs();rPumps();rSum()}
-function rBrands(){g('brand-grid').innerHTML=BRANDS.map(b=>`<button class="brand-btn${ES.brand===b.id?' active':''}" style="--bc:${b.color}" onclick="selBrand('${b.id}')"><div class="bi">${b.icon}</div><div class="bn">${b.label}</div><div class="bs">${b.sub}</div></button>`).join('')}
-function selType(i){ES.typeIdx=i;ES.pump=null;rTypeTabs();rPumps();rSum()}
-function selPump(id){ES.pump=id;rPumps();rSum()}
 function togSec(sid){const s=MSEC.find(x=>x.id===sid);if(!s||!s.hasToggle)return;s.on=!s.on;if(s.on){if(s.defaultOn.length)s.items.forEach(it=>{it.on=s.defaultOn.includes(it.id)});s.labor.on=true}rMats();rSum()}
 function togItem(sid,iid){const s=MSEC.find(x=>x.id===sid);if(!s)return;const it=s.items.find(i=>i.id===iid);if(it){it.on=!it.on;rMats();rSum()}}
 function updQty(sid,iid,v){const s=MSEC.find(x=>x.id===sid);if(!s)return;const it=s.items.find(i=>i.id===iid);if(it){it.qty=Math.max(0,parseFloat(v)||0);it.on=it.qty>0;rMats();rSum()}}
@@ -1656,6 +1568,7 @@ async function crmLogin(){
     authStore(j); try{ localStorage.setItem('crm_last_email', em); }catch(e){}
     var gt=g('crm-gate'); if(gt)gt.style.display='none';
     var p=g('crm-pass'); if(p)p.value='';
+    loadPrices();
     call(goCustomers);
   }catch(e){
     if(er)er.textContent=/invalid/i.test(e.message)?'Λάθος email ή κωδικός':('Σφάλμα: '+e.message);
@@ -1668,7 +1581,7 @@ async function crmLogout(){
   try{ if(t) await authCall('logout',{},t); }catch(e){}
   authClear(); location.reload();
 }
-var CRM_VER='3.4';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='3.6';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 async function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   var gv=g('crm-gate-ver'); if(gv)gv.textContent='έκδοση v'+CRM_VER;
@@ -1940,13 +1853,13 @@ window.addEventListener('load', async ()=>{
 const GAS_BRANDS = [
   { id:'buderus', label:'Buderus', icon:'🟡', color:'#b45309', sub:'Logamax Plus GB',
     models:[
-      {id:'gb062_24', kw:'24 kW', name:'Logamax GB062-24 ΜΕ ΖΝΧ',         cost:694.14,  retail:902.38},
-      {id:'gb122_24', kw:'24 kW', name:'Logamax GB122i-24 ΖΝΧ + Πλήρωση', cost:788.90,  retail:1025.57},
-      {id:'gb172_24', kw:'24 kW', name:'Logamax GB172i.2-24 KDW ΖΝΧ',     cost:1005.56, retail:1307.23},
+      {id:'gb062_24', kw:'24 kW', name:'Logamax GB062-24 ΜΕ ΖΝΧ',         cost:0,  retail:0},
+      {id:'gb122_24', kw:'24 kW', name:'Logamax GB122i-24 ΖΝΧ + Πλήρωση', cost:0,  retail:0},
+      {id:'gb172_24', kw:'24 kW', name:'Logamax GB172i.2-24 KDW ΖΝΧ',     cost:0, retail:0},
     ]},
   { id:'bongioanni', label:'Bongioanni', icon:'🟢', color:'#059669', sub:'Play S',
     models:[
-      {id:'plays24', kw:'24 kW', name:'Play S24 + Καμινάδα + ΖΝΧ', cost:604.00, retail:785.20},
+      {id:'plays24', kw:'24 kW', name:'Play S24 + Καμινάδα + ΖΝΧ', cost:0, retail:0},
     ]},
   {id:'other_gas',label:'Άλλο',icon:'⚙️',color:'#6b7280',sub:'Ελεύθερη επιλογή',
     models:[
@@ -1958,39 +1871,39 @@ const GAS_MAT_TPL = [
   { id:'boiler_acc', icon:'🔧', label:'Εξαρτήματα Λέβητα', hdrClass:'pump-hdr',
     hasToggle:false, on:true, defaultOn:[],
     items:[
-      {id:'flue',    name:'Kit Καμινάδα Coaxial Φ60/100',      unit:'τεμ.', qty:1,  on:true,  cost:41.86, retail:60.70},
-      {id:'tc100',   name:'Θερμοστάτης RC100 On-Off',         unit:'τεμ.', qty:0,  on:false, cost:47.84, retail:69.37},
-      {id:'rc210',   name:'Θερμοστάτης RC210 RF ασύρματος',   unit:'τεμ.', qty:0,  on:false, cost:135.24,retail:196.10},
-      {id:'af',      name:'Εξωτ. Αισθητήριο Αντιστάθμ. AF',   unit:'τεμ.', qty:0,  on:false, cost:18.40, retail:26.68},
-      {id:'iso_val', name:'Βαλβίδες απόμ. + φίλτρο λάσπης 1"', unit:'σετ', qty:1,  on:true,  cost:48.00, retail:69.60},
-      {id:'fill_v',  name:'Βαλβίδα πλήρωσης/εκκένωσης',        unit:'τεμ.', qty:1,  on:true,  cost:16.00, retail:23.20},
-      {id:'mm_boi',  name:'Υλικά μηχανοστάσιο Λέβητα',        unit:'σετ', qty:1,  on:true,  cost:150.00,retail:217.50},
-      {id:'znx_boi', name:'Υλικά ΖΝΧ Λέβητα',                 unit:'σετ', qty:1,  on:true,  cost:50.00, retail:72.50},
-      {id:'mag_g',   name:'Μαγνητικό φίλτρο 1"',              unit:'τεμ.', qty:1,  on:true,  cost:20.32, retail:29.46},
-      {id:'pipe20g', name:'Σωλήνα Πολυστρωματική Φ20',         unit:'μ.',   qty:20, on:true,  cost:1.80,  retail:2.61},
-      {id:'pipe26g', name:'Σωλήνα Πολυστρωματική Φ26',         unit:'μ.',   qty:10, on:true,  cost:4.65,  retail:6.74},
-    ], free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'}, labor:{on:true,days:4,costPerDay:165,retailPerDay:230}},
+      {id:'flue',    name:'Kit Καμινάδα Coaxial Φ60/100',      unit:'τεμ.', qty:1,  on:true,  cost:0, retail:0},
+      {id:'tc100',   name:'Θερμοστάτης RC100 On-Off',         unit:'τεμ.', qty:0,  on:false, cost:0, retail:0},
+      {id:'rc210',   name:'Θερμοστάτης RC210 RF ασύρματος',   unit:'τεμ.', qty:0,  on:false, cost:0,retail:0},
+      {id:'af',      name:'Εξωτ. Αισθητήριο Αντιστάθμ. AF',   unit:'τεμ.', qty:0,  on:false, cost:0, retail:0},
+      {id:'iso_val', name:'Βαλβίδες απόμ. + φίλτρο λάσπης 1"', unit:'σετ', qty:1,  on:true,  cost:0, retail:0},
+      {id:'fill_v',  name:'Βαλβίδα πλήρωσης/εκκένωσης',        unit:'τεμ.', qty:1,  on:true,  cost:0, retail:0},
+      {id:'mm_boi',  name:'Υλικά μηχανοστάσιο Λέβητα',        unit:'σετ', qty:1,  on:true,  cost:0,retail:0},
+      {id:'znx_boi', name:'Υλικά ΖΝΧ Λέβητα',                 unit:'σετ', qty:1,  on:true,  cost:0, retail:0},
+      {id:'mag_g',   name:'Μαγνητικό φίλτρο 1"',              unit:'τεμ.', qty:1,  on:true,  cost:0, retail:0},
+      {id:'pipe20g', name:'Σωλήνα Πολυστρωματική Φ20',         unit:'μ.',   qty:20, on:true,  cost:0,  retail:0},
+      {id:'pipe26g', name:'Σωλήνα Πολυστρωματική Φ26',         unit:'μ.',   qty:10, on:true,  cost:0,  retail:0},
+    ], free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'}, labor:{on:true,days:4,costPerDay:0,retailPerDay:230}},
   { id:'gas_pipe', icon:'🔵', label:'Παροχή Αερίου', hdrClass:'gas-hdr',
     hasToggle:false, on:true, defaultOn:[],
     items:[
-      {id:'galv',  name:'Γαλβανιζέ σωλήνας 1" βαρ. τύπου', unit:'μ.',   qty:6, on:true, cost:8.00,  retail:11.60},
-      {id:'vgas',  name:'Βάνα αερίου σφαιρική 1" EN331',  unit:'τεμ.', qty:2, on:true, cost:12.56, retail:18.21},
-      {id:'galvf', name:'Γαλβανιζές εξαρτ. 1" (γωνίες/μούφες/ταφ)', unit:'σετ', qty:1, on:true, cost:43.00, retail:62.35},
-      {id:'gfilt', name:'Φίλτρο αερίου Y 1" (gas strainer)', unit:'τεμ.', qty:1, on:true, cost:18.00, retail:26.10},
-      {id:'flex_g',name:'Εύκαμπτος σωλ. αερίου inox 3/4"',unit:'τεμ.', qty:1, on:true, cost:22.00, retail:31.90},
-    ], free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'}, labor:{on:false,days:2,costPerDay:165,retailPerDay:230}},
+      {id:'galv',  name:'Γαλβανιζέ σωλήνας 1" βαρ. τύπου', unit:'μ.',   qty:6, on:true, cost:0,  retail:0},
+      {id:'vgas',  name:'Βάνα αερίου σφαιρική 1" EN331',  unit:'τεμ.', qty:2, on:true, cost:0, retail:0},
+      {id:'galvf', name:'Γαλβανιζές εξαρτ. 1" (γωνίες/μούφες/ταφ)', unit:'σετ', qty:1, on:true, cost:0, retail:0},
+      {id:'gfilt', name:'Φίλτρο αερίου Y 1" (gas strainer)', unit:'τεμ.', qty:1, on:true, cost:0, retail:0},
+      {id:'flex_g',name:'Εύκαμπτος σωλ. αερίου inox 3/4"',unit:'τεμ.', qty:1, on:true, cost:0, retail:0},
+    ], free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'}, labor:{on:false,days:2,costPerDay:0,retailPerDay:230}},
   { id:'gas_study', icon:'📋', label:'Μελέτη & Υπηρεσίες', hdrClass:'study-hdr',
     hasToggle:true, on:true, defaultOn:['study_eda'],
     items:[
-      {id:'study_eda', name:'Μελέτη ΕΔΑ + Κατάθεση + Θέση Λειτουργίας',unit:'παγ.',qty:1,on:true,cost:200.00,retail:290.00},
-    ], free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'}, labor:{on:false,days:1,costPerDay:165,retailPerDay:230}},
+      {id:'study_eda', name:'Μελέτη ΕΔΑ + Κατάθεση + Θέση Λειτουργίας',unit:'παγ.',qty:1,on:true,cost:0,retail:0},
+    ], free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'}, labor:{on:false,days:1,costPerDay:0,retailPerDay:230}},
   { id:'extra_pipes', icon:'📐', label:'Επιπλέον Σωληνώσεις', hdrClass:'buf-hdr',
     hasToggle:true, on:false, defaultOn:['ex_znx','ex_heat','ex_gas'],
     items:[
-      {id:'ex_znx',  name:'Επιπλέον ζεύγος μ. ΖΝΧ Φ20 (εισ.+επιστ.) all-in',      unit:'ζεύγ.μ.', qty:0, on:false, cost:26.20, retail:38.00},
-      {id:'ex_heat', name:'Επιπλέον ζεύγος μ. Θέρμανσης Φ26 (εισ.+επιστ.) all-in',   unit:'ζεύγ.μ.', qty:0, on:false, cost:39.20, retail:52.00},
-      {id:'ex_gas',  name:'Επιπλέον τρέχον μ. Αερίου Γαλβανιζέ 1" all-in',      unit:'μ.',      qty:0, on:false, cost:22.55, retail:32.00},
-    ], free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'}, labor:{on:false,days:0,costPerDay:165,retailPerDay:230}}
+      {id:'ex_znx',  name:'Επιπλέον ζεύγος μ. ΖΝΧ Φ20 (εισ.+επιστ.) all-in',      unit:'ζεύγ.μ.', qty:0, on:false, cost:0, retail:0},
+      {id:'ex_heat', name:'Επιπλέον ζεύγος μ. Θέρμανσης Φ26 (εισ.+επιστ.) all-in',   unit:'ζεύγ.μ.', qty:0, on:false, cost:0, retail:0},
+      {id:'ex_gas',  name:'Επιπλέον τρέχον μ. Αερίου Γαλβανιζέ 1" all-in',      unit:'μ.',      qty:0, on:false, cost:0, retail:0},
+    ], free:{on:false,cost:0,desc:'Λοιπά / Έκτακτα'}, labor:{on:false,days:0,costPerDay:0,retailPerDay:230}}
 ];
 
 const LAB_RET_GAS = 1.35;
@@ -2135,121 +2048,11 @@ function rBrands() {
 
 function selType(i) { ES.typeIdx = i; ES.pump = null; rTypeTabs(); rPumps(); rSum(); }
 
-function selPump(pid) { ES.pump = pid; rPumps(); rSum(); }
-function selPumpEl(btn) { selPump(btn.getAttribute('data-pid')); }
-
-
 // ── TOTALS ────────────────────────────────────────────────────────
 
 // ── SUMMARY ───────────────────────────────────────────────────────
 
-// ── SAVE QUOTE ────────────────────────────────────────────────────
-async function saveQuote() {
-  var isGas = (ES.equipType === 'gas');
-  var brands = isGas ? GAS_BRANDS : BRANDS;
-  var brand = brands.find(function(b) { return b.id === ES.brand; }) || brands[0];
-  var p = null;
-  if (isGas) {
-    var gbr = GAS_BRANDS.find(function(b) { return b.id === ES.brand; }) || GAS_BRANDS[0];
-    p = ES.pump ? gbr.models.find(function(x) { return x.id === ES.pump; }) : null;
-  } else {
-    var htype = brand.types ? brand.types[ES.typeIdx] : null;
-    if (htype) p = ES.pump ? htype.pumps.find(function(x) { return x.id === ES.pump; }) : null;
-  }
-  var pC = p ? p.cost : 0, pR = p ? p.retail : 0;
-  var tC = pC + MSEC.reduce(function(a,s) { return a + sTotals(s.id).c; }, 0);
-  var tR = pR + MSEC.reduce(function(a,s) { return a + sTotals(s.id).r; }, 0);
-  var q = {
-    id: EDIT_QID || uuid(), customer_id: APP.custId, created_at: new Date().toISOString(),
-    quote_number: g('e-num').value, date: g('e-date').value,
-    status: g('e-status').value, notes: g('e-notes').value,
-    equip_type: ES.equipType, brand: ES.brand, brand_label: brand.label, type_idx: ES.typeIdx,
-    pump_id: ES.pump, pump_name: p ? p.name : null, pump_kw: p ? p.kw : null,
-    sections: JSON.parse(JSON.stringify(MSEC)),
-    totals: {pump_c:pC, pump_r:pR, total_c:tC, total_r:tR, profit:tR-tC, profit_pct:tC>0?(tR-tC)/tC*100:0}
-  };
-  await DB.saveQuote(q);
-  EDIT_QID = q.id;
-  var bc = g('bc-equote');
-  if (bc) bc.textContent = q.quote_number;
-  alert('Αποθηκεύτηκε! Προσφορά ' + q.quote_number);
-  await goCustomer();
-}
-
-// ── OPEN EDITOR ───────────────────────────────────────────────────
-async function openEditor(qid) {
-  EDIT_QID = qid;
-  var c = APP._custCache;
-  var cn = c ? c.lastname + (c.firstname ? ' ' + c.firstname : '') : '---';
-  var bcec = g('bc-ecust'); if (bcec) bcec.textContent = cn;
-  if (qid) {
-    var qs = await DB.custQuotes(APP.custId);
-    var q2 = qs.find(function(x) { return x.id === qid; });
-    if (!q2) return;
-    g('e-num').value = q2.quote_number || '';
-    g('e-date').value = q2.date || '';
-    g('e-status').value = q2.status || 'draft';
-    g('e-notes').value = q2.notes || '';
-    var bc = g('bc-equote'); if (bc) bc.textContent = q2.quote_number || 'Prosfora';
-    ES.equipType = q2.equip_type || 'hp';
-    ES.brand = q2.brand || 'bosch'; ES.typeIdx = q2.type_idx || 0; ES.pump = q2.pump_id || null;
-    MSEC = migrateGasSections(JSON.parse(JSON.stringify(q2.sections || (ES.equipType==='gas' ? GAS_MAT_TPL : MAT_TPL))), q2.equip_type || 'hp');
-  } else {
-    var num = await DB.nextNum(APP.custId);
-    g('e-num').value = num;
-    g('e-date').value = new Date().toISOString().split('T')[0];
-    g('e-status').value = 'draft'; g('e-notes').value = '';
-    var bc2 = g('bc-equote'); if (bc2) bc2.textContent = 'Νέα Προσφορά';
-    ES = {equipType:'hp', brand:'bosch', typeIdx:0, pump:null};
-    MSEC = JSON.parse(JSON.stringify(MAT_TPL));
-  }
-  var eqhp = document.getElementById('eq-hp');
-  var eqgas = document.getElementById('eq-gas');
-  if (eqhp) eqhp.classList.toggle('active', ES.equipType === 'hp');
-  if (eqgas) eqgas.classList.toggle('active', ES.equipType === 'gas');
-  var t = g('brand-card-title');
-  if (t) t.textContent = (ES.equipType === 'hp') ? 'Μάρκα αντλίας' : 'Μάρκα λέβητα';
-  showView('v-editor'); rBrands(); rTypeTabs(); rPumps(); rMats(); rSum();
-}
-
 // ── RENDER QUOTES ─────────────────────────────────────────────────
-async function renderQuotes() {
-  g('q-cards').innerHTML = '<div style="padding:20px;text-align:center;color:#94a3b8">Loading...</div>';
-  var quotes = await DB.custQuotes(APP.custId);
-  g('q-count').textContent = quotes.length ? '(' + quotes.length + ')' : '';
-  if (!quotes.length) {
-    g('q-cards').innerHTML = '<div class="no-quotes">'
-      + '<div style="font-size:32px;margin-bottom:8px">📋</div>'
-      + '<p style="font-weight:600;margin-bottom:4px">Den yparxoun prosfores</p>'
-      + '<p style="font-size:12px">Kanete klik Neo Prosfora</p></div>';
-    return;
-  }
-  var bmap = {}; BRANDS.forEach(function(b) { bmap[b.id] = b; });
-  var gbmap = {}; GAS_BRANDS.forEach(function(b) { gbmap[b.id] = b; });
-  g('q-cards').innerHTML = quotes.map(function(q) {
-    var st = ST[q.status] || ST.draft;
-    var t = q.totals || {};
-    var isGas = (q.equip_type === 'gas');
-    var br = isGas ? (gbmap[q.brand] || {icon:'🔥', label:'Αέριο'}) : (bmap[q.brand] || {icon:'🔌', label:'-'});
-    var gasTag = isGas ? '<span style="font-size:9px;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:8px;padding:1px 7px;margin-left:6px;font-weight:700">AERIO</span>' : '';
-    return '<div class="qcard">'
-      + '<div class="qcard-hdr">'
-      + '<div class="q-num">📄 ' + (q.quote_number || '-') + gasTag + '</div>'
-      + '<span class="qst" style="background:' + st.bg + ';color:' + st.color + '">' + st.icon + ' ' + st.label + '</span>'
-      + '</div><div class="qcard-body">'
-      + '<div class="q-pump">' + br.icon + ' ' + (q.brand_label ? q.brand_label + ' ' : '') + (q.pump_name || '-') + ' &middot; ' + (q.pump_kw || '') + '</div>'
-      + '<div class="q-date">📅 ' + (q.date || '-') + (q.notes ? ' &middot; ' + q.notes : '') + '</div>'
-      + '<div class="q-totals">'
-      + '<div class="qtb"><span class="qtb-lbl">Κόστος</span><span class="qtb-val">' + fmt(t.total_c||0) + '</span></div>'
-      + '<div class="qtb"><span class="qtb-lbl">Λιανική</span><span class="qtb-val">' + fmt(t.total_r||0) + '</span></div>'
-      + '<div class="qtb profit"><span class="qtb-lbl">Κέρδος</span><span class="qtb-val">' + fmt(t.profit||0) + ' <small style="font-size:9px;font-weight:400">(' + ((t.profit_pct||0).toFixed(0)) + '%)</small></span></div>'
-      + '</div><div class="q-acts">'
-      + '<button class="qab edit" data-qid="' + q.id + '" onclick="qEdit(this)">✏ Επεξεργασία</button>'
-      + '<button class="qab copy" data-qid="' + q.id + '" onclick="qCopy(this)">📋 Αντιγραφή</button>'
-      + '<button class="qab del" data-qid="' + q.id + '" onclick="qDel(this)">🗑</button>'
-      + '</div></div></div>';
-  }).join('');
-}
 
 // ── QUOTE ACTION HELPERS (avoid onclick quote issues) ─────────────
 function qEdit(btn) { var id=typeof btn==='string'?btn:btn.getAttribute('data-qid'); call(function(){return openEditor(id);}); }
@@ -2305,104 +2108,6 @@ function migrateGasSections(sections, equipType) {
   return sections;
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// EXCEL EXPORT — μία προσφορά ανά φύλλο
-// ═══════════════════════════════════════════════════════════════════
-async function exportQuotesToExcel() {
-  if (!window.XLSX) { alert('Η βιβλιοθήκη XLSX δεν φορτώθηκε. Ελέγξτε τη σύνδεση.'); return; }
-  var c = APP._custCache;
-  var quotes = await DB.custQuotes(APP.custId);
-  if (!quotes.length) { alert('Δεν υπάρχουν προσφορές για εξαγωγή.'); return; }
-  var custName = c ? c.lastname + (c.firstname ? ' ' + c.firstname : '') : '';
-  var wb = XLSX.utils.book_new();
-
-  quotes.forEach(function(q) {
-    var isGas = (q.equip_type === 'gas');
-    var t = q.totals || {};
-    var st = ST[q.status] || ST.draft;
-    var secs = migrateGasSections(JSON.parse(JSON.stringify(q.sections || [])), q.equip_type);
-    var labRet = isGas ? 1.35 : 1.30;
-    var equipLbl = isGas ? 'Λέβητας Αερίου' : 'Αντλία Θερμότητας';
-
-    var rows = [];
-    // ── HEADER ────────────────────────────────────────────────
-    rows.push(['ΑΝΤΛΙΕΣ ΘΕΡΜΟΤΗΤΑΣ — ΠΡΟΣΦΟΡΑ']);
-    rows.push([]);
-    rows.push(['Αρ. Προσφοράς:', q.quote_number || '-', '', 'Κατάσταση:', st.label]);
-    rows.push(['Ημερομηνία:',    q.date || '-',          '', 'Πελάτης:',  custName]);
-    if (q.notes) rows.push(['Παρατηρήσεις:', q.notes]);
-    rows.push([]);
-
-    // ── ΕΞΟΠΛΙΣΜΟΣ ────────────────────────────────────────────
-    rows.push(['ΕΞΟΠΛΙΣΜΟΣ']);
-    rows.push(['Τύπος:',   equipLbl]);
-    rows.push(['Μάρκα:',   q.brand_label || q.brand || '-']);
-    rows.push(['Μοντέλο:', q.pump_name || '-']);
-    rows.push(['Ισχύς:',   q.pump_kw || '-']);
-    rows.push(['Κόστος αγοράς:',  t.pump_c || 0]);
-    rows.push(['Λιανική πώληση:', t.pump_r || 0]);
-    rows.push([]);
-
-    // ── ΥΛΙΚΑ ─────────────────────────────────────────────────
-    rows.push(['ΥΛΙΚΑ ΕΓΚΑΤΑΣΤΑΣΗΣ']);
-    rows.push(['Περιγραφή', 'Μον.', 'Ποσ.', 'Κόστος', 'Λιανική']);
-
-    secs.forEach(function(sec) {
-      if (sec.hasToggle && !sec.on) return;
-      rows.push(['── ' + sec.label.toUpperCase() + ' ──', '', '', '', '']);
-      sec.items.filter(function(i) { return i.on && i.qty > 0; }).forEach(function(i) {
-        rows.push([i.name, i.unit, i.qty,
-          Math.round(i.cost * i.qty * 100) / 100,
-          Math.round(i.retail * i.qty * 100) / 100]);
-      });
-      if (sec.free.on && sec.free.cost > 0)
-        rows.push([sec.free.desc, '€', 1, sec.free.cost, Math.round(sec.free.cost * 1.45 * 100)/100]);
-      if (sec.labor.on && sec.labor.days > 0) {
-        var lc = Math.round(sec.labor.days * 165 * 100) / 100;
-        var lr = Math.round(lc * labRet * 100) / 100;
-        rows.push(['Εργασία 1 ατόμου (165€/ημ.)', 'ημ.', sec.labor.days, lc, lr]);
-      }
-    });
-    rows.push([]);
-
-    // ── ΣΥΝΟΛΑ ────────────────────────────────────────────────
-    rows.push(['ΣΥΝΟΛΑ ΠΡΟΣΦΟΡΑΣ']);
-    rows.push(['Συν. Κόστους:',  Math.round((t.total_c||0)*100)/100]);
-    rows.push(['Συν. Λιανικής:', Math.round((t.total_r||0)*100)/100]);
-    rows.push(['Κέρδος:',        Math.round((t.profit||0)*100)/100]);
-    rows.push(['Περιθώριο:',     ((t.profit_pct||0).toFixed(1)) + '%']);
-
-    var ws = XLSX.utils.aoa_to_sheet(rows);
-
-    // Column widths
-    ws['!cols'] = [{wch:42},{wch:8},{wch:6},{wch:12},{wch:12}];
-
-    // Bold + borders via cell styles (basic)
-    // Mark header rows (row 0, rows with ΚΕΦΑΛΑΙA labels)
-    var boldRows = [0, 6, 12, rows.length - 5];
-    boldRows.forEach(function(ri) {
-      var cell = ws[XLSX.utils.encode_cell({r:ri, c:0})];
-      if (cell) { cell.s = {font:{bold:true, sz:11}}; }
-    });
-
-    // Format number cells as currency
-    var numFmt = '#,##0.00 €';
-    Object.keys(ws).forEach(function(addr) {
-      if (addr[0] === '!') return;
-      var cell = ws[addr];
-      if (typeof cell.v === 'number') {
-        cell.t = 'n';
-        cell.z = numFmt;
-      }
-    });
-
-    var sheetName = (q.quote_number || 'Quote').replace(/[/:*?\[\]\\]/g, '-').substring(0, 31);
-    XLSX.utils.book_append_sheet(wb, ws, sheetName);
-  });
-
-  var fname = 'Prosfores_' + custName.replace(/\s+/g, '_') + '_' + new Date().toISOString().split('T')[0] + '.xlsx';
-  XLSX.writeFile(wb, fname);
-}
 
 // ═══════════════════════════════════════════════════════════════════
 // NEW: Editable prices, agreed amount, rMats/rSum/saveQuote/openEditor overrides
@@ -2411,80 +2116,6 @@ async function exportQuotesToExcel() {
 function updCost(sid,iid,v){var s=MSEC.find(function(x){return x.id===sid;});if(!s)return;var it=s.items.find(function(i){return i.id===iid;});if(it){it.cost=Math.max(0,parseFloat(v)||0);rMats();rSum();}}
 function updRetail(sid,iid,v){var s=MSEC.find(function(x){return x.id===sid;});if(!s)return;var it=s.items.find(function(i){return i.id===iid;});if(it){it.retail=Math.max(0,parseFloat(v)||0);rMats();rSum();}}
 function toggleAgreed(){var st=g('e-status');var wrap=g('agreed-wrap');if(wrap)wrap.style.display=(st&&st.value==='accepted')?'':'none';}
-
-
-
-async function saveQuote(){
-  var isGas=(ES.equipType==='gas');
-  var brands=isGas?GAS_BRANDS:BRANDS;
-  var brand=brands.find(function(b){return b.id===ES.brand;})||brands[0];
-  var p=null;
-  if(isGas){var gbr=GAS_BRANDS.find(function(b){return b.id===ES.brand;})||GAS_BRANDS[0];p=ES.pump?gbr.models.find(function(x){return x.id===ES.pump;}):null;}
-  else{var htype=brand.types?brand.types[ES.typeIdx]:null;if(htype)p=ES.pump?htype.pumps.find(function(x){return x.id===ES.pump;}):null;}
-  var pC=p?p.cost:0,pR=p?p.retail:0;
-  var tC=pC+MSEC.reduce(function(a,s){return a+sTotals(s.id).c;},0);
-  var tR=pR+MSEC.reduce(function(a,s){return a+sTotals(s.id).r;},0);
-  var agreedEl=g('e-agreed');
-  var agreed=agreedEl?(parseFloat(agreedEl.value)||0):0;
-  var statusVal=g('e-status')?g('e-status').value:'draft';
-  var isAccepted=statusVal==='accepted';
-  var finalAgreed=isAccepted&&agreed>0?agreed:null;
-  var prof=finalAgreed?finalAgreed-tC:tR-tC;
-  var profPct=tC>0?prof/tC*100:0;
-  var q={id:EDIT_QID||uuid(),customer_id:APP.custId,created_at:new Date().toISOString(),
-    quote_number:g('e-num').value,date:g('e-date').value,status:statusVal,notes:g('e-notes').value,
-    equip_type:ES.equipType,brand:ES.brand,brand_label:brand.label,type_idx:ES.typeIdx,
-    pump_id:ES.pump,pump_name:p?p.name:null,pump_kw:p?p.kw:null,
-    agreed_amount:finalAgreed,
-    sections:JSON.parse(JSON.stringify(MSEC)),
-    totals:{pump_c:pC,pump_r:pR,total_c:tC,total_r:tR,profit:prof,profit_pct:profPct,agreed_amount:finalAgreed}};
-  await DB.saveQuote(q);EDIT_QID=q.id;
-  var bc=g('bc-equote');if(bc)bc.textContent=q.quote_number;
-  alert('OK - Prosfora ' + q.quote_number + ' apotheikeyth.');
-  await goCustomer();
-}
-
-async function openEditor(qid){
-  EDIT_QID=qid;
-  var c=APP._custCache;
-  var cn=c?c.lastname+(c.firstname?' '+c.firstname:''):'---';
-  var bcec=g('bc-ecust');if(bcec)bcec.textContent=cn;
-  var bceq=g('bc-equote');if(bceq)bceq.textContent=qid?'Επεξεργασία':'Νέα Προσφορά';
-  // Διατηρεί APP.propId ώστε το saveQuote να ξέρει σε ποιο ακίνητο ανήκει
-  if(qid){
-    var qs=await DB.custQuotes(APP.custId);
-    var q2=qs.find(function(x){return x.id===qid;});if(!q2)return;
-    g('e-num').value=q2.quote_number||'';g('e-date').value=q2.date||'';
-    g('e-status').value=q2.status||'draft';g('e-notes').value=q2.notes||'';
-    var bc=g('bc-equote');if(bc)bc.textContent=q2.quote_number||'Prosfora';
-    ES.equipType=q2.equip_type||'hp';
-    ES.brand=q2.brand||'bosch';ES.typeIdx=q2.type_idx||0;ES.pump=q2.pump_id||null;
-    MSEC=migrateGasSections(JSON.parse(JSON.stringify(q2.sections||(ES.equipType==='gas'?GAS_MAT_TPL:MAT_TPL))),q2.equip_type||'hp');
-    var agEl=g('e-agreed');if(agEl)agEl.value=q2.agreed_amount||'';
-  }else{
-    var num=await DB.nextNum(APP.custId);
-    g('e-num').value=num;g('e-date').value=new Date().toISOString().split('T')[0];
-    g('e-status').value='draft';g('e-notes').value='';
-    var bc2=g('bc-equote');if(bc2)bc2.textContent='Nea Prosfora';
-    ES={equipType:'hp',brand:'bosch',typeIdx:0,pump:null};
-    MSEC=JSON.parse(JSON.stringify(MAT_TPL));
-    var agEl2=g('e-agreed');if(agEl2)agEl2.value='';
-  }
-  var eqhp=document.getElementById('eq-hp'),eqgas=document.getElementById('eq-gas');
-  if(eqhp)eqhp.classList.toggle('active',ES.equipType==='hp');
-  if(eqgas)eqgas.classList.toggle('active',ES.equipType==='gas');
-  var bt=g('brand-card-title');if(bt)bt.textContent=(ES.equipType==='hp')?'Marka antlias':'Marka lebita';
-  toggleAgreed();
-  // HL banner: check localStorage + propCache
-  (function(){
-    var hlData=null, pc=APP._propCache;
-    if(pc&&pc.heat_kw) hlData={kw:String(pc.heat_kw),safe:String(pc.heat_safe),pump:pc.heat_pump};
-    if(!hlData&&APP.propId){try{var _s=localStorage.getItem('hl_'+APP.propId);if(_s)hlData=JSON.parse(_s);}catch(e){}}
-    var hlb=document.getElementById('hl-editor-banner');
-    if(hlb){if(hlData&&hlData.kw){g('hlb-kw').textContent=hlData.kw+' kW';g('hlb-safe').textContent=hlData.safe+' kW';g('hlb-pump').textContent=hlData.pump+' kW';hlb.style.display='flex';}else{hlb.style.display='none';}}
-  })();
-  showView('v-editor');rBrands();rTypeTabs();rPumps();rMats();rSum();
-}
 
 // Better Excel export
 async function exportQuotesToExcel(){
@@ -2548,10 +2179,10 @@ async function exportQuotesToExcel(){
         rows.push([D(sec.free.desc),D('€'),{v:1,t:'n',z:'0'},N(fc),N(fr),N(fc),N(fr)]);
       }
       if(sec.labor.on&&sec.labor.days>0){
-        var lc=Math.round(sec.labor.days*165*100)/100;
+        var _cpd=labCPD(sec), lc=Math.round(sec.labor.days*_cpd*100)/100;
         var lr=Math.round(lc*labRet*100)/100;
         matC+=lc;matR+=lr;
-        rows.push([D('Εργασία 1 ατόμου (165€/ημ.)'),D('ημ.'),{v:sec.labor.days,t:'n',z:'0.0'},N(165),N(Math.round(165*labRet*100)/100),N(lc),N(lr)]);
+        rows.push([D('Εργασία 1 ατόμου ('+_cpd+'€/ημ.)'),D('ημ.'),{v:sec.labor.days,t:'n',z:'0.0'},N(_cpd),N(Math.round(_cpd*labRet*100)/100),N(lc),N(lr)]);
       }
     });
     rows.push([D(''),D(''),D(''),D(''),D(''),D(''),D('')]);
@@ -2835,7 +2466,7 @@ function sTotals(sid) {
   var mR=s.items.reduce(function(t,i){return t+(i.on?i.retail*i.qty:0);},0);
   var fC=s.free.on?s.free.cost:0;
   var fR=fC*((window.PSET&&PSET.matMarkup)||1.45);
-  var labCostPerDay   = s.labor.costPerDay   !== undefined ? s.labor.costPerDay   : 165;
+  var labCostPerDay   = labCPD(s);
   var labRetailPerDay = s.labor.retailPerDay !== undefined ? s.labor.retailPerDay : 230;
   var lC=s.labor.on?s.labor.days*labCostPerDay:0;
   var lR=s.labor.on?s.labor.days*labRetailPerDay:0;
@@ -2883,7 +2514,7 @@ function printCostAnalysis(){
     rows+=row(esc(s.icon+' '+s.label), st.c, st.r, 'sec');
     s.items.forEach(function(it){ if(it.on){ rows+=row('<span class="sub">'+esc(it.name)+(it.qty>1?' × '+it.qty+' '+esc(it.unit||''):'')+'</span>', it.cost*it.qty, it.retail*it.qty, 'item'); } });
     if(s.free&&s.free.on){ rows+=row('<span class="sub">'+esc(s.free.desc||'Λοιπά / Έκτακτα')+'</span>', s.free.cost, s.free.cost*((window.PSET&&PSET.matMarkup)||1.45), 'item'); }
-    if(s.labor&&s.labor.on){ var cpd=(s.labor.costPerDay!==undefined?s.labor.costPerDay:165); var rpd=(s.labor.retailPerDay!==undefined?s.labor.retailPerDay:230); rows+=row('<span class="sub">👷 Εργασία '+s.labor.days+' ημέρες</span>', s.labor.days*cpd, s.labor.days*rpd, 'item'); }
+    if(s.labor&&s.labor.on){ var cpd=labCPD(s); var rpd=(s.labor.retailPerDay!==undefined?s.labor.retailPerDay:230); rows+=row('<span class="sub">👷 Εργασία '+s.labor.days+' ημέρες</span>', s.labor.days*cpd, s.labor.days*rpd, 'item'); }
   });
 
   var c=APP._custCache||{}, prc=APP._propCache||{};
@@ -2948,9 +2579,9 @@ function rMats(){
       +'<span class="msec-title">'+sec.label+'</span>'+tog
       +'</div><div style="padding:6px 11px;font-size:12px;color:#94a3b8;font-style:italic">Ενεργοποιήστε για να προσθέσετε υλικά.</div></div>';
 
-    var labCPD   = sec.labor.costPerDay   !== undefined ? sec.labor.costPerDay   : 165;
+    var _labCPD  = labCPD(sec);
     var labRPD   = sec.labor.retailPerDay !== undefined ? sec.labor.retailPerDay : 230;
-    var lC=sec.labor.on?sec.labor.days*labCPD:0;
+    var lC=sec.labor.on?sec.labor.days*_labCPD:0;
     var lR=sec.labor.on?sec.labor.days*labRPD:0;
     var fC=sec.free.on?sec.free.cost:0;
     var fR=fC*((window.PSET&&PSET.matMarkup)||1.45);
@@ -2990,7 +2621,7 @@ function rMats(){
       +'<td class="mat-nm" onclick="togLab(\''+sec.id+'\')">⚒ Εργασία · 1 άτομο</td>'
       +'<td class="mat-un">ημ.</td>'
       +'<td class="qty-c"><input type="number" class="qty-i" value="'+sec.labor.days+'" min="0" step="0.5" onclick="event.stopPropagation()" onchange="updLab(\''+sec.id+'\',this.value)" title="Ημέρες εργασίας"></td>'
-      +'<td class="qty-c"><input type="number" class="qty-i price-i" value="'+labCPD+'" min="0" step="1" onclick="event.stopPropagation()" onchange="updLabCost(\''+sec.id+'\',this.value)" title="Κόστος/ημέρα"></td>'
+      +'<td class="qty-c"><input type="number" class="qty-i price-i" value="'+_labCPD+'" min="0" step="1" onclick="event.stopPropagation()" onchange="updLabCost(\''+sec.id+'\',this.value)" title="Κόστος/ημέρα"></td>'
       +'<td class="qty-c"><input type="number" class="qty-i price-i" value="'+labRPD+'" min="0" step="1" onclick="event.stopPropagation()" onchange="updLabRetail(\''+sec.id+'\',this.value)" title="Λιανική/ημέρα"></td>'
       +'<td class="mat-pr">'+(sec.labor.on?fmt(lC):'—')+'</td>'+'<td class="mat-pr">'+(sec.labor.on?fmt(lR):'—')+'</td>'
       +'</tr>';
@@ -3101,8 +2732,8 @@ function rSum(){
     ?('<div class="sum-sel" style="background:color-mix(in srgb,'+brand.color+' 10%,#fff);color:'+brand.color+';border-color:color-mix(in srgb,'+brand.color+' 30%,#fff)">'+pName+'</div>')
     :'<div class="sum-ph">&larr; Επιλέξτε μοντέλο</div>';
   var __labD=0,__labC=0,__labR=0;
-  activeSecs.forEach(function(s){if(s.labor&&s.labor.on){var _c=(s.labor.costPerDay!==undefined)?s.labor.costPerDay:165;var _r=(s.labor.retailPerDay!==undefined)?s.labor.retailPerDay:230;__labD+=s.labor.days;__labC+=s.labor.days*_c;__labR+=s.labor.days*_r;}});
-  function __labOf(s,kind){if(!s.labor||!s.labor.on)return 0;var _c=(s.labor.costPerDay!==undefined)?s.labor.costPerDay:165;var _r=(s.labor.retailPerDay!==undefined)?s.labor.retailPerDay:230;return s.labor.days*(kind==='c'?_c:_r);}
+  activeSecs.forEach(function(s){if(s.labor&&s.labor.on){var _c=labCPD(s);var _r=(s.labor.retailPerDay!==undefined)?s.labor.retailPerDay:230;__labD+=s.labor.days;__labC+=s.labor.days*_c;__labR+=s.labor.days*_r;}});
+  function __labOf(s,kind){if(!s.labor||!s.labor.on)return 0;var _c=labCPD(s);var _r=(s.labor.retailPerDay!==undefined)?s.labor.retailPerDay:230;return s.labor.days*(kind==='c'?_c:_r);}
   var secRowsC=activeSecs.map(function(s){return'<div class="srow"><span class="slbl">'+s.icon+' '+s.label+'</span><span class="sval">'+fmt(sTotals(s.id).c-__labOf(s,'c'))+'</span></div>';}).join('')+(__labC>0?'<div class="srow"><span class="slbl">⚒ Εργασία · '+__labD+' ημ.</span><span class="sval">'+fmt(__labC)+'</span></div>':'');
   var secRowsR=activeSecs.map(function(s){return'<div class="srow"><span class="slbl">'+s.icon+' '+s.label+'</span><span class="sval">'+fmt(sTotals(s.id).r-__labOf(s,'r'))+'</span></div>';}).join('')+(__labR>0?'<div class="srow"><span class="slbl">⚒ Εργασία · '+__labD+' ημ.</span><span class="sval">'+fmt(__labR)+'</span></div>':'');
   var agreedSection='';
@@ -3846,7 +3477,7 @@ function hlRestoreForProperty(pid, prop){
 // ══ ΡΥΘΜΙΣΕΙΣ ΤΙΜΩΝ (markup + χειροκίνητα κόστη/λιανικές καταλόγου) ══
 // Αποθήκευση: Supabase hm_settings (id='pricing', value=PSET) + localStorage.
 // Ισχύουν ΜΟΝΟ για νέες προσφορές — οι αποθηκευμένες κρατούν τα δικά τους ποσά.
-var PSET={pumpMarkup:1.46,matMarkup:1.45,laborCost:165,laborRetail:230,pumps:{},mats:{}};
+var PSET={pumpMarkup:1.46,matMarkup:1.45,laborCost:0,laborRetail:230,pumps:{},mats:{}};
 var PRICING_BASE=null;
 function psR2(n){return Math.round((parseFloat(n)||0)*100)/100;}
 function psSnapshotBase(){
@@ -3874,6 +3505,52 @@ function applyPricing(){
   });
   try{var ve=g('v-editor');if(ve&&!ve.classList.contains('hidden')){rPumps();rSum();}}catch(e){}
 }
+// ══ ΚΑΤΑΛΟΓΟΣ ΤΙΜΩΝ (κόστη & λιανικές) — ΔΕΝ υπάρχει στον κώδικα της σελίδας ══
+// Ζει στη Supabase: hm_settings id='catalog' (RLS: μόνο συνδεδεμένοι χρήστες του CRM).
+// Μορφή: {pumps:{id:{c,r}}, mats:{'sec.item':{c,r}}, gas:{id:{c,r}}, gasMats:{'sec.item':{c,r}},
+//         labor:{sec:{c,r}}, gasLabor:{sec:{c,r}}}. Αντίγραφο στη συσκευή (localStorage) για χρήση χωρίς δίκτυο.
+var CATALOG_KEY='crm_catalog_v1', CATALOG_OK=false;
+function applyCatalog(cat){
+  if(DEMO||!cat) return false;
+  var P=cat.pumps||{}, M=cat.mats||{}, G=cat.gas||{}, GM=cat.gasMats||{}, LB=cat.labor||{}, GL=cat.gasLabor||{};
+  function set(o,v){ if(v){ if(v.c!=null)o.cost=+v.c||0; if(v.r!=null)o.retail=+v.r||0; } }
+  BRANDS.forEach(function(b){(b.types||[]).forEach(function(t){(t.pumps||[]).forEach(function(x){ set(x,P[x.id]); });});});
+  MAT_TPL.forEach(function(sc){ sc.items.forEach(function(it){ set(it,M[sc.id+'.'+it.id]); });
+    if(sc.labor&&LB[sc.id]){ sc.labor.costPerDay=+LB[sc.id].c||0; if(LB[sc.id].r!=null)sc.labor.retailPerDay=+LB[sc.id].r||0; } });
+  try{
+    GAS_BRANDS.forEach(function(b){(b.models||[]).forEach(function(x){ set(x,G[x.id]); });});
+    GAS_MAT_TPL.forEach(function(sc){ sc.items.forEach(function(it){ set(it,GM[sc.id+'.'+it.id]); });
+      if(sc.labor&&GL[sc.id]){ sc.labor.costPerDay=+GL[sc.id].c||0; if(GL[sc.id].r!=null)sc.labor.retailPerDay=+GL[sc.id].r||0; } });
+  }catch(e){}
+  var l0=LB.pump||LB[Object.keys(LB)[0]]; if(l0&&l0.c!=null) LAB_COST=+l0.c||0;
+  PSET.laborCost=LAB_COST;
+  PRICING_BASE=null;   // οι «βάσεις» των ρυθμίσεων τιμών παίρνονται από τον κατάλογο
+  CATALOG_OK=Object.keys(P).length>0;
+  return CATALOG_OK;
+}
+async function loadCatalog(){
+  if(DEMO) return;
+  var cat=null;
+  try{
+    if(storageMode==='supa' && authGet()){
+      var rows=await supaRest('hm_settings','GET',null,'id=eq.catalog&select=value');
+      if(rows&&rows[0]&&rows[0].value){ cat=rows[0].value; try{ localStorage.setItem(CATALOG_KEY,JSON.stringify(cat)); }catch(e){} }
+    }
+  }catch(e){ console.warn('loadCatalog supa:',e); }
+  if(!cat && (storageMode!=='supa' || authGet())){ try{ cat=JSON.parse(localStorage.getItem(CATALOG_KEY)||'null'); }catch(e){} }
+  applyCatalog(cat);
+  catalogBanner();
+}
+function catalogBanner(){
+  var id='catalog-warn', el=g(id);
+  var show=!DEMO && !CATALOG_OK && !!authGet();
+  if(!show){ if(el)el.remove(); return; }
+  if(!el){ el=document.createElement('div'); el.id=id;
+    el.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#fef3c7;color:#92400e;border-top:2px solid #f59e0b;padding:9px 14px;font-size:13px;font-weight:700;text-align:center';
+    el.textContent='⚠️ Δεν φορτώθηκε ο κατάλογος τιμών (κόστη/λιανικές). Οι νέες προσφορές θα βγουν με μηδενικές τιμές. Ελέγξτε τη σύνδεση και κάντε ανανέωση.';
+    document.body.appendChild(el); }
+}
+async function loadPrices(){ await loadCatalog(); await loadPricing(); }
 async function loadPricing(){
   if(DEMO) return; // demo: δεν φορτώνουμε πραγματικές τιμές
   psSnapshotBase();
@@ -3888,7 +3565,7 @@ async function loadPricing(){
   if(got){
     if(got.pumpMarkup)PSET.pumpMarkup=parseFloat(got.pumpMarkup)||1.46;
     if(got.matMarkup)PSET.matMarkup=parseFloat(got.matMarkup)||1.45;
-    if(got.laborCost)PSET.laborCost=parseFloat(got.laborCost)||165;
+    if(got.laborCost)PSET.laborCost=parseFloat(got.laborCost)||LAB_COST;
     if(got.laborRetail)PSET.laborRetail=parseFloat(got.laborRetail)||230;
     PSET.pumps=got.pumps||{};PSET.mats=got.mats||{};
   }
@@ -4003,7 +3680,7 @@ function openPricing(){
   g('ps-type').onchange=psRefreshPumps;
   g('ps-mk-pump').oninput=function(){PSET.pumpMarkup=parseFloat(this.value)||1.46;};
   g('ps-mk-mat').oninput=function(){PSET.matMarkup=parseFloat(this.value)||1.45;applyPricing();};
-  g('ps-lab-c').oninput=function(){PSET.laborCost=parseFloat(this.value)||165;applyPricing();};
+  g('ps-lab-c').oninput=function(){PSET.laborCost=parseFloat(this.value)||LAB_COST;applyPricing();};
   g('ps-lab-r').oninput=function(){PSET.laborRetail=parseFloat(this.value)||230;applyPricing();};
   g('ps-apply-pumps').onclick=function(){
     var mk=PSET.pumpMarkup||1.46;
@@ -4028,7 +3705,7 @@ function openPricing(){
   };
   g('ps-reset').onclick=function(){
     if(!confirm('Επαναφορά όλων των τιμών και συντελεστών στις αρχικές προεπιλογές του προγράμματος;'))return;
-    PSET={pumpMarkup:1.46,matMarkup:1.45,laborCost:165,laborRetail:230,pumps:{},mats:{}};
+    PSET={pumpMarkup:1.46,matMarkup:1.45,laborCost:LAB_COST,laborRetail:230,pumps:{},mats:{}};
     applyPricing();
     g('ps-mk-pump').value=PSET.pumpMarkup;g('ps-mk-mat').value=PSET.matMarkup;
     g('ps-lab-c').value=PSET.laborCost;g('ps-lab-r').value=PSET.laborRetail;
@@ -4044,7 +3721,7 @@ function openPricing(){
   psRefreshTypes();
   psRefreshMats();
 }
-window.addEventListener('load',function(){setTimeout(function(){loadPricing();},450);});
+window.addEventListener('load',function(){setTimeout(function(){loadPrices();},450);});
 </script>
 <script>
 // ═══════════════════════════════════════════════════════════════════
