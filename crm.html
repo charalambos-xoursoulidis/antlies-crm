@@ -294,6 +294,7 @@ a{color:#2563eb}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
       <div style="font-size:16px;font-weight:800;color:#0f172a">📊 Στατιστικά Υπολογιστή</div>
       <div style="display:flex;gap:8px;align-items:center">
+        <button onclick="call(exportPropertiesExcel)" title="Κάθε ακίνητο σε μία γραμμή: πελάτης, ισχύς αντλίας, τιμές προσφορών" style="background:#15803d;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">📥 Ακίνητα σε Excel</button>
         <button onclick="printStats()" style="background:#1e3a5f;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">🖨️ Εκτύπωση</button>
         <button onclick="document.getElementById('stats-mod').style.display='none'" style="background:none;border:none;font-size:20px;color:#94a3b8;cursor:pointer">✕</button>
       </div>
@@ -1582,7 +1583,7 @@ async function crmLogout(){
   try{ if(t) await authCall('logout',{},t); }catch(e){}
   authClear(); location.reload();
 }
-var CRM_VER='3.6';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
+var CRM_VER='3.7';   // έκδοση CRM — +0.1 σε κάθε αλλαγή, +1 σε σημαντική αλλαγή
 async function crmBoot(){
   var vv=g('crm-ver'); if(vv)vv.textContent='v'+CRM_VER;
   var gv=g('crm-gate-ver'); if(gv)gv.textContent='έκδοση v'+CRM_VER;
@@ -4009,6 +4010,92 @@ function wizThanks(hl){
   g('wz-stepnum').textContent='';
   g('wz-nav').innerHTML='<button class="wz-btn wz-back" onclick="wizExit()">‹ Αρχική</button><button class="wz-btn wz-next" onclick="startWizard()">+ Νέα καταχώρηση</button>';
 }
+// ══════════════════════════════════════════════════════════════════
+// ΕΞΑΓΩΓΗ ΑΚΙΝΗΤΩΝ ΣΕ EXCEL (από τα Στατιστικά)
+// Κάθε ακίνητο = μία γραμμή: πελάτης, ισχύς αντλίας, και για κάθε προσφορά
+// του ακινήτου 3 στήλες (Προσφορά N · Τιμή N χ/ΦΠΑ · Τιμή N με ΦΠΑ).
+// Τιμή = ποσό συμφωνίας αν η προσφορά έγινε δεκτή, αλλιώς λιανική (όπως στην καρτέλα).
+// Δεν εξάγονται τιμές κόστους.
+// ══════════════════════════════════════════════════════════════════
+async function exportPropertiesExcel(){
+  if(typeof XLSX==='undefined'){ alert('Η βιβλιοθήκη Excel δεν φορτώθηκε. Ελέγξτε τη σύνδεση και ξαναδοκιμάστε.'); return; }
+  var custs=[], props=[], quotes=[];
+  if(storageMode==='supa'){
+    var r=await Promise.all([
+      DB.customers(),
+      supaRest('properties','GET',null,'select=*&order=created_at.asc'),
+      supaRest('quotes','GET',null,'select=*&order=created_at.asc')
+    ]);
+    custs=r[0]||[]; props=r[1]||[]; quotes=r[2]||[];
+  } else {
+    custs=await DB.customers();
+    props=propsLoadLocal();
+    quotes=(storageMode==='local')?LOC.quotes():[];
+    if(storageMode==='server'){ for(var ci=0;ci<custs.length;ci++){ quotes=quotes.concat(await DB.custQuotes(custs[ci].id)||[]); } }
+  }
+  if(!Array.isArray(custs)) custs=[]; if(!Array.isArray(props)) props=[]; if(!Array.isArray(quotes)) quotes=[];
+  var cmap={}; custs.forEach(function(c){ cmap[c.id]=c; });
+  var pmap={}; props.forEach(function(p){ pmap[p.id]=p; });
+
+  // Προσφορές ανά ακίνητο. Παλιές προσφορές χωρίς ακίνητο: στο μοναδικό ακίνητο του πελάτη,
+  // αλλιώς σε ξεχωριστή γραμμή «(χωρίς ακίνητο)».
+  var byProp={}, orphanRows={};
+  quotes.sort(function(a,b){ return String(a.created_at||'').localeCompare(String(b.created_at||'')); });
+  quotes.forEach(function(q){
+    var pid=q.property_id;
+    if(!pid || !pmap[pid]){
+      var own=props.filter(function(p){ return p.customer_id===q.customer_id; });
+      if(own.length===1) pid=own[0].id;
+      else {
+        pid='__orphan_'+q.customer_id;
+        if(!orphanRows[pid]) orphanRows[pid]={id:pid,customer_id:q.customer_id,name:'(χωρίς ακίνητο)',created_at:q.created_at};
+      }
+    }
+    (byProp[pid]=byProp[pid]||[]).push(q);
+  });
+  var rowsSrc=props.concat(Object.keys(orphanRows).map(function(k){ return orphanRows[k]; }));
+  if(!rowsSrc.length){ alert('Δεν υπάρχουν ακίνητα για εξαγωγή.'); return; }
+
+  function custName(c){ return c ? ((c.lastname||'')+(c.firstname?' '+c.firstname:'')).trim() : ''; }
+  function num(v){ if(v==null||v==='') return ''; var t=String(v).trim().replace(',','.'); return /^-?\d+(\.\d+)?$/.test(t)?parseFloat(t):String(v); }
+  function r2(n){ return Math.round(n*100)/100; }
+  function qPrice(q){ var t=q.totals||{}; return (q.status==='accepted'&&t.agreed_amount)?Number(t.agreed_amount):Number(t.total_r||0); }
+  function qLabel(q){
+    var lbl=((q.brand_label?q.brand_label+' ':'')+(q.pump_name||'')).trim();
+    var st=(typeof ST!=='undefined'&&ST[q.status])?ST[q.status].label:'';
+    return [q.quote_number||'', lbl+(q.pump_kw?' ('+q.pump_kw+')':''), st].filter(Boolean).join(' · ');
+  }
+  // Ταξινόμηση: πελάτης (αλφαβητικά), μετά ακίνητο
+  rowsSrc.sort(function(a,b){
+    var x=custName(cmap[a.customer_id]).localeCompare(custName(cmap[b.customer_id]),'el');
+    return x||String(a.created_at||'').localeCompare(String(b.created_at||''));
+  });
+  var maxQ=0; rowsSrc.forEach(function(p){ maxQ=Math.max(maxQ,(byProp[p.id]||[]).length); });
+
+  var head=['Πελάτης','Τηλέφωνο','Πόλη','Ακίνητο','Διεύθυνση ακινήτου','Εμβαδόν (m²)','Θερμικές απώλειες (kW)','Ισχύς αντλίας (kW)','Πλήθος προσφορών'];
+  for(var i=1;i<=maxQ;i++) head.push('Προσφορά '+i,'Τιμή '+i+' χ/ΦΠΑ (€)','Τιμή '+i+' με ΦΠΑ (€)');
+  var aoa=[head];
+  rowsSrc.forEach(function(p){
+    var c=cmap[p.customer_id], qs=byProp[p.id]||[];
+    var row=[custName(c)||'—', c&&c.phone||'', c&&c.city||'', p.name||'', p.address||'', num(p.area), num(p.heat_kw), num(p.heat_pump), qs.length];
+    qs.forEach(function(q){ var net=qPrice(q); row.push(qLabel(q), r2(net), r2(net*1.24)); });
+    aoa.push(row);
+  });
+
+  var ws=XLSX.utils.aoa_to_sheet(aoa);
+  var cols=[{wch:26},{wch:14},{wch:14},{wch:18},{wch:24},{wch:11},{wch:12},{wch:12},{wch:10}];
+  for(var j=0;j<maxQ;j++) cols.push({wch:44},{wch:14},{wch:14});
+  ws['!cols']=cols;
+  ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:aoa.length-1,c:head.length-1}})};
+  for(var rr=1;rr<aoa.length;rr++) for(var cc=9;cc<head.length;cc++){
+    if((cc-9)%3===0) continue;
+    var cell=ws[XLSX.utils.encode_cell({r:rr,c:cc})]; if(cell&&cell.t==='n') cell.z='#,##0.00';
+  }
+  var wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Ακίνητα');
+  XLSX.writeFile(wb,'Akinita_'+new Date().toISOString().split('T')[0]+'.xlsx');
+}
+
 </script>
 </body>
 </html>
